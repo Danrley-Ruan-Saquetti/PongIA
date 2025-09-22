@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "outDir": "dist",
+    "rootDir": "src",
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strictPropertyInitialization": false,
+    "sourceMap": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "src/*",
+    "src/nn/game-nn.ts",
+    "src/nn/paddle-nn.ts",
+    "src/game/ball.ts",
+    "src/game/game-view-player.ts",
+    "src/game/game-view.ts",
+    "src/game/game.ts",
+    "src/globals.ts",
+    "src/game/paddle.ts"
+  ]
+}

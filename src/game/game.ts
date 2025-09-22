@@ -1,0 +1,162 @@
+import { DeltaTime } from '../utils/delta-time.js';
+import { generateID } from '../utils/utils.js';
+import { Paddle } from "./paddle.js";
+import { Ball } from "./ball.js";
+import { IObservable, ListenerHandler, Observer } from '../utils/observer.js';
+import { GLOBALS } from '../globals.js';
+
+type GameEvents = {
+  'game/stop': null
+}
+
+export class Game implements IObservable<GameEvents> {
+  public id = generateID()
+
+  deltaTime = new DeltaTime()
+  protected observer: Observer<GameEvents>
+
+  protected requestAnimation: number
+  protected timeoutStop: number
+
+  isRunning = false
+
+  paddleLeft: Paddle;
+  paddleRight: Paddle;
+
+  protected ball: Ball;
+
+  constructor(protected width: number, protected height: number) {
+    this.observer = new Observer<GameEvents>()
+  }
+
+  initComponents() {
+    this.ball.clearAllListeners()
+
+    this.ball.on('ball/table-out', side => {
+      const paddle = this.getReversePaddleBySide(side)
+
+      paddle.score++
+      this.onScored(paddle, this.getPaddleBySide(side))
+    })
+
+    this.ball.on('ball/paddle-hit', side => {
+      this.onPaddleHitBall(this.getPaddleBySide(side))
+    })
+  }
+
+  start() {
+    this.createBall()
+    this.createPaddles()
+    this.initComponents()
+
+    clearTimeout(this.timeoutStop)
+
+    this.timeoutStop = setTimeout(() => {
+      this.stop()
+    }, GLOBALS.game.limitTime)
+
+    this.deltaTime.reset()
+    this.isRunning = true
+    this.requestAnimation = requestAnimationFrame(() => this.loop());
+  }
+
+  stop() {
+    this.isRunning = false
+    cancelAnimationFrame(this.requestAnimation)
+    this.observer.emit('game/stop', null)
+  }
+
+  protected createPaddles() {
+    this.paddleLeft = new Paddle(20, this.height / 2 - 50, 15, 100, this.height, 'left');
+    this.paddleRight = new Paddle(this.width - 35, this.height / 2 - 50, 15, 100, this.height, 'right');
+  }
+
+  protected createBall() {
+    if (this.ball) {
+      this.ball.clearAllListeners()
+    }
+
+    this.ball = new Ball(this.width / 2, this.height / 2, 10, this.width, this.height);
+  }
+
+  private loop() {
+    this.update()
+
+    if (this.isRunning)
+      this.requestAnimation = requestAnimationFrame(() => this.loop());
+  }
+
+  update() {
+    this.deltaTime.next()
+    this.updateInternal()
+    this.paddleLeft.update();
+    this.paddleRight.update();
+    this.ball.update(this.paddleLeft, this.paddleRight);
+  }
+
+  moveLeftUp() {
+    this.paddleLeft.moveUp();
+  }
+
+  moveLeftDown() {
+    this.paddleLeft.moveDown();
+  }
+
+  moveRightUp() {
+    this.paddleRight.moveUp();
+  }
+
+  moveRightDown() {
+    this.paddleRight.moveDown();
+  }
+
+  protected updateInternal() { }
+
+  protected onPaddleHitBall(paddle: Paddle) {
+    paddle.onBallHit()
+  }
+
+  protected onScored(paddle: Paddle, paddleLost: Paddle) {
+    paddleLost.onLostBall()
+
+    if (paddle.score >= GLOBALS.game.maxVictories) {
+      this.stop()
+    }
+  }
+
+  getPaddleBySide(side: 'left' | 'right') {
+    return side == 'left' ? this.paddleLeft : this.paddleRight
+  }
+
+  getReversePaddleBySide(side: 'left' | 'right') {
+    return side == 'right' ? this.paddleLeft : this.paddleRight
+  }
+
+  on<EventName extends keyof GameEvents>(event: EventName, handler: ListenerHandler<GameEvents[EventName]>) {
+    return this.observer.on(event, handler)
+  }
+
+  clearListener(event: keyof GameEvents, id: string) {
+    this.observer.clearListener(event, id)
+  }
+
+  clearAllListeners() {
+    this.observer.clearAllListeners()
+  }
+
+  clearListenersByEvent(event: keyof GameEvents) {
+    this.observer.clearListenersByEvent(event)
+  }
+
+  getState() {
+    return {
+      id: this.id,
+      left: this.paddleLeft,
+      right: this.paddleRight,
+      ball: this.ball,
+      width: this.width,
+      height: this.height,
+      time: this.deltaTime.totalElapsedTimeSeconds,
+    };
+  }
+}
