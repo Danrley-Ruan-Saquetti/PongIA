@@ -1,3 +1,4 @@
+import { TableSide } from "./types.js"
 
 export class Paddle {
 
@@ -12,11 +13,11 @@ export class Paddle {
     public width: number,
     public height: number,
     protected tableHeight: number,
-    protected side: 'left' | 'right'
+    protected side: TableSide
   ) {
     this.y = this.height / 2 - 50
 
-    if (side == 'left') {
+    if (side == TableSide.LEFT) {
       this.x = 20
     } else {
       this.x = this.width - 35

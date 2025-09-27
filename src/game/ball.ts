@@ -1,9 +1,10 @@
 import { IObservable, ListenerHandler, Observer } from '../utils/observer.js';
-import { Paddle } from "./paddle.js"
+import { Paddle } from "./paddle.js";
+import { TableSide } from './types.js';
 
 type BallEvents = {
-  'ball/table-out': 'left' | 'right'
-  'ball/paddle-hit': 'left' | 'right'
+  'ball/table-out': TableSide
+  'ball/paddle-hit': TableSide
 }
 
 export class Ball implements IObservable<BallEvents> {
@@ -51,7 +52,7 @@ export class Ball implements IObservable<BallEvents> {
       this.y > p1.y &&
       this.y < p1.y + p1.height
     ) {
-      this.collisionPaddle(p1, 'left');
+      this.collisionPaddle(p1, TableSide.LEFT);
     }
 
     if (
@@ -59,20 +60,20 @@ export class Ball implements IObservable<BallEvents> {
       this.y > p2.y &&
       this.y < p2.y + p2.height
     ) {
-      this.collisionPaddle(p2, 'right');
+      this.collisionPaddle(p2, TableSide.RIGHT);
     }
 
     if (this.x < 0) {
       this.reset();
-      this.observer.emit('ball/table-out', 'left');
+      this.observer.emit('ball/table-out', TableSide.LEFT);
     }
     if (this.x > this.tableWidth) {
       this.reset();
-      this.observer.emit('ball/table-out', 'right');
+      this.observer.emit('ball/table-out', TableSide.RIGHT);
     }
   }
 
-  private collisionPaddle(paddle: Paddle, side: 'left' | 'right') {
+  private collisionPaddle(paddle: Paddle, side: TableSide) {
     const relativeIntersectY = this.y - (paddle.y + paddle.height / 2);
 
     const normalizedIntersectY = relativeIntersectY / (paddle.height / 2);
@@ -84,7 +85,7 @@ export class Ball implements IObservable<BallEvents> {
 
     this.speedY = speed * Math.sin(bounceAngle) + (Math.random() * 2 - 1);
 
-    if (side === 'left') {
+    if (side == TableSide.LEFT) {
       this.speedX = speed * Math.cos(bounceAngle);
 
       if (this.speedX < 0) {

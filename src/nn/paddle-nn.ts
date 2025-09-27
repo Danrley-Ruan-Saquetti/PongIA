@@ -1,5 +1,6 @@
 import { Ball } from "../game/ball.js";
 import { Paddle } from "../game/paddle.js";
+import { TableSide } from "../game/types.js";
 import { GLOBALS } from "../globals.js";
 import { NeuralNetwork } from "./core/neural-network.js";
 
@@ -9,7 +10,7 @@ export class PaddleNN extends Paddle {
     width: number,
     height: number,
     tableHeight: number,
-    side: 'left' | 'right',
+    side: TableSide,
     public ball: Ball,
     public network: NeuralNetwork
   ) {
@@ -41,7 +42,7 @@ export class PaddleNN extends Paddle {
 
     ctx.fillText(
       `${this.network.fitness.toFixed(2)}`,
-      this.x + (this.side == 'left' ? 150 : -150),
+      this.x + (this.side == TableSide.LEFT ? 150 : -150),
       this.tableHeight - 15
     );
   }

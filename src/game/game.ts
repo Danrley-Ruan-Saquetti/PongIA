@@ -4,6 +4,7 @@ import { IObservable, ListenerHandler, Observer } from '../utils/observer.js';
 import { generateID } from '../utils/utils.js';
 import { Ball } from "./ball.js";
 import { Paddle } from "./paddle.js";
+import { TableSide } from './types.js';
 
 type GameEvents = {
   'game/stop': null
@@ -67,8 +68,8 @@ export class Game implements IObservable<GameEvents> {
   }
 
   protected createPaddles() {
-    this.paddleLeft = new Paddle(15, 100, this.height, 'left');
-    this.paddleRight = new Paddle(15, 100, this.height, 'right');
+    this.paddleLeft = new Paddle(15, 100, this.height, TableSide.LEFT);
+    this.paddleRight = new Paddle(15, 100, this.height, TableSide.RIGHT);
   }
 
   protected createBall() {
@@ -124,12 +125,12 @@ export class Game implements IObservable<GameEvents> {
     }
   }
 
-  getPaddleBySide(side: 'left' | 'right') {
-    return side == 'left' ? this.paddleLeft : this.paddleRight
+  getPaddleBySide(side: TableSide) {
+    return side == TableSide.LEFT ? this.paddleLeft : this.paddleRight
   }
 
-  getReversePaddleBySide(side: 'left' | 'right') {
-    return side == 'right' ? this.paddleLeft : this.paddleRight
+  getReversePaddleBySide(side: TableSide) {
+    return side == TableSide.LEFT ? this.paddleLeft : this.paddleRight
   }
 
   on<EventName extends keyof GameEvents>(event: EventName, handler: ListenerHandler<GameEvents[EventName]>) {
