@@ -1,51 +1,57 @@
-import { GenerationView } from './nn/generation-view.js';
-import { PopulationNNGame } from './nn/population-nn-game.js';
 import { GameView } from "./game/game-view.js";
+import { GLOBALS } from "./globals.js";
+import { AITrainer } from './nn/ai-trainer.js';
+import { GenerationView } from './nn/generation-view.js';
 import { resizeCanvas } from './utils/utils.js';
 
-const canvasRank = document.getElementById("rankCanvas") as HTMLCanvasElement;
-const canvasGame = document.getElementById("gameCanvas") as HTMLCanvasElement;
+window.onload = app
 
-resizeCanvas(canvasRank, { weight: 375, height: 500 })
-resizeCanvas(canvasGame, { weight: 800, height: 500 })
+function app() {
+  const canvasRank = document.getElementById("rankCanvas") as HTMLCanvasElement;
+  const canvasGame = document.getElementById("gameCanvas") as HTMLCanvasElement;
 
-const populationGame = new PopulationNNGame(canvasGame.width, canvasGame.height)
+  resizeCanvas(canvasRank, { width: 375, height: 500 })
+  resizeCanvas(canvasGame, GLOBALS.game.table)
 
-populationGame.on('next-generation', () => {
-  gameView.setGame(populationGame.getGameSelected())
-})
+  const aiTrainer = new AITrainer(canvasGame.width, canvasGame.height)
 
-populationGame.loadPopulation()
-populationGame.initializeGames()
+  const generationView = new GenerationView(canvasRank, aiTrainer)
+  const gameView = new GameView(canvasGame);
 
-const gameView = new GameView(canvasGame, populationGame.games[0]);
-const rankView = new GenerationView(canvasRank, populationGame)
+  aiTrainer.on('next-generation', () => {
+    gameView.setGame(generationView.getGameSelected())
+  })
 
-gameView.start()
-rankView.start()
+  generationView.on('game-selected/change', game => gameView.setGame(game))
 
-let isKeyPressed = false
+  aiTrainer.startGames()
 
-const KEY_MAP: Record<string, () => void> = {
-  '1': () => populationGame.selectPreviousGame(),
-  '2': () => populationGame.selectNextGame(),
-  '3': () => populationGame.selectPreviousGameRunning(),
-  '4': () => populationGame.selectNextGameRunning(),
-  '5': () => populationGame.selectGameWithBestFitnessRunning(),
+  gameView.setGame(generationView.getGameSelected())
+
+  gameView.start()
+  generationView.start()
+
+  const KEY_MAP: Record<string, () => void> = {
+    '1': () => generationView.selectPreviousGame(),
+    '2': () => generationView.selectNextGame(),
+    '3': () => generationView.selectPreviousGameRunning(),
+    '4': () => generationView.selectNextGameRunning(),
+    '5': () => generationView.setSelectGame(0),
+  }
+
+  let isKeyPressed = false
+
+  addEventListener('keydown', ({ key }) => {
+    if (!isKeyPressed && KEY_MAP[key]) {
+      isKeyPressed = true
+
+      KEY_MAP[key]()
+    }
+  })
+
+  addEventListener('keyup', ({ key }) => {
+    if (KEY_MAP[key]) {
+      isKeyPressed = false
+    }
+  })
 }
-
-addEventListener('keydown', ({ key }) => {
-  if (!isKeyPressed && KEY_MAP[key]) {
-    isKeyPressed = true
-
-    KEY_MAP[key]()
-  }
-})
-
-addEventListener('keyup', ({ key }) => {
-  if (KEY_MAP[key]) {
-    isKeyPressed = false
-  }
-})
-
-setInterval(() => gameView.setGame(populationGame.getGameSelected()), 1000 / 10)
