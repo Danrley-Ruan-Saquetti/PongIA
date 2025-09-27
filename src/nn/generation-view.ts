@@ -1,12 +1,22 @@
-import { PopulationNNGame } from './population-nn-game.js'
+import { IObservable, ListenerHandler, Observer } from '../utils/observer.js';
+import { AITrainer } from './ai-trainer.js';
+import { GameNN } from './game-nn.js';
 
-export class GenerationView {
+export type GenerationViewEvents = {
+  'game-selected/change': GameNN
+}
+
+export class GenerationView implements IObservable<GenerationViewEvents> {
+
+  private observable: Observer<GenerationViewEvents>
   private ctx: CanvasRenderingContext2D
-
   protected timeInterval!: number
 
-  constructor(protected canvas: HTMLCanvasElement, protected population: PopulationNNGame) {
+  private gameIndexSelected = 0
+
+  constructor(protected canvas: HTMLCanvasElement, protected population: AITrainer) {
     this.ctx = canvas.getContext("2d")!
+    this.observable = new Observer<GenerationViewEvents>()
   }
 
   stop() {
@@ -22,8 +32,8 @@ export class GenerationView {
   }
 
   private draw() {
-    const gameIndexSelected = this.population.getGameIndexSelected()
-    const gameSelected = this.population.getGameSelected()
+    const gameIndexSelected = this.gameIndexSelected
+    const gameSelected = this.population.games[this.gameIndexSelected]
 
     let minRange = Math.max(0, gameIndexSelected - 4)
     let maxRange = Math.min(this.population.games.length - 1, gameIndexSelected + 5)
@@ -44,17 +54,12 @@ export class GenerationView {
     let marginLeft = 10
 
     this.ctx.fillText("Game", marginLeft + 40, positionY)
-    this.ctx.fillText("Time", marginLeft + 140, positionY)
-    this.ctx.fillText("Score", marginLeft + 200, positionY)
-    this.ctx.fillText("Best Fitness", marginLeft + 260, positionY)
+    this.ctx.fillText("Time", marginLeft + 200, positionY)
+    this.ctx.fillText("Score", marginLeft + 260, positionY)
 
     positionY += 30
 
-    const games = this.population.games.sort((gameA, gameB) => {
-      return gameB.getState().bestFitness - gameA.getState().bestFitness
-    })
-
-    games.forEach((game, i) => {
+    this.population.games.forEach((game, i) => {
       if (i < minRange || maxRange < i) {
         return
       }
@@ -66,14 +71,13 @@ export class GenerationView {
       this.ctx.fillText(`#${i + 1}`, marginLeft + 5, positionY)
       this.ctx.fillText(state.id, marginLeft + 40, positionY)
 
-      this.ctx.fillStyle = '#FFF'
-
-      this.ctx.fillText(`${state.time.toFixed(0)}s`, marginLeft + 140, positionY)
-      this.ctx.fillText(`${state.left.score} x ${state.right.score}`, marginLeft + 200, positionY)
-      this.ctx.fillText(`${state.bestFitness.toFixed(2)}`, marginLeft + 260, positionY)
+      this.ctx.fillText(`${state.time.toFixed(0)}s`, marginLeft + 200, positionY)
+      this.ctx.fillText(`${state.left.score} x ${state.right.score}`, marginLeft + 260, positionY)
 
       positionY += 30
     })
+
+    this.ctx.fillStyle = '#FFF'
 
     positionY += 10
 
@@ -84,5 +88,63 @@ export class GenerationView {
 
     this.ctx.fillText(`Generation: ${this.population.population.getCurrentGeneration()}`, 20, positionY)
     this.ctx.fillText(`Record Fitness: ${this.population.population.getRecordFitness().toFixed(2)}`, 150, positionY)
+  }
+
+  getGameSelected() {
+    return this.population.games[this.gameIndexSelected]
+  }
+
+  setSelectGame(index: number) {
+    this.gameIndexSelected = index % this.population.games.length
+
+    this.observable.emit('game-selected/change', this.population.games[this.gameIndexSelected])
+  }
+
+  selectPreviousGame() {
+    this.gameIndexSelected = (this.gameIndexSelected - 1 + this.population.games.length) % this.population.games.length
+
+    this.observable.emit('game-selected/change', this.population.games[this.gameIndexSelected])
+  }
+
+  selectNextGame() {
+    this.gameIndexSelected = ++this.gameIndexSelected % this.population.games.length
+
+    this.observable.emit('game-selected/change', this.population.games[this.gameIndexSelected])
+  }
+
+  selectPreviousGameRunning() {
+    let initialIndex = this.gameIndexSelected
+
+    do {
+      this.selectPreviousGame()
+    } while (this.gameIndexSelected != initialIndex && !this.population.games[this.gameIndexSelected].isRunning)
+
+    this.observable.emit('game-selected/change', this.population.games[this.gameIndexSelected])
+  }
+
+  selectNextGameRunning() {
+    let initialIndex = this.gameIndexSelected
+
+    do {
+      this.selectNextGame()
+    } while (this.gameIndexSelected != initialIndex && !this.population.games[this.gameIndexSelected].isRunning)
+
+    this.observable.emit('game-selected/change', this.population.games[this.gameIndexSelected])
+  }
+
+  on<EventName extends keyof GenerationViewEvents>(event: EventName, handler: ListenerHandler<GenerationViewEvents[EventName]>) {
+    return this.observable.on(event, handler)
+  }
+
+  clearListener(event: keyof GenerationViewEvents, id: string) {
+    this.observable.clearListener(event, id)
+  }
+
+  clearAllListeners() {
+    this.observable.clearAllListeners()
+  }
+
+  clearListenersByEvent(event: keyof GenerationViewEvents) {
+    this.observable.clearListenersByEvent(event)
   }
 }
