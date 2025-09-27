@@ -1,13 +1,11 @@
 import { Ball } from "../game/ball.js";
-import { NeuralNetwork } from "./core/neural-network.js";
 import { Paddle } from "../game/paddle.js";
 import { GLOBALS } from "../globals.js";
+import { NeuralNetwork } from "./core/neural-network.js";
 
 export class PaddleNN extends Paddle {
 
   constructor(
-    x: number,
-    y: number,
     width: number,
     height: number,
     tableHeight: number,
@@ -15,7 +13,7 @@ export class PaddleNN extends Paddle {
     public ball: Ball,
     public network: NeuralNetwork
   ) {
-    super(x, y, width, height, tableHeight, side)
+    super(width, height, tableHeight, side)
   }
 
   update() {

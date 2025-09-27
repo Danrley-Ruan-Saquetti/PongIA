@@ -1,9 +1,9 @@
-import { DeltaTime } from '../utils/delta-time.js';
-import { generateID } from '../utils/utils.js';
-import { Paddle } from "./paddle.js";
-import { Ball } from "./ball.js";
-import { IObservable, ListenerHandler, Observer } from '../utils/observer.js';
 import { GLOBALS } from '../globals.js';
+import { DeltaTime } from '../utils/delta-time.js';
+import { IObservable, ListenerHandler, Observer } from '../utils/observer.js';
+import { generateID } from '../utils/utils.js';
+import { Ball } from "./ball.js";
+import { Paddle } from "./paddle.js";
 
 type GameEvents = {
   'game/stop': null
@@ -67,8 +67,8 @@ export class Game implements IObservable<GameEvents> {
   }
 
   protected createPaddles() {
-    this.paddleLeft = new Paddle(20, this.height / 2 - 50, 15, 100, this.height, 'left');
-    this.paddleRight = new Paddle(this.width - 35, this.height / 2 - 50, 15, 100, this.height, 'right');
+    this.paddleLeft = new Paddle(15, 100, this.height, 'left');
+    this.paddleRight = new Paddle(15, 100, this.height, 'right');
   }
 
   protected createBall() {
