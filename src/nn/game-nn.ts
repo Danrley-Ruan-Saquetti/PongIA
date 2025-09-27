@@ -15,8 +15,8 @@ export class GameNN extends Game {
   }
 
   protected createPaddles() {
-    this.paddleLeft = new PaddleNN(15, 100, this.height, TableSide.LEFT, this.ball, this.networkLeft);
-    this.paddleRight = new PaddleNN(15, 100, this.height, TableSide.RIGHT, this.ball, this.networkRight);
+    this.paddleLeft = new PaddleNN(15, 100, this.width, this.height, TableSide.LEFT, this.ball, this.networkLeft);
+    this.paddleRight = new PaddleNN(15, 100, this.width, this.height, TableSide.RIGHT, this.ball, this.networkRight);
   }
 
   getState() {

@@ -9,21 +9,22 @@ export class PaddleNN extends Paddle {
   constructor(
     width: number,
     height: number,
+    tableWidth: number,
     tableHeight: number,
     side: TableSide,
     public ball: Ball,
     public network: NeuralNetwork
   ) {
-    super(width, height, tableHeight, side)
+    super(width, height, tableWidth, tableHeight, side)
   }
 
   update() {
     const [up, down, stay] = this.network.feedforward([
-      this.y,
-      this.ball.x,
-      this.ball.y,
-      Math.abs(this.ball.speedX),
-      this.ball.speedY,
+      this.position.y,
+      this.ball.position.x,
+      this.ball.position.y,
+      Math.abs(this.ball.speed.x),
+      this.ball.speed.y,
     ])
 
     if (up > down && up > stay) {
@@ -42,7 +43,7 @@ export class PaddleNN extends Paddle {
 
     ctx.fillText(
       `${this.network.fitness.toFixed(2)}`,
-      this.x + (this.side == TableSide.LEFT ? 150 : -150),
+      this.position.x + (this.side == TableSide.LEFT ? 150 : -150),
       this.tableHeight - 15
     );
   }
@@ -66,7 +67,7 @@ export class PaddleNN extends Paddle {
   }
 
   private onNetworkAction() {
-    if (this.ball.y - this.ball.radius >= this.y && this.ball.y + this.ball.radius <= this.y + this.height) {
+    if (this.ball.position.y - this.ball.radius >= this.position.y && this.ball.position.y + this.ball.radius <= this.position.y + this.height) {
       this.network.fitness += GLOBALS.network.fitness.onFollowBall
     }
   }

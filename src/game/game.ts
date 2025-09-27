@@ -68,8 +68,8 @@ export class Game implements IObservable<GameEvents> {
   }
 
   protected createPaddles() {
-    this.paddleLeft = new Paddle(15, 100, this.height, TableSide.LEFT);
-    this.paddleRight = new Paddle(15, 100, this.height, TableSide.RIGHT);
+    this.paddleLeft = new Paddle(15, 100, this.width, this.height, TableSide.LEFT);
+    this.paddleRight = new Paddle(15, 100, this.width, this.height, TableSide.RIGHT);
   }
 
   protected createBall() {
@@ -77,7 +77,7 @@ export class Game implements IObservable<GameEvents> {
       this.ball.clearAllListeners()
     }
 
-    this.ball = new Ball(this.width / 2, this.height / 2, 10, this.width, this.height);
+    this.ball = new Ball(10, this.width, this.height);
   }
 
   private loop() {

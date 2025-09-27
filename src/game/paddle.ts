@@ -1,48 +1,50 @@
+import { Vector2D } from "../utils/vector2d.js"
 import { TableSide } from "./types.js"
 
 export class Paddle {
 
-  private speed: number = 6
+  position: Vector2D
+  speed = 6
 
-  score: number = 0
-
-  x: number
-  y: number
+  score = 0
 
   constructor(
     public width: number,
     public height: number,
+    protected tableWidth: number,
     protected tableHeight: number,
     protected side: TableSide
   ) {
-    this.y = this.height / 2 - 50
+    this.position = new Vector2D()
 
     if (side == TableSide.LEFT) {
-      this.x = 20
+      this.position.x = 20
     } else {
-      this.x = this.width - 35
+      this.position.x = this.tableWidth - 35
     }
+
+    this.reset()
   }
 
   reset() {
-
+    this.position.y = this.height / 2 - this.tableHeight
   }
 
   update() { }
 
   moveUp() {
-    this.y -= this.speed
+    this.position.y -= this.speed
 
-    if (this.y < 0) {
-      this.y = 0
+    if (this.position.y < 0) {
+      this.position.y = 0
     }
   }
 
   moveDown() {
-    this.y += this.speed
+    this.position.y += this.speed
 
-    if (this.y + this.height > this.tableHeight) {
-      this.y = this.tableHeight - this.height
+    if (this.position.y + this.height > this.tableHeight) {
+      this.position.y = this.tableHeight - this.height
     }
   }
 
@@ -52,6 +54,6 @@ export class Paddle {
 
   draw(ctx: CanvasRenderingContext2D) {
     ctx.fillStyle = "white"
-    ctx.fillRect(this.x, this.y, this.width, this.height)
+    ctx.fillRect(this.position.x, this.position.y, this.width, this.height)
   }
 }

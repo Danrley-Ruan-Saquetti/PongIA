@@ -1,4 +1,5 @@
 import { IObservable, ListenerHandler, Observer } from '../utils/observer.js';
+import { Vector2D } from './../utils/vector2d.js';
 import { Paddle } from "./paddle.js";
 import { TableSide } from './types.js';
 
@@ -11,91 +12,91 @@ export class Ball implements IObservable<BallEvents> {
 
   private observer: Observer<BallEvents>
 
-  speedX = 0
-  speedY = 0
+  speed: Vector2D
+  position: Vector2D
 
   constructor(
-    public x: number,
-    public y: number,
     public radius: number,
     private tableWidth: number,
     private tableHeight: number
   ) {
     this.observer = new Observer<BallEvents>()
+    this.speed = new Vector2D()
+    this.position = new Vector2D()
     this.reset()
   }
 
   reset() {
-    this.x = this.tableWidth / 2
-    this.y = this.tableHeight / 2
+    this.position.x = this.tableWidth / 2
+    this.position.y = this.tableHeight / 2
 
-    this.speedX = 5 * (Math.random() > 0.5 ? 1 : -1)
-    this.speedY = 4 * (Math.random() > 0.5 ? 1 : -1)
+    this.speed.x = 5 * (Math.random() > 0.5 ? 1 : -1)
+    this.speed.y = 4 * (Math.random() > 0.5 ? 1 : -1)
   }
 
   update(p1: Paddle, p2: Paddle) {
-    this.x += this.speedX
-    this.y += this.speedY
+    this.position.x += this.speed.x
+    this.position.y += this.speed.y
 
-    if (this.y - this.radius < 0 || this.y + this.radius > this.tableHeight) {
-      this.speedY *= -1
+    if (this.position.y - this.radius < 0 || this.position.y + this.radius > this.tableHeight) {
+      this.speed.y *= -1
 
-      if (this.y - this.radius < 0) {
-        this.y = this.radius
+      if (this.position.y - this.radius < 0) {
+        this.position.y = this.radius
       } else {
-        this.y = this.tableHeight - this.radius
+        this.position.y = this.tableHeight - this.radius
       }
     }
 
     if (
-      this.x - this.radius < p1.x + p1.width &&
-      this.y > p1.y &&
-      this.y < p1.y + p1.height
+      this.position.x - this.radius < p1.position.x + p1.width &&
+      this.position.y > p1.position.y &&
+      this.position.y < p1.position.y + p1.height
     ) {
       this.collisionPaddle(p1, TableSide.LEFT);
     }
 
     if (
-      this.x + this.radius > p2.x &&
-      this.y > p2.y &&
-      this.y < p2.y + p2.height
+      this.position.x + this.radius > p2.position.x &&
+      this.position.y > p2.position.y &&
+      this.position.y < p2.position.y + p2.height
     ) {
       this.collisionPaddle(p2, TableSide.RIGHT);
     }
 
-    if (this.x < 0) {
+    if (this.position.x < 0) {
       this.reset();
       this.observer.emit('ball/table-out', TableSide.LEFT);
     }
-    if (this.x > this.tableWidth) {
+    if (this.position.x > this.tableWidth) {
       this.reset();
       this.observer.emit('ball/table-out', TableSide.RIGHT);
     }
   }
 
   private collisionPaddle(paddle: Paddle, side: TableSide) {
-    const relativeIntersectY = this.y - (paddle.y + paddle.height / 2);
+    const relativeIntersectY = this.position.y - (paddle.position.y + paddle.height / 2);
 
     const normalizedIntersectY = relativeIntersectY / (paddle.height / 2);
 
     const maxBounceAngle = Math.PI / 3;
     const bounceAngle = normalizedIntersectY * maxBounceAngle;
 
-    const speed = Math.sqrt(this.speedX * this.speedX + this.speedY * this.speedY);
+    const speed = Math.sqrt(this.speed.x * this.speed.x + this.speed.y * this.speed.y);
 
-    this.speedY = speed * Math.sin(bounceAngle) + (Math.random() * 2 - 1);
+    this.speed.y = speed * Math.sin(bounceAngle) + (Math.random() * 2 - 1);
 
     if (side == TableSide.LEFT) {
-      this.speedX = speed * Math.cos(bounceAngle);
+      this.speed.x = speed * Math.cos(bounceAngle);
 
-      if (this.speedX < 0) {
-        this.speedX *= -1;
+      if (this.speed.x < 0) {
+        this.speed.x *= -1;
       }
     } else {
-      this.speedX = -speed * Math.cos(bounceAngle);
+      this.speed.x = -speed * Math.cos(bounceAngle);
 
-      if (this.speedX > 0) {
-        this.speedX *= -1;
+      if (this.speed.x > 0) {
+        this.speed.x *= -1;
       }
     }
 
@@ -105,7 +106,7 @@ export class Ball implements IObservable<BallEvents> {
   draw(ctx: CanvasRenderingContext2D) {
     ctx.fillStyle = "white"
     ctx.beginPath()
-    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2)
+    ctx.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2)
     ctx.fill()
   }
 
