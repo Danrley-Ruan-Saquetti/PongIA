@@ -3,9 +3,11 @@ import { Game } from "./game.js";
 export class GameView {
   private ctx: CanvasRenderingContext2D;
 
+  protected game: Game
+
   protected animationFrame: number
 
-  constructor(protected canvas: HTMLCanvasElement, protected game: Game) {
+  constructor(protected canvas: HTMLCanvasElement) {
     this.ctx = canvas.getContext("2d")!;
   }
 

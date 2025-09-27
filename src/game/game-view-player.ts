@@ -1,4 +1,3 @@
-import { Game } from "./game.js"
 import { GameView } from "./game-view.js"
 
 export class GameViewPlayer extends GameView {
@@ -9,8 +8,8 @@ export class GameViewPlayer extends GameView {
   onKeyDown = (e: KeyboardEvent) => this.keys.add(e.key)
   onkeyUp = (e: KeyboardEvent) => this.keys.delete(e.key)
 
-  constructor(canvas: HTMLCanvasElement, game: Game) {
-    super(canvas, game)
+  constructor(canvas: HTMLCanvasElement) {
+    super(canvas)
 
     this.registerEvents()
   }
