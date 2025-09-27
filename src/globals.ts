@@ -1,7 +1,11 @@
 export const GLOBALS = {
   game: {
     limitTime: 1000 * 30,
-    maxVictories: 25
+    maxVictories: 25,
+    table: {
+      width: 800,
+      height: 500
+    }
   },
   evolution: {
     mutationRate: .1,
