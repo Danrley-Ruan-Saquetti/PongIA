@@ -27,7 +27,8 @@ export class Paddle {
   }
 
   reset() {
-    this.position.y = this.height / 2 - this.tableHeight
+    this.position.y = this.tableHeight / 2 - this.height
+    this.score = 0
   }
 
   update() { }
