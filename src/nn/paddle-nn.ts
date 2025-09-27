@@ -1,10 +1,11 @@
 import { Ball } from "../game/ball.js";
 import { Paddle } from "../game/paddle.js";
 import { TableSide } from "../game/types.js";
-import { GLOBALS } from "../globals.js";
 import { NeuralNetwork } from "./core/neural-network.js";
 
 export class PaddleNN extends Paddle {
+
+  network: NeuralNetwork
 
   constructor(
     width: number,
@@ -13,7 +14,6 @@ export class PaddleNN extends Paddle {
     tableHeight: number,
     side: TableSide,
     public ball: Ball,
-    public network: NeuralNetwork
   ) {
     super(width, height, tableWidth, tableHeight, side)
   }
@@ -58,17 +58,9 @@ export class PaddleNN extends Paddle {
     this.onNetworkAction()
   }
 
-  onBallHit() {
-    this.network.fitness += GLOBALS.network.fitness.onBallHit
-  }
+  onBallHit() { }
 
-  onLostBall() {
-    this.network.fitness += GLOBALS.network.fitness.onBallLost
-  }
+  onLostBall() { }
 
-  private onNetworkAction() {
-    if (this.ball.position.y - this.ball.radius >= this.position.y && this.ball.position.y + this.ball.radius <= this.position.y + this.height) {
-      this.network.fitness += GLOBALS.network.fitness.onFollowBall
-    }
-  }
+  private onNetworkAction() { }
 }
