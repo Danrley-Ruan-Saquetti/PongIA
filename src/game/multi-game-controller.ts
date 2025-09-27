@@ -8,7 +8,11 @@ export class MultiGameController<TGame extends Game> {
 
   private countGamesRunning = 0
 
-  constructor(gameLength: number) {
+  constructor(
+    protected tableWith: number,
+    protected tableHeight: number,
+    gameLength: number
+  ) {
     this.gamePool = new ObjectPool<TGame>(
       gameLength,
       () => this.createGame(),
