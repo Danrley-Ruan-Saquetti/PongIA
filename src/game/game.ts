@@ -7,6 +7,7 @@ import { Paddle } from "./paddle.js";
 import { TableSide } from './types.js';
 
 type GameEvents = {
+  'game/start': null
   'game/stop': null
 }
 
@@ -28,10 +29,57 @@ export class Game implements IObservable<GameEvents> {
 
   constructor(protected width: number, protected height: number) {
     this.observer = new Observer<GameEvents>()
+
+    this.initComponents()
   }
 
   initComponents() {
-    this.ball.clearAllListeners()
+    this.loadBall()
+    this.loadPaddles()
+  }
+
+  start() {
+    if (this.isRunning) {
+      return
+    }
+
+    this.reset()
+
+    clearTimeout(this.timeoutStop)
+
+    this.timeoutStop = setTimeout(() => {
+      this.stop()
+    }, GLOBALS.game.limitTime)
+
+    this.isRunning = true
+    this.deltaTime.reset()
+
+    this.observer.emit('game/start', null)
+
+    this.requestAnimation = requestAnimationFrame(() => this.loop());
+  }
+
+  stop() {
+    if (!this.isRunning) {
+      return
+    }
+
+    this.isRunning = false
+
+    clearTimeout(this.timeoutStop)
+    cancelAnimationFrame(this.requestAnimation)
+
+    this.observer.emit('game/stop', null)
+  }
+
+  reset() {
+    this.ball.reset()
+    this.paddleLeft.reset()
+    this.paddleRight.reset()
+  }
+
+  protected loadBall() {
+    this.ball = new Ball(10, this.width, this.height);
 
     this.ball.on('ball/table-out', side => {
       const paddle = this.getReversePaddleBySide(side)
@@ -45,39 +93,9 @@ export class Game implements IObservable<GameEvents> {
     })
   }
 
-  start() {
-    this.createBall()
-    this.createPaddles()
-    this.initComponents()
-
-    clearTimeout(this.timeoutStop)
-
-    this.timeoutStop = setTimeout(() => {
-      this.stop()
-    }, GLOBALS.game.limitTime)
-
-    this.deltaTime.reset()
-    this.isRunning = true
-    this.requestAnimation = requestAnimationFrame(() => this.loop());
-  }
-
-  stop() {
-    this.isRunning = false
-    cancelAnimationFrame(this.requestAnimation)
-    this.observer.emit('game/stop', null)
-  }
-
-  protected createPaddles() {
+  protected loadPaddles() {
     this.paddleLeft = new Paddle(15, 100, this.width, this.height, TableSide.LEFT);
     this.paddleRight = new Paddle(15, 100, this.width, this.height, TableSide.RIGHT);
-  }
-
-  protected createBall() {
-    if (this.ball) {
-      this.ball.clearAllListeners()
-    }
-
-    this.ball = new Ball(10, this.width, this.height);
   }
 
   private loop() {
@@ -123,6 +141,14 @@ export class Game implements IObservable<GameEvents> {
     if (paddle.score >= GLOBALS.game.maxVictories) {
       this.stop()
     }
+  }
+
+  getPaddleLeft() {
+    return this.paddleLeft
+  }
+
+  getPaddleRight() {
+    return this.paddleRight
   }
 
   getPaddleBySide(side: TableSide) {
