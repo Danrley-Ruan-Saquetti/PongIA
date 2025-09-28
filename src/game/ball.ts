@@ -16,9 +16,11 @@ export class Ball implements IObservable<BallEvents> {
   alphaSpeed = 1
   position: Vector2D
 
-  private finalY: number
+  finalY: number
 
   private readonly GAP_FINAL_Y = 3.5
+
+  private isBallEnableToHit = false
 
   constructor(
     public radius: number,
@@ -37,6 +39,8 @@ export class Ball implements IObservable<BallEvents> {
   }
 
   restartBall() {
+    this.isBallEnableToHit = false
+
     this.position.x = this.tableWidth / 2
     this.position.y = this.tableHeight / 2
 
@@ -51,6 +55,8 @@ export class Ball implements IObservable<BallEvents> {
   update(p1: Paddle, p2: Paddle) {
     this.position.x += this.speed.x * this.alphaSpeed
     this.position.y += this.speed.y * this.alphaSpeed
+
+    this.isBallEnableToHit = this.isCrossedTable()
 
     if (this.position.y - this.radius < 0 || this.position.y + this.radius > this.tableHeight) {
       this.speed.y *= -1
@@ -102,7 +108,19 @@ export class Ball implements IObservable<BallEvents> {
     ctx.fill()
   }
 
+  isCrossedTable() {
+    if (this.speed.x > 0) {
+      return this.position.x >= this.tableWidth / 2
+    }
+
+    return this.position.x <= this.tableWidth / 2
+  }
+
   private collisionPaddle(paddle: Paddle, side: TableSide) {
+    if (!this.isBallEnableToHit) {
+      return
+    }
+
     const relativeIntersectY = this.position.y - (paddle.position.y + paddle.height / 2)
 
     const normalizedIntersectY = relativeIntersectY / (paddle.height / 2)
@@ -128,8 +146,8 @@ export class Ball implements IObservable<BallEvents> {
       }
     }
 
-    if (this.alphaSpeed < 2) {
-      this.alphaSpeed += .01
+    if (this.alphaSpeed < 3) {
+      this.alphaSpeed += .25
     }
 
     this.finalY = this.predictFinalY()
