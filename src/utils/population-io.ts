@@ -1,7 +1,8 @@
 import { GLOBALS } from "../globals.js"
+import { NeuralNetwork } from "../nn/core/neural-network.js"
 import { Population } from "../nn/core/population.js"
 
-export function savePopulation(population: Population) {
+export function savePopulation(population: Population, best?: NeuralNetwork) {
   if (!GLOBALS.storage.enable) {
     return
   }
@@ -10,8 +11,12 @@ export function savePopulation(population: Population) {
 
   console.log('Population saved', updatedAt.toLocaleString('pt-BR'))
 
-  localStorage.setItem('population', JSON.stringify(population.toJSON()))
   localStorage.setItem('population.updated_at', JSON.stringify(updatedAt))
+  localStorage.setItem('population', JSON.stringify(population.toJSON()))
+
+  if (best) {
+    localStorage.setItem('population.best-individual', JSON.stringify(best.toJSON()))
+  }
 }
 
 export function getPopulationStorage(): Population | null {
@@ -25,5 +30,19 @@ export function getPopulationStorage(): Population | null {
     return null
   }
 
-  return Population.from(populationStorage, x => x)
+  return Population.from(populationStorage, GLOBALS.network.activations)
+}
+
+export function getBestIndividualStorage(): NeuralNetwork | null {
+  if (!GLOBALS.storage.enable) {
+    return null
+  }
+
+  const individualStorage = JSON.parse(localStorage.getItem('population.best-individual')!)
+
+  if (!individualStorage) {
+    return null
+  }
+
+  return NeuralNetwork.from(individualStorage, GLOBALS.network.activations)
 }
