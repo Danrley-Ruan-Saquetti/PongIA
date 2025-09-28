@@ -1,7 +1,7 @@
 export const GLOBALS = {
   game: {
     limitTime: 1000 * 30,
-    maxVictories: 25,
+    maxVictories: 30,
     table: {
       width: 800,
       height: 350

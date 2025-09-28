@@ -3,8 +3,6 @@ import { NeuralNetwork } from './neural-network.js'
 
 export class Population {
 
-
-
   private currentGeneration = 1
   private recordFitness = 0
   private avgFitness = 0
@@ -15,10 +13,14 @@ export class Population {
     return new Population(Array.from<NeuralNetwork>({ length: size }).map(() => NeuralNetwork.create(structure, activations)))
   }
 
-  static from(neuralNetworks: { weights: number[][], biases: number[] }[][], activations: ActivationFunction[]) {
+  static from(neuralNetworks: { weights: number[][], biases: number[] }[][], activations: ActivationFunction[], initiateGeneration = 1) {
     const individuals = Array.from({ length: neuralNetworks.length }).map((_, i) => NeuralNetwork.from(neuralNetworks[i], activations))
 
-    return new Population(individuals)
+    const population = new Population(individuals)
+
+    population.currentGeneration = initiateGeneration
+
+    return population
   }
 
   nextGeneration(options: { mutationRate: number, mutationStrength: number, rateDeath: number }) {

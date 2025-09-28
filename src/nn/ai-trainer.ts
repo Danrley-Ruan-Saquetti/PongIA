@@ -1,7 +1,7 @@
 import { MultiGameController } from "../game/multi-game-controller.js"
 import { GLOBALS } from "../globals.js"
 import { IObservable, ListenerHandler, Observer } from "../utils/observer.js"
-import { getPopulationStorage, savePopulation } from "../utils/population-io.js"
+import { getGenerationStorage, saveGeneration } from "../utils/population-io.js"
 import { NeuralNetwork } from "./core/neural-network.js"
 import { Population } from './core/population.js'
 import { computeFitness } from "./fitness.js"
@@ -42,7 +42,7 @@ export class AITrainer extends MultiGameController<GameNN> implements IObservabl
     this.population.nextGeneration(GLOBALS.evolution)
     this.neuralNetworks = this.population.individuals.map(network => network)
 
-    savePopulation(this.population, best)
+    saveGeneration({ population: this.population, best })
 
     this.startGames()
 
@@ -64,7 +64,7 @@ export class AITrainer extends MultiGameController<GameNN> implements IObservabl
   }
 
   private loadPopulation() {
-    this.population = AITrainer.getPopulation()
+    this.population = AITrainer.getGeneration()
     this.neuralNetworks = this.population.individuals.map(network => network)
   }
 
@@ -84,8 +84,8 @@ export class AITrainer extends MultiGameController<GameNN> implements IObservabl
     this.observer.clearListenersByEvent(event)
   }
 
-  private static getPopulation() {
-    const populationStorage = getPopulationStorage()
+  private static getGeneration() {
+    const populationStorage = getGenerationStorage()
 
     if (populationStorage) {
       console.log('Load population from Storage')

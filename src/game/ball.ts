@@ -18,7 +18,7 @@ export class Ball implements IObservable<BallEvents> {
 
   finalY: number
 
-  private readonly GAP_FINAL_Y = 3.5
+  private readonly GAP_FINAL_Y = 4
 
   private isBallEnableToHit = false
 
@@ -102,10 +102,12 @@ export class Ball implements IObservable<BallEvents> {
 
     const finalX = this.speed.x > 0 ? this.tableWidth - (this.radius * this.GAP_FINAL_Y) : this.radius * this.GAP_FINAL_Y
 
+    ctx.globalAlpha = 0.5
     ctx.fillStyle = "red"
     ctx.beginPath()
-    ctx.arc(finalX, this.finalY, 5, 0, Math.PI * 2)
+    ctx.arc(finalX, this.finalY, this.radius, 0, Math.PI * 2)
     ctx.fill()
+    ctx.globalAlpha = 1
   }
 
   isCrossedTable() {
