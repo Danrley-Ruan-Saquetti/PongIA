@@ -97,8 +97,8 @@ export class Game implements IObservable<GameEvents> {
   }
 
   protected loadPaddles() {
-    this.paddleLeft = new Paddle(10, 100, this.width, this.height, TableSide.LEFT);
-    this.paddleRight = new Paddle(10, 100, this.width, this.height, TableSide.RIGHT);
+    this.paddleLeft = new Paddle(10, 100, this.width, this.height, TableSide.LEFT, this.ball);
+    this.paddleRight = new Paddle(10, 100, this.width, this.height, TableSide.RIGHT, this.ball);
   }
 
   private loop() {
@@ -156,11 +156,11 @@ export class Game implements IObservable<GameEvents> {
   }
 
   getPaddleBySide(side: TableSide) {
-    return side == TableSide.RIGHT ? this.paddleLeft : this.paddleRight
+    return side == TableSide.LEFT ? this.paddleLeft : this.paddleRight
   }
 
   getReversePaddleBySide(side: TableSide) {
-    return side == TableSide.LEFT ? this.paddleLeft : this.paddleRight
+    return side == TableSide.RIGHT ? this.paddleLeft : this.paddleRight
   }
 
   on<EventName extends keyof GameEvents>(event: EventName, handler: ListenerHandler<GameEvents[EventName]>) {
