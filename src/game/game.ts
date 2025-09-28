@@ -17,8 +17,8 @@ export class Game implements IObservable<GameEvents> {
   deltaTime = new DeltaTime()
   protected observer: Observer<GameEvents>
 
-  protected requestAnimation: number
-  protected timeoutStop: number
+  protected loopId: number
+  protected stopId: number
 
   isRunning = false
 
@@ -45,7 +45,7 @@ export class Game implements IObservable<GameEvents> {
 
     this.reset()
 
-    this.timeoutStop = setTimeout(() => {
+    this.stopId = setTimeout(() => {
       this.stop()
     }, GLOBALS.game.limitTime)
 
@@ -53,7 +53,7 @@ export class Game implements IObservable<GameEvents> {
 
     this.observer.emit('game/start', null)
 
-    this.requestAnimation = requestAnimationFrame(() => this.loop())
+    this.loopId = setInterval(() => this.loop(), 1000 / GLOBALS.game.FPS)
   }
 
   stop() {
@@ -63,15 +63,15 @@ export class Game implements IObservable<GameEvents> {
 
     this.isRunning = false
 
-    clearTimeout(this.timeoutStop)
-    cancelAnimationFrame(this.requestAnimation)
+    clearTimeout(this.stopId)
+    clearInterval(this.loopId)
 
     this.observer.emit('game/stop', null)
   }
 
   reset() {
-    clearTimeout(this.timeoutStop)
-    cancelAnimationFrame(this.requestAnimation)
+    clearTimeout(this.stopId)
+    clearInterval(this.loopId)
 
     this.isRunning = false
     this.deltaTime.reset()
@@ -103,9 +103,6 @@ export class Game implements IObservable<GameEvents> {
 
   private loop() {
     this.update()
-
-    if (this.isRunning)
-      this.requestAnimation = requestAnimationFrame(() => this.loop())
   }
 
   update() {
@@ -188,6 +185,7 @@ export class Game implements IObservable<GameEvents> {
       width: this.width,
       height: this.height,
       time: this.deltaTime.totalElapsedTimeSeconds,
+      fps: this.deltaTime.FPS,
     }
   }
 }

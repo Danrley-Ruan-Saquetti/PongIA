@@ -56,6 +56,15 @@ export class GameView {
       30
     )
 
+    this.ctx.font = "15px Arial"
+    this.ctx.fillText(
+      `${state.fps}FPS`,
+      200,
+      25
+    )
+
+    this.ctx.font = "30px Arial"
+
     this.ctx.fillText(
       `${state.time.toFixed(1)}s`,
       state.width / 2,

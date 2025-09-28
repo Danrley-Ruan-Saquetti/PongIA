@@ -61,7 +61,9 @@ export class GenerationView implements IObservable<GenerationViewEvents> {
 
     this.ctx.fillRect(0, positionY - 23, this.canvas.width, 1)
 
-    this.population.games.forEach((game, i) => {
+    const games = this.population.games.sort((gameA, gameB) => gameB.getState().bestSequence - gameA.getState().bestSequence)
+
+    games.forEach((game, i) => {
       if (i < minRange || maxRange < i) {
         return
       }
@@ -92,6 +94,10 @@ export class GenerationView implements IObservable<GenerationViewEvents> {
 
     this.ctx.fillText(`Generation: ${this.population.population.getCurrentGeneration()}`, marginLeft, positionY)
     this.ctx.fillText(`Record Fitness: ${this.population.population.getRecordFitness().toFixed(2)}`, marginLeft + 150, positionY)
+
+    positionY += 30
+
+    this.ctx.fillText(`Avg Fitness: ${this.population.population.getAvgFitness().toFixed(2)}`, marginLeft, positionY)
 
     positionY += 30
 
@@ -162,6 +168,20 @@ export class GenerationView implements IObservable<GenerationViewEvents> {
     do {
       this.selectNextGame()
     } while (this.gameIndexSelected != initialIndex && !this.population.games[this.gameIndexSelected].isRunning)
+
+    this.observable.emit('game-selected/change', this.population.games[this.gameIndexSelected])
+  }
+
+  selectGameWithLongestSequence() {
+    let indexGameWithLongestSequence = 0
+
+    for (let i = 0; i < this.population.games.length; i++) {
+      if (this.population.games[indexGameWithLongestSequence].getState().bestSequence < this.population.games[i].getState().bestSequence) {
+        indexGameWithLongestSequence = i
+      }
+    }
+
+    this.gameIndexSelected = indexGameWithLongestSequence
 
     this.observable.emit('game-selected/change', this.population.games[this.gameIndexSelected])
   }

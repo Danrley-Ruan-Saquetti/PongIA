@@ -8,11 +8,15 @@ export function computeFitness(stats: PaddleStatistics) {
 
   fitness += stats.scoresByAttack * GLOBALS.evolution.fitness.scoresByAttack
 
-  fitness -= stats.ballsLost * GLOBALS.evolution.fitness.ballsLost
+  fitness += stats.ballsLost * GLOBALS.evolution.fitness.ballsLost
 
   fitness += stats.rallyInitiated * GLOBALS.evolution.fitness.rallyInitiated
 
-  fitness += stats.totalRallySequence * GLOBALS.evolution.fitness.totalRallySequence
+  if (stats.totalRallySequence > 0) {
+    fitness += stats.totalRallySequence * GLOBALS.evolution.fitness.totalRallySequence
+  } else {
+    fitness += GLOBALS.evolution.fitness.penaltyNoSequence
+  }
 
   fitness += stats.longestRallySequence * GLOBALS.evolution.fitness.longestRallySequence
 

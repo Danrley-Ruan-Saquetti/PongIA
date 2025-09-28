@@ -47,7 +47,7 @@ export class GameNN extends Game {
       ...super.getState(),
       networkLeft: this.networkLeft,
       networkRight: this.networkRight,
-      bestFitness: Math.max(this.networkLeft.fitness || 0, this.networkLeft.fitness || 0),
+      bestSequence: Math.max(this.paddleLeft.statistics.totalRallySequence || 0, this.paddleRight.statistics.totalRallySequence || 0),
     }
   }
 }

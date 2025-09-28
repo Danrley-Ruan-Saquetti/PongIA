@@ -86,8 +86,12 @@ export class AITrainer extends MultiGameController<GameNN> implements IObservabl
     const populationStorage = getPopulationStorage()
 
     if (populationStorage) {
+      console.log('Load population from Storage')
+
       return populationStorage
     }
+
+    console.log('Create new Population')
 
     const population = Population.createPopulation(GLOBALS.population.pairs * 2, GLOBALS.network.structure, GLOBALS.network.activation)
 

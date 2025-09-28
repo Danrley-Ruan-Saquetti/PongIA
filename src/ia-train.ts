@@ -36,8 +36,10 @@ function app() {
     '2': () => generationView.selectNextGame(),
     '3': () => generationView.selectPreviousGameRunning(),
     '4': () => generationView.selectNextGameRunning(),
-    '5': () => generationView.setSelectGame(0),
+    '5': () => generationView.selectGameWithLongestSequence(),
   }
+
+  setInterval(() => generationView.selectGameWithLongestSequence(), 1000 / 10)
 
   let isKeyPressed = false
 

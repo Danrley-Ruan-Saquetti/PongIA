@@ -1,25 +1,27 @@
 export const GLOBALS = {
   game: {
-    limitTime: 1000 * 30,
+    limitTime: 1000 * 15,
     maxVictories: 25,
     table: {
       width: 800,
       height: 350
-    }
+    },
+    FPS: 200
   },
   evolution: {
     mutationRate: .1,
     mutationStrength: .2,
-    rateDeath: .2,
+    rateDeath: .3,
     fitness: {
-      score: 200,
-      scoresByAttack: 150,
-      ballsLost: 100,
-      rallyInitiated: 30,
-      totalRallySequence: 5,
-      longestRallySequence: 20,
-      anticipationTimes: 50,
-      avgRally: 10,
+      score: 5,
+      scoresByAttack: 10,
+      ballsLost: -5,
+      rallyInitiated: 3,
+      totalRallySequence: 2.5,
+      longestRallySequence: 2,
+      anticipationTimes: 5,
+      avgRally: 2,
+      penaltyNoSequence: -20
     }
   },
   population: {
