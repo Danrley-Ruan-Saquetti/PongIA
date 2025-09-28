@@ -13,9 +13,9 @@ export class PaddleNN extends Paddle {
     tableWidth: number,
     tableHeight: number,
     side: TableSide,
-    public ball: Ball,
+    ball: Ball
   ) {
-    super(width, height, tableWidth, tableHeight, side)
+    super(width, height, tableWidth, tableHeight, side, ball)
   }
 
   update() {

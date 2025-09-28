@@ -1,10 +1,12 @@
 import { Vector2D } from "../utils/vector2d.js"
+import { Ball } from "./ball.js"
 import { TableSide } from "./types.js"
 
 export type PaddleStatistics = {
   hitsBall: number
   score: number
   ballsLost: number
+  scoresByAttack: number
   rallySequence: number
   rallyInitiated: number
   longestRallySequence: number
@@ -20,18 +22,23 @@ export class Paddle {
     hitsBall: 0,
     score: 0,
     ballsLost: 0,
+    scoresByAttack: 0,
     rallySequence: 0,
     rallyInitiated: 0,
     longestRallySequence: 0,
     totalRallySequence: 0,
   }
 
+  private isMoveForAttack = false
+  private isCounteredBall = false
+
   constructor(
     public width: number,
     public height: number,
     protected tableWidth: number,
     protected tableHeight: number,
-    protected side: TableSide
+    protected side: TableSide,
+    public ball: Ball
   ) {
     this.position = new Vector2D()
 
@@ -45,16 +52,21 @@ export class Paddle {
   }
 
   reset() {
-    this.position.y = this.tableHeight / 2 - this.height
+    this.position.y = (this.tableHeight / 2) - (this.height / 2)
+
     this.statistics = {
       hitsBall: 0,
       score: 0,
       ballsLost: 0,
+      scoresByAttack: 0,
       rallySequence: 0,
       rallyInitiated: 0,
       longestRallySequence: 0,
-      totalRallySequence: 0
+      totalRallySequence: 0,
     }
+
+    this.isMoveForAttack = false
+    this.isCounteredBall = false
   }
 
   update() { }
@@ -79,6 +91,9 @@ export class Paddle {
     if (this.position.y < 0) {
       this.position.y = 0
     }
+    else {
+      this.onMoved()
+    }
   }
 
   moveDown() {
@@ -87,18 +102,37 @@ export class Paddle {
     if (this.position.y + this.height > this.tableHeight) {
       this.position.y = this.tableHeight - this.height
     }
+    else {
+      this.onMoved()
+    }
+  }
+
+  onMoved() {
+    this.isMoveForAttack = true
   }
 
   onScore() {
     this.statistics.score++
+
+    if (this.isCounteredBall) {
+      this.statistics.scoresByAttack++
+
+      this.isCounteredBall = false
+      this.isMoveForAttack = false
+    }
   }
 
   onLostBall() {
     this.statistics.ballsLost++
+
+    this.isMoveForAttack = false
+    this.isCounteredBall = false
   }
 
   onHitBall() {
     this.statistics.hitsBall++
+
+    this.isCounteredBall = this.isMoveForAttack
   }
 
   protected nextRally() {
