@@ -116,6 +116,14 @@ export class Ball implements IObservable<BallEvents> {
     return this.position.x <= this.tableWidth / 2
   }
 
+  isBallIntoSide(side: TableSide) {
+    if (side == TableSide.RIGHT) {
+      return this.speed.x > 0
+    }
+
+    return this.speed.x < 0
+  }
+
   private collisionPaddle(paddle: Paddle, side: TableSide) {
     if (!this.isBallEnableToHit) {
       return
