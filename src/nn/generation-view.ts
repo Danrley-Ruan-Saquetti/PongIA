@@ -1,6 +1,6 @@
-import { IObservable, ListenerHandler, Observer } from '../utils/observer.js';
-import { AITrainer } from './ai-trainer.js';
-import { GameNN } from './game-nn.js';
+import { IObservable, ListenerHandler, Observer } from '../utils/observer.js'
+import { AITrainer } from './ai-trainer.js'
+import { GameNN } from './game-nn.js'
 
 export type GenerationViewEvents = {
   'game-selected/change': GameNN

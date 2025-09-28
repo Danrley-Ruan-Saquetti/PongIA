@@ -1,9 +1,9 @@
-import { GameViewPlayer } from "./game/game-view-player.js";
-import { Game } from "./game/game.js";
-import { GLOBALS } from "./globals.js";
-import { resizeCanvas } from "./utils/utils.js";
+import { GameViewPlayer } from "./game/game-view-player.js"
+import { Game } from "./game/game.js"
+import { GLOBALS } from "./globals.js"
+import { resizeCanvas } from "./utils/utils.js"
 
-const canvasGame = document.getElementById("gameCanvas") as HTMLCanvasElement;
+const canvasGame = document.getElementById("gameCanvas") as HTMLCanvasElement
 
 resizeCanvas(canvasGame, GLOBALS.game.table)
 

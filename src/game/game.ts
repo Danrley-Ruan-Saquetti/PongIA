@@ -1,10 +1,10 @@
-import { GLOBALS } from '../globals.js';
-import { DeltaTime } from '../utils/delta-time.js';
-import { IObservable, ListenerHandler, Observer } from '../utils/observer.js';
-import { generateID } from '../utils/utils.js';
-import { Ball } from "./ball.js";
-import { Paddle } from "./paddle.js";
-import { TableSide } from './types.js';
+import { GLOBALS } from '../globals.js'
+import { DeltaTime } from '../utils/delta-time.js'
+import { IObservable, ListenerHandler, Observer } from '../utils/observer.js'
+import { generateID } from '../utils/utils.js'
+import { Ball } from "./ball.js"
+import { Paddle } from "./paddle.js"
+import { TableSide } from './types.js'
 
 type GameEvents = {
   'game/start': null
@@ -22,10 +22,10 @@ export class Game implements IObservable<GameEvents> {
 
   isRunning = false
 
-  paddleLeft: Paddle;
-  paddleRight: Paddle;
+  paddleLeft: Paddle
+  paddleRight: Paddle
 
-  protected ball: Ball;
+  protected ball: Ball
 
   constructor(protected width: number, protected height: number) {
     this.observer = new Observer<GameEvents>()
@@ -53,7 +53,7 @@ export class Game implements IObservable<GameEvents> {
 
     this.observer.emit('game/start', null)
 
-    this.requestAnimation = requestAnimationFrame(() => this.loop());
+    this.requestAnimation = requestAnimationFrame(() => this.loop())
   }
 
   stop() {
@@ -82,7 +82,7 @@ export class Game implements IObservable<GameEvents> {
   }
 
   protected loadBall() {
-    this.ball = new Ball(10, this.width, this.height);
+    this.ball = new Ball(10, this.width, this.height)
 
     this.ball.on('ball/table-out', side => {
       this.onScored(
@@ -97,39 +97,39 @@ export class Game implements IObservable<GameEvents> {
   }
 
   protected loadPaddles() {
-    this.paddleLeft = new Paddle(10, 100, this.width, this.height, TableSide.LEFT, this.ball);
-    this.paddleRight = new Paddle(10, 100, this.width, this.height, TableSide.RIGHT, this.ball);
+    this.paddleLeft = new Paddle(10, 100, this.width, this.height, TableSide.LEFT, this.ball)
+    this.paddleRight = new Paddle(10, 100, this.width, this.height, TableSide.RIGHT, this.ball)
   }
 
   private loop() {
     this.update()
 
     if (this.isRunning)
-      this.requestAnimation = requestAnimationFrame(() => this.loop());
+      this.requestAnimation = requestAnimationFrame(() => this.loop())
   }
 
   update() {
     this.deltaTime.next()
     this.updateInternal()
-    this.paddleLeft.update();
-    this.paddleRight.update();
-    this.ball.update(this.paddleLeft, this.paddleRight);
+    this.paddleLeft.update()
+    this.paddleRight.update()
+    this.ball.update(this.paddleLeft, this.paddleRight)
   }
 
   moveLeftUp() {
-    this.paddleLeft.moveUp();
+    this.paddleLeft.moveUp()
   }
 
   moveLeftDown() {
-    this.paddleLeft.moveDown();
+    this.paddleLeft.moveDown()
   }
 
   moveRightUp() {
-    this.paddleRight.moveUp();
+    this.paddleRight.moveUp()
   }
 
   moveRightDown() {
-    this.paddleRight.moveDown();
+    this.paddleRight.moveDown()
   }
 
   protected updateInternal() { }
@@ -188,6 +188,6 @@ export class Game implements IObservable<GameEvents> {
       width: this.width,
       height: this.height,
       time: this.deltaTime.totalElapsedTimeSeconds,
-    };
+    }
   }
 }

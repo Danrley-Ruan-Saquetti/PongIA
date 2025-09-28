@@ -1,10 +1,10 @@
-import { MultiGameController } from "../game/multi-game-controller.js";
-import { GLOBALS } from "../globals.js";
-import { IObservable, ListenerHandler, Observer } from "../utils/observer.js";
-import { getPopulationStorage, savePopulation } from "../utils/population-io.js";
-import { NeuralNetwork } from "./core/neural-network.js";
-import { Population } from './core/population.js';
-import { GameNN } from './game-nn.js';
+import { MultiGameController } from "../game/multi-game-controller.js"
+import { GLOBALS } from "../globals.js"
+import { IObservable, ListenerHandler, Observer } from "../utils/observer.js"
+import { getPopulationStorage, savePopulation } from "../utils/population-io.js"
+import { NeuralNetwork } from "./core/neural-network.js"
+import { Population } from './core/population.js'
+import { GameNN } from './game-nn.js'
 
 type AITrainerEvents = {
   'game-stop': GameNN

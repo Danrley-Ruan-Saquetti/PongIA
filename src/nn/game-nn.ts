@@ -1,7 +1,7 @@
-import { Game } from "../game/game.js";
-import { TableSide } from "../game/types.js";
-import { NeuralNetwork } from './core/neural-network.js';
-import { PaddleNN } from './paddle-nn.js';
+import { Game } from "../game/game.js"
+import { TableSide } from "../game/types.js"
+import { NeuralNetwork } from './core/neural-network.js'
+import { PaddleNN } from './paddle-nn.js'
 
 export class GameNN extends Game {
 
@@ -16,8 +16,8 @@ export class GameNN extends Game {
   }
 
   protected loadPaddles() {
-    this.paddleLeft = new PaddleNN(10, 100, this.width, this.height, TableSide.LEFT, this.ball);
-    this.paddleRight = new PaddleNN(10, 100, this.width, this.height, TableSide.RIGHT, this.ball);
+    this.paddleLeft = new PaddleNN(10, 100, this.width, this.height, TableSide.LEFT, this.ball)
+    this.paddleRight = new PaddleNN(10, 100, this.width, this.height, TableSide.RIGHT, this.ball)
   }
 
   setNeuralNetworkLeft(network: NeuralNetwork) {

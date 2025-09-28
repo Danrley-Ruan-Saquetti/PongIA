@@ -1,7 +1,7 @@
-import { Ball } from "../game/ball.js";
-import { Paddle } from "../game/paddle.js";
-import { TableSide } from "../game/types.js";
-import { NeuralNetwork } from "./core/neural-network.js";
+import { Ball } from "../game/ball.js"
+import { Paddle } from "../game/paddle.js"
+import { TableSide } from "../game/types.js"
+import { NeuralNetwork } from "./core/neural-network.js"
 
 export class PaddleNN extends Paddle {
 

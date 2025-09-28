@@ -1,5 +1,5 @@
-import { Game } from '../game/game.js';
-import { ObjectPool } from '../utils/object-pool.js';
+import { Game } from '../game/game.js'
+import { ObjectPool } from '../utils/object-pool.js'
 
 export class MultiGameController<TGame extends Game> {
 

@@ -1,22 +1,22 @@
-import { GameView } from "./game/game-view.js";
-import { GLOBALS } from "./globals.js";
-import { AITrainer } from './nn/ai-trainer.js';
-import { GenerationView } from './nn/generation-view.js';
-import { resizeCanvas } from './utils/utils.js';
+import { GameView } from "./game/game-view.js"
+import { GLOBALS } from "./globals.js"
+import { AITrainer } from './nn/ai-trainer.js'
+import { GenerationView } from './nn/generation-view.js'
+import { resizeCanvas } from './utils/utils.js'
 
 window.onload = app
 
 function app() {
-  const canvasRank = document.getElementById("rankCanvas") as HTMLCanvasElement;
-  const canvasGame = document.getElementById("gameCanvas") as HTMLCanvasElement;
+  const canvasRank = document.getElementById("rankCanvas") as HTMLCanvasElement
+  const canvasGame = document.getElementById("gameCanvas") as HTMLCanvasElement
 
-  resizeCanvas(canvasRank, { width: 375, height: 500 })
+  resizeCanvas(canvasRank, { width: 375, height: 600 })
   resizeCanvas(canvasGame, GLOBALS.game.table)
 
   const aiTrainer = new AITrainer(canvasGame.width, canvasGame.height)
 
   const generationView = new GenerationView(canvasRank, aiTrainer)
-  const gameView = new GameView(canvasGame);
+  const gameView = new GameView(canvasGame)
 
   aiTrainer.on('next-generation', () => {
     gameView.setGame(generationView.getGameSelected())

@@ -78,14 +78,14 @@ export class Paddle {
     ctx.fillStyle = "white"
     ctx.fillRect(this.position.x, this.position.y, this.width, this.height)
 
-    ctx.textAlign = "center";
-    ctx.font = "20px Arial";
+    ctx.textAlign = "center"
+    ctx.font = "20px Arial"
 
     ctx.fillText(
       `Sequence: ${this.statistics.rallySequence}`,
       this.position.x + (this.side == TableSide.LEFT ? 150 : -150),
       this.tableHeight - 15
-    );
+    )
   }
 
   moveUp() {

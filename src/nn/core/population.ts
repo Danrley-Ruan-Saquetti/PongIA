@@ -1,5 +1,5 @@
-import { NeuralNetwork } from './neural-network.js';
-import { ActivationFunction } from './layer.js';
+import { ActivationFunction } from './layer.js'
+import { NeuralNetwork } from './neural-network.js'
 
 export class Population {
 
@@ -30,7 +30,7 @@ export class Population {
     const eliteCount = Math.floor(this.individuals.length * (1 - options.rateDeath))
 
     for (let i = 0; i < eliteCount; i++) {
-      newIndividuals.push(individuals[i].clone());
+      newIndividuals.push(individuals[i].clone())
     }
 
     while (newIndividuals.length < this.individuals.length) {
