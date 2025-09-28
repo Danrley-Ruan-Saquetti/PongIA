@@ -51,13 +51,15 @@ export class GenerationView implements IObservable<GenerationViewEvents> {
     this.ctx.fillStyle = '#FFF'
 
     let positionY = 30
-    let marginLeft = 10
+    let marginLeft = 20
 
     this.ctx.fillText("Game", marginLeft + 40, positionY)
     this.ctx.fillText("Time", marginLeft + 200, positionY)
     this.ctx.fillText("Score", marginLeft + 260, positionY)
 
     positionY += 30
+
+    this.ctx.fillRect(0, positionY - 23, this.canvas.width, 1)
 
     this.population.games.forEach((game, i) => {
       if (i < minRange || maxRange < i) {
@@ -79,15 +81,47 @@ export class GenerationView implements IObservable<GenerationViewEvents> {
 
     this.ctx.fillStyle = '#FFF'
 
+    this.ctx.fillRect(0, positionY - 15, this.canvas.width, 1)
+
     positionY += 10
 
-    this.ctx.fillText(`Total Games: ${this.population.games.length}`, 20, positionY)
-    this.ctx.fillText(`Running: ${this.population.getCountGamesRunning()}`, 150, positionY)
+    this.ctx.fillText(`Total Games: ${this.population.games.length}`, marginLeft, positionY)
+    this.ctx.fillText(`Running: ${this.population.getCountGamesRunning()}`, marginLeft + 150, positionY)
 
     positionY += 30
 
-    this.ctx.fillText(`Generation: ${this.population.population.getCurrentGeneration()}`, 20, positionY)
-    this.ctx.fillText(`Record Fitness: ${this.population.population.getRecordFitness().toFixed(2)}`, 150, positionY)
+    this.ctx.fillText(`Generation: ${this.population.population.getCurrentGeneration()}`, marginLeft, positionY)
+    this.ctx.fillText(`Record Fitness: ${this.population.population.getRecordFitness().toFixed(2)}`, marginLeft + 150, positionY)
+
+    positionY += 30
+
+    this.ctx.fillRect(0, positionY - 15, this.canvas.width, 1)
+
+    const gameState = gameSelected.getState()
+
+    positionY += 10
+
+    this.ctx.fillText(`Statistics:`, marginLeft, positionY)
+    this.ctx.fillText("Left", marginLeft + 150, positionY)
+    this.ctx.fillText("Right", marginLeft + 250, positionY)
+
+    positionY += 30
+
+    this.ctx.fillText(`Score:`, marginLeft, positionY)
+    this.ctx.fillText(`${gameState.left.statistics.score}`, marginLeft + 150, positionY)
+    this.ctx.fillText(`${gameState.right.statistics.score}`, marginLeft + 250, positionY)
+
+    positionY += 30
+
+    this.ctx.fillText(`Scored by Attack:`, marginLeft, positionY)
+    this.ctx.fillText(`${gameState.left.statistics.scoresByAttack}`, marginLeft + 150, positionY)
+    this.ctx.fillText(`${gameState.right.statistics.scoresByAttack}`, marginLeft + 250, positionY)
+
+    positionY += 30
+
+    this.ctx.fillText(`Anticipations:`, marginLeft, positionY)
+    this.ctx.fillText(`${gameState.left.statistics.anticipationTimes}`, marginLeft + 150, positionY)
+    this.ctx.fillText(`${gameState.right.statistics.anticipationTimes}`, marginLeft + 250, positionY)
   }
 
   getGameSelected() {
