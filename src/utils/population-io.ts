@@ -2,15 +2,9 @@ import { GLOBALS } from "../globals.js"
 import { Population } from "../nn/core/population.js"
 
 export function savePopulation(population: Population) {
-  if (GLOBALS.storage) {
+  if (GLOBALS.storage.enable) {
     localStorage.setItem('population', JSON.stringify(population.toJSON()))
   }
-}
-
-export function getPopulation() {
-  const populationStorage = getPopulationStorage()
-
-  return populationStorage
 }
 
 export function getPopulationStorage(): Population | null {
