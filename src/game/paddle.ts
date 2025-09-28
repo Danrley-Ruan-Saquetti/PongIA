@@ -32,6 +32,8 @@ export class Paddle {
   private isMoveForAttack = false
   private isCounteredBall = false
 
+  private isAnticipated = false
+
   constructor(
     public width: number,
     public height: number,
@@ -67,6 +69,7 @@ export class Paddle {
 
     this.isMoveForAttack = false
     this.isCounteredBall = false
+    this.isAnticipated = false
   }
 
   update() { }
@@ -110,12 +113,18 @@ export class Paddle {
   onMoved() {
     this.isMoveForAttack = true
 
-    if (this.ball.isCrossedTable()) {
+    if (!this.ball.isBallIntoSide(this.side)) {
       return
     }
 
     if (this.position.y <= this.ball.finalY && this.ball.finalY <= this.position.y + this.height) {
-      this.statistics.anticipationTimes++
+      if (!this.ball.isCrossedTable()) {
+        this.isAnticipated = true
+      }
+    } else {
+      if (this.ball.isCrossedTable()) {
+        this.isAnticipated = false
+      }
     }
   }
 
@@ -124,10 +133,11 @@ export class Paddle {
 
     if (this.isCounteredBall) {
       this.statistics.scoresByAttack++
-
-      this.isCounteredBall = false
-      this.isMoveForAttack = false
     }
+
+    this.isAnticipated = false
+    this.isCounteredBall = false
+    this.isMoveForAttack = false
 
     this.stopRally()
   }
@@ -137,12 +147,17 @@ export class Paddle {
 
     this.isMoveForAttack = false
     this.isCounteredBall = false
+    this.isAnticipated = false
 
     this.stopRally()
   }
 
   onHitBall() {
     this.isCounteredBall = this.isMoveForAttack
+
+    if (this.isAnticipated) {
+      this.statistics.anticipationTimes++
+    }
 
     this.nextRally()
   }
