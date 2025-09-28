@@ -51,9 +51,7 @@ export class MultiGameController<TGame extends Game> {
 
   protected onAllGamesFinish() { }
 
-  private resetGame(game: TGame) {
-    game.reset()
-  }
+  private resetGame(game: TGame) { }
 
   protected createInstanceGame(): TGame {
     return new Game(0, 0) as TGame
