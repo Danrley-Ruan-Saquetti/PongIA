@@ -45,14 +45,11 @@ export class Game implements IObservable<GameEvents> {
 
     this.reset()
 
-    clearTimeout(this.timeoutStop)
-
     this.timeoutStop = setTimeout(() => {
       this.stop()
     }, GLOBALS.game.limitTime)
 
     this.isRunning = true
-    this.deltaTime.reset()
 
     this.observer.emit('game/start', null)
 
@@ -73,6 +70,12 @@ export class Game implements IObservable<GameEvents> {
   }
 
   reset() {
+    clearTimeout(this.timeoutStop)
+    cancelAnimationFrame(this.requestAnimation)
+
+    this.isRunning = false
+    this.deltaTime.reset()
+
     this.ball.reset()
     this.paddleLeft.reset()
     this.paddleRight.reset()
@@ -82,10 +85,10 @@ export class Game implements IObservable<GameEvents> {
     this.ball = new Ball(10, this.width, this.height);
 
     this.ball.on('ball/table-out', side => {
-      const paddle = this.getReversePaddleBySide(side)
-
-      paddle.score++
-      this.onScored(paddle, this.getPaddleBySide(side))
+      this.onScored(
+        this.getReversePaddleBySide(side),
+        this.getPaddleBySide(side)
+      )
     })
 
     this.ball.on('ball/paddle-hit', side => {
@@ -94,8 +97,8 @@ export class Game implements IObservable<GameEvents> {
   }
 
   protected loadPaddles() {
-    this.paddleLeft = new Paddle(15, 100, this.width, this.height, TableSide.LEFT);
-    this.paddleRight = new Paddle(15, 100, this.width, this.height, TableSide.RIGHT);
+    this.paddleLeft = new Paddle(10, 100, this.width, this.height, TableSide.LEFT);
+    this.paddleRight = new Paddle(10, 100, this.width, this.height, TableSide.RIGHT);
   }
 
   private loop() {
@@ -132,13 +135,14 @@ export class Game implements IObservable<GameEvents> {
   protected updateInternal() { }
 
   protected onPaddleHitBall(paddle: Paddle) {
-    paddle.onBallHit()
+    paddle.onHitBall()
   }
 
   protected onScored(paddle: Paddle, paddleLost: Paddle) {
+    paddle.onScore()
     paddleLost.onLostBall()
 
-    if (paddle.score >= GLOBALS.game.maxVictories) {
+    if (paddle.statistics.score >= GLOBALS.game.maxVictories) {
       this.stop()
     }
   }
@@ -152,7 +156,7 @@ export class Game implements IObservable<GameEvents> {
   }
 
   getPaddleBySide(side: TableSide) {
-    return side == TableSide.LEFT ? this.paddleLeft : this.paddleRight
+    return side == TableSide.RIGHT ? this.paddleLeft : this.paddleRight
   }
 
   getReversePaddleBySide(side: TableSide) {
