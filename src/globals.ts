@@ -4,7 +4,7 @@ export const GLOBALS = {
     maxVictories: 25,
     table: {
       width: 800,
-      height: 500
+      height: 350
     }
   },
   evolution: {
