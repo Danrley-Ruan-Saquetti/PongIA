@@ -61,20 +61,20 @@ export class GameView {
     );
 
     this.ctx.fillText(
-      `${state.left.score} - ${state.right.score}`,
+      `${state.left.statistics.score} - ${state.right.statistics.score}`,
       state.width / 2,
       70
     );
 
     if (!this.game.isRunning) {
-      if (this.game.paddleLeft.score > this.game.paddleRight.score) {
+      if (this.game.paddleLeft.statistics.score > this.game.paddleRight.statistics.score) {
         this.ctx.fillText(
           `Winner`,
           state.width / 4,
           state.height / 2
         );
       }
-      else if (this.game.paddleLeft.score < this.game.paddleRight.score) {
+      else if (this.game.paddleLeft.statistics.score < this.game.paddleRight.statistics.score) {
         this.ctx.fillText(
           `Winner`,
           (state.width / 4) * 3,

@@ -72,7 +72,7 @@ export class GenerationView implements IObservable<GenerationViewEvents> {
       this.ctx.fillText(state.id, marginLeft + 40, positionY)
 
       this.ctx.fillText(`${state.time.toFixed(0)}s`, marginLeft + 200, positionY)
-      this.ctx.fillText(`${state.left.score} x ${state.right.score}`, marginLeft + 260, positionY)
+      this.ctx.fillText(`${state.left.statistics.score} x ${state.right.statistics.score}`, marginLeft + 260, positionY)
 
       positionY += 30
     })
