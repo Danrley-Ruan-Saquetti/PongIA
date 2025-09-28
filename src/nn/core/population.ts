@@ -5,6 +5,7 @@ export class Population {
 
   private currentGeneration = 1
   private recordFitness = 0
+  private avgFitness = 0
 
   constructor(public individuals: NeuralNetwork[]) { }
 
@@ -25,6 +26,8 @@ export class Population {
       this.recordFitness = individuals[0].fitness
     }
 
+    this.avgFitness = individuals.length > 0 ? individuals.reduce((acc, { fitness }) => acc + fitness, 0) / individuals.length : 0
+
     const newIndividuals: NeuralNetwork[] = []
 
     const eliteCount = Math.floor(this.individuals.length * (1 - options.rateDeath))
@@ -33,9 +36,11 @@ export class Population {
       newIndividuals.push(individuals[i].clone())
     }
 
+    const minFitness = individuals[eliteCount - 1].fitness
+
     while (newIndividuals.length < this.individuals.length) {
-      const partnerA = this.tournamentSelect()
-      const partnerB = this.tournamentSelect()
+      const partnerA = this.tournamentSelect(minFitness)
+      const partnerB = this.tournamentSelect(minFitness)
 
       const child = partnerA.crossover(partnerB)
 
@@ -48,11 +53,16 @@ export class Population {
     this.individuals = newIndividuals
   }
 
-  private tournamentSelect() {
+  private tournamentSelect(minFitness = 0) {
     let bestIndividual: NeuralNetwork = null!
 
     for (let i = 0; i < 3; i++) {
       const individual = this.individuals[Math.floor(Math.random() * this.individuals.length)]
+
+      if (individual.fitness < minFitness) {
+        i--
+        continue
+      }
 
       if (!bestIndividual || bestIndividual.fitness < individual.fitness) {
         bestIndividual = individual
@@ -70,6 +80,10 @@ export class Population {
 
   getRecordFitness() {
     return this.recordFitness
+  }
+
+  getAvgFitness() {
+    return this.avgFitness
   }
 
   getCurrentGeneration() {
