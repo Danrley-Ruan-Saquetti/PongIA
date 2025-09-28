@@ -11,6 +11,7 @@ export type PaddleStatistics = {
   rallyInitiated: number
   longestRallySequence: number
   totalRallySequence: number
+  anticipationTimes: number
 }
 
 export class Paddle {
@@ -27,6 +28,7 @@ export class Paddle {
     rallyInitiated: 0,
     longestRallySequence: 0,
     totalRallySequence: 0,
+    anticipationTimes: 0,
   }
 
   private isMoveForAttack = false
@@ -63,6 +65,7 @@ export class Paddle {
       rallyInitiated: 0,
       longestRallySequence: 0,
       totalRallySequence: 0,
+      anticipationTimes: 0,
     }
 
     this.isMoveForAttack = false
@@ -109,6 +112,14 @@ export class Paddle {
 
   onMoved() {
     this.isMoveForAttack = true
+
+    if (this.ball.isCrossedTable()) {
+      return
+    }
+
+    if (this.position.y <= this.ball.finalY && this.ball.finalY <= this.position.y + this.height) {
+      this.statistics.anticipationTimes++
+    }
   }
 
   onScore() {
@@ -120,6 +131,8 @@ export class Paddle {
       this.isCounteredBall = false
       this.isMoveForAttack = false
     }
+
+    this.stopRally()
   }
 
   onLostBall() {
@@ -127,12 +140,15 @@ export class Paddle {
 
     this.isMoveForAttack = false
     this.isCounteredBall = false
+
+    this.stopRally()
   }
 
   onHitBall() {
     this.statistics.hitsBall++
-
     this.isCounteredBall = this.isMoveForAttack
+
+    this.nextRally()
   }
 
   protected nextRally() {
