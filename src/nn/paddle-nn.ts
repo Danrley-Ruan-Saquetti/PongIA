@@ -34,33 +34,4 @@ export class PaddleNN extends Paddle {
       this.moveDown()
     }
   }
-
-  draw(ctx: CanvasRenderingContext2D) {
-    super.draw(ctx)
-
-    ctx.textAlign = "center";
-    ctx.font = "20px Arial";
-
-    ctx.fillText(
-      `${this.network.fitness.toFixed(2)}`,
-      this.position.x + (this.side == TableSide.LEFT ? 150 : -150),
-      this.tableHeight - 15
-    );
-  }
-
-  moveUp() {
-    super.moveUp()
-    this.onNetworkAction()
-  }
-
-  moveDown() {
-    super.moveDown()
-    this.onNetworkAction()
-  }
-
-  onBallHit() { }
-
-  onLostBall() { }
-
-  private onNetworkAction() { }
 }
