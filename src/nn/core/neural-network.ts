@@ -6,15 +6,17 @@ export class NeuralNetwork {
 
   constructor(public layers: Layer[]) { }
 
-  static create(structure: number[], activation: ActivationFunction) {
+  static create(structure: number[], activations: ActivationFunction[]) {
     return new NeuralNetwork(
-      Array.from<Layer>({ length: structure.length - 1 }).map((_, i) => Layer.createLayer(structure[i], structure[i + 1], activation))
+      Array
+        .from<Layer>({ length: structure.length - 1 })
+        .map((_, i) => Layer.createLayer(structure[i], structure[i + 1], activations[i]))
     )
   }
 
-  static from(layersRaw: { weights: number[][], biases: number[] }[], activation: ActivationFunction) {
+  static from(layersRaw: { weights: number[][], biases: number[] }[], activations: ActivationFunction[]) {
     const layers = Array.from({ length: layersRaw.length }).map((_, i) => {
-      return new Layer(layersRaw[i].weights, layersRaw[i].biases, activation)
+      return new Layer(layersRaw[i].weights, layersRaw[i].biases, activations[i])
     })
 
     return new NeuralNetwork(layers)

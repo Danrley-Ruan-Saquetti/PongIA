@@ -3,18 +3,20 @@ import { NeuralNetwork } from './neural-network.js'
 
 export class Population {
 
+
+
   private currentGeneration = 1
   private recordFitness = 0
   private avgFitness = 0
 
   constructor(public individuals: NeuralNetwork[]) { }
 
-  static createPopulation(size: number, structure: number[], activation: ActivationFunction) {
-    return new Population(Array.from<NeuralNetwork>({ length: size }).map(() => NeuralNetwork.create(structure, activation)))
+  static createPopulation(size: number, structure: number[], activations: ActivationFunction[]) {
+    return new Population(Array.from<NeuralNetwork>({ length: size }).map(() => NeuralNetwork.create(structure, activations)))
   }
 
-  static from(neuralNetworks: { weights: number[][], biases: number[] }[][], activation: ActivationFunction) {
-    const individuals = Array.from({ length: neuralNetworks.length }).map((_, i) => NeuralNetwork.from(neuralNetworks[i], activation))
+  static from(neuralNetworks: { weights: number[][], biases: number[] }[][], activations: ActivationFunction[]) {
+    const individuals = Array.from({ length: neuralNetworks.length }).map((_, i) => NeuralNetwork.from(neuralNetworks[i], activations))
 
     return new Population(individuals)
   }
@@ -33,7 +35,9 @@ export class Population {
     const eliteCount = Math.floor(this.individuals.length * (1 - options.rateDeath))
 
     for (let i = 0; i < eliteCount; i++) {
-      newIndividuals.push(individuals[i].clone())
+      individuals[i].fitness = 0
+
+      newIndividuals.push(individuals[i])
     }
 
     const minFitness = individuals[eliteCount - 1].fitness
@@ -76,6 +80,10 @@ export class Population {
     for (let i = 0; i < this.individuals.length; i++) {
       this.individuals[i].randomize(min, max)
     }
+  }
+
+  getBestIndividual() {
+    return this.individuals.sort((networkA, networkB) => networkB.fitness - networkA.fitness)[0]
   }
 
   getRecordFitness() {

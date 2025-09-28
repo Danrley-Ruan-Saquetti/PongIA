@@ -37,10 +37,12 @@ export class AITrainer extends MultiGameController<GameNN> implements IObservabl
       game.getPaddleRight().network.fitness = computeFitness(game.getPaddleRight().statistics)
     }
 
+    const best = this.population.getBestIndividual()
+
     this.population.nextGeneration(GLOBALS.evolution)
     this.neuralNetworks = this.population.individuals.map(network => network)
 
-    savePopulation(this.population)
+    savePopulation(this.population, best)
 
     this.startGames()
 
@@ -93,7 +95,7 @@ export class AITrainer extends MultiGameController<GameNN> implements IObservabl
 
     console.log('Create new Population')
 
-    const population = Population.createPopulation(GLOBALS.population.pairs * 2, GLOBALS.network.structure, GLOBALS.network.activation)
+    const population = Population.createPopulation(GLOBALS.population.pairs * 2, GLOBALS.network.structure, GLOBALS.network.activations)
 
     population.randomize(-GLOBALS.network.rateInitialRandomInterval, GLOBALS.network.rateInitialRandomInterval)
 

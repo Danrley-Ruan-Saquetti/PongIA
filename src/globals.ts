@@ -1,6 +1,6 @@
 export const GLOBALS = {
   game: {
-    limitTime: 1000 * 15,
+    limitTime: 1000 * 30,
     maxVictories: 25,
     table: {
       width: 800,
@@ -29,7 +29,11 @@ export const GLOBALS = {
   },
   network: {
     structure: [5, 8, 8, 3],
-    activation: (x: number) => Math.tanh(x),
+    activations: [
+      (x: number) => Math.tanh(x),
+      (x: number) => Math.tanh(x),
+      (x: number) => x,
+    ],
     rateInitialRandomInterval: 4,
   },
   storage: {
