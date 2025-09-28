@@ -20,6 +20,14 @@ export class GameNN extends Game {
     this.paddleRight = new PaddleNN(10, 100, this.width, this.height, TableSide.RIGHT, this.ball)
   }
 
+  getPaddleLeft() {
+    return this.paddleLeft as PaddleNN
+  }
+
+  getPaddleRight() {
+    return this.paddleRight as PaddleNN
+  }
+
   setNeuralNetworkLeft(network: NeuralNetwork) {
     this.networkLeft = network
     if (this.paddleLeft instanceof PaddleNN) {

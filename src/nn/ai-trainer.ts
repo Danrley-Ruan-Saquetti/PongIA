@@ -4,6 +4,7 @@ import { IObservable, ListenerHandler, Observer } from "../utils/observer.js"
 import { getPopulationStorage, savePopulation } from "../utils/population-io.js"
 import { NeuralNetwork } from "./core/neural-network.js"
 import { Population } from './core/population.js'
+import { computeFitness } from "./fitness.js"
 import { GameNN } from './game-nn.js'
 
 type AITrainerEvents = {
@@ -22,13 +23,20 @@ export class AITrainer extends MultiGameController<GameNN> implements IObservabl
     tableWith: number,
     tableHeight: number
   ) {
-    super(tableWith, tableHeight, GLOBALS.population.size / 2)
+    super(tableWith, tableHeight, GLOBALS.population.pairs)
     this.observer = new Observer<AITrainerEvents>()
 
     this.loadPopulation()
   }
 
   protected onAllGamesFinish() {
+    for (let i = 0; i < this.games.length; i++) {
+      const game = this.games[i]
+
+      game.getPaddleLeft().network.fitness = computeFitness(game.getPaddleLeft().statistics)
+      game.getPaddleRight().network.fitness = computeFitness(game.getPaddleRight().statistics)
+    }
+
     this.population.nextGeneration(GLOBALS.evolution)
     this.neuralNetworks = this.population.individuals.map(network => network)
 
@@ -81,7 +89,7 @@ export class AITrainer extends MultiGameController<GameNN> implements IObservabl
       return populationStorage
     }
 
-    const population = Population.createPopulation(GLOBALS.population.size, GLOBALS.network.structure, GLOBALS.network.activation)
+    const population = Population.createPopulation(GLOBALS.population.pairs * 2, GLOBALS.network.structure, GLOBALS.network.activation)
 
     population.randomize(-GLOBALS.network.rateInitialRandomInterval, GLOBALS.network.rateInitialRandomInterval)
 

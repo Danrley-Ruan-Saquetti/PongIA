@@ -3,7 +3,7 @@ import { ObjectPool } from '../utils/object-pool.js'
 
 export class MultiGameController<TGame extends Game> {
 
-  private gamePool: ObjectPool<TGame>
+  protected gamePool: ObjectPool<TGame>
   games: TGame[] = []
 
   private countGamesRunning = 0

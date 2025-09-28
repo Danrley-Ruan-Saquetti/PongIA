@@ -10,20 +10,25 @@ export const GLOBALS = {
   evolution: {
     mutationRate: .1,
     mutationStrength: .2,
-    rateDeath: .2
+    rateDeath: .2,
+    fitness: {
+      score: 200,
+      scoresByAttack: 150,
+      ballsLost: 100,
+      rallyInitiated: 30,
+      totalRallySequence: 5,
+      longestRallySequence: 20,
+      anticipationTimes: 50,
+      avgRally: 10,
+    }
   },
   population: {
-    size: 100
+    pairs: 100
   },
   network: {
     structure: [5, 8, 8, 3],
     activation: (x: number) => Math.tanh(x),
-    rateInitialRandomInterval: .5,
-    fitness: {
-      onBallHit: 100,
-      onBallLost: -100,
-      onFollowBall: .1
-    }
+    rateInitialRandomInterval: 4,
   },
   storage: {
     enable: true
