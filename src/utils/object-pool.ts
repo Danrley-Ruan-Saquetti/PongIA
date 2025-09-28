@@ -6,13 +6,21 @@ export class ObjectPool<T> {
   private pool: T[] = []
   private used: Set<T> = new Set()
 
+  private size = 0
+
   constructor(
-    private maxSize: number = 10,
+    size = 10,
     private factory: Factory<T>,
     private reset: Reset<T>
   ) {
-    for (let i = 0; i < maxSize; i++) {
-      this.pool.push(factory())
+    this.increaseSize(size)
+  }
+
+  increaseSize(amount: number) {
+    this.size += amount
+
+    for (let i = 0; i < amount; i++) {
+      this.pool.push(this.factory())
     }
   }
 
