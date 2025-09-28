@@ -13,6 +13,7 @@ export class Ball implements IObservable<BallEvents> {
   private observer: Observer<BallEvents>
 
   speed: Vector2D
+  alphaSpeed = 1
   position: Vector2D
 
   constructor(
@@ -32,11 +33,13 @@ export class Ball implements IObservable<BallEvents> {
 
     this.speed.x = 5 * (Math.random() > 0.5 ? 1 : -1)
     this.speed.y = 4 * (Math.random() > 0.5 ? 1 : -1)
+
+    this.alphaSpeed = 1
   }
 
   update(p1: Paddle, p2: Paddle) {
-    this.position.x += this.speed.x
-    this.position.y += this.speed.y
+    this.position.x += this.speed.x * this.alphaSpeed
+    this.position.y += this.speed.y * this.alphaSpeed
 
     if (this.position.y - this.radius < 0 || this.position.y + this.radius > this.tableHeight) {
       this.speed.y *= -1
@@ -84,7 +87,7 @@ export class Ball implements IObservable<BallEvents> {
 
     const speed = Math.sqrt(this.speed.x * this.speed.x + this.speed.y * this.speed.y);
 
-    this.speed.y = speed * Math.sin(bounceAngle) + (Math.random() * 2 - 1);
+    this.speed.y = speed * Math.sin(bounceAngle);
 
     if (side == TableSide.LEFT) {
       this.speed.x = speed * Math.cos(bounceAngle);
@@ -98,6 +101,10 @@ export class Ball implements IObservable<BallEvents> {
       if (this.speed.x > 0) {
         this.speed.x *= -1;
       }
+    }
+
+    if (this.alphaSpeed < 2) {
+      this.alphaSpeed += .05
     }
 
     this.observer.emit('ball/paddle-hit', side);
