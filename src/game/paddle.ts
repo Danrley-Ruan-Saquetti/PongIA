@@ -3,7 +3,6 @@ import { Ball } from "./ball.js"
 import { TableSide } from "./types.js"
 
 export type PaddleStatistics = {
-  hitsBall: number
   score: number
   ballsLost: number
   scoresByAttack: number
@@ -20,7 +19,6 @@ export class Paddle {
   speed = 6
 
   statistics: PaddleStatistics = {
-    hitsBall: 0,
     score: 0,
     ballsLost: 0,
     scoresByAttack: 0,
@@ -57,7 +55,6 @@ export class Paddle {
     this.position.y = (this.tableHeight / 2) - (this.height / 2)
 
     this.statistics = {
-      hitsBall: 0,
       score: 0,
       ballsLost: 0,
       scoresByAttack: 0,
@@ -145,7 +142,6 @@ export class Paddle {
   }
 
   onHitBall() {
-    this.statistics.hitsBall++
     this.isCounteredBall = this.isMoveForAttack
 
     this.nextRally()
