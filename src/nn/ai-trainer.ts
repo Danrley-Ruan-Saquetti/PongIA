@@ -1,4 +1,5 @@
 import { MultiGameController } from "../game/multi-game-controller.js"
+import { TableSide } from "../game/types.js"
 import { GLOBALS } from "../globals.js"
 import { IObservable, ListenerHandler, Observer } from "../utils/observer.js"
 import { getGenerationStorage, saveGeneration } from "../utils/population-io.js"
@@ -6,6 +7,7 @@ import { NeuralNetwork } from "./core/neural-network.js"
 import { Population } from './core/population.js'
 import { computeFitness } from "./fitness.js"
 import { GameNN } from './game-nn.js'
+import { PaddleNN } from "./paddle-nn.js"
 
 type AITrainerEvents = {
   'game-stop': GameNN
@@ -52,7 +54,12 @@ export class AITrainer extends MultiGameController<GameNN> implements IObservabl
   }
 
   protected createInstanceGame() {
-    const game = new GameNN(this.tableWith, this.tableHeight)
+    const game = new GameNN(
+      this.tableWith,
+      this.tableHeight,
+      new PaddleNN(10, 100, this.tableWith, this.tableHeight, TableSide.LEFT),
+      new PaddleNN(10, 100, this.tableWith, this.tableHeight, TableSide.RIGHT)
+    )
 
     game.on('game/start', () => {
       const [networkLeft] = this.neuralNetworks.splice(Math.floor(Math.random() * this.neuralNetworks.length), 1)

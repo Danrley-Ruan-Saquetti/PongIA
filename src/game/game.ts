@@ -22,12 +22,14 @@ export class Game implements IObservable<GameEvents> {
 
   isRunning = false
 
-  paddleLeft: Paddle
-  paddleRight: Paddle
-
   protected ball: Ball
 
-  constructor(protected width: number, protected height: number) {
+  constructor(
+    protected width: number,
+    protected height: number,
+    public paddleLeft: Paddle,
+    public paddleRight: Paddle
+  ) {
     this.observer = new Observer<GameEvents>()
 
     this.initComponents()
@@ -97,8 +99,8 @@ export class Game implements IObservable<GameEvents> {
   }
 
   protected loadPaddles() {
-    this.paddleLeft = new Paddle(10, 100, this.width, this.height, TableSide.LEFT, this.ball)
-    this.paddleRight = new Paddle(10, 100, this.width, this.height, TableSide.RIGHT, this.ball)
+    this.paddleLeft.ball = this.ball
+    this.paddleRight.ball = this.ball
   }
 
   private loop() {

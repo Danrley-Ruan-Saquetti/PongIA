@@ -1,5 +1,7 @@
 import { Game } from '../game/game.js'
 import { ObjectPool } from '../utils/object-pool.js'
+import { Paddle } from './paddle.js'
+import { TableSide } from './types.js'
 
 export class MultiGameController<TGame extends Game> {
 
@@ -54,7 +56,7 @@ export class MultiGameController<TGame extends Game> {
   private resetGame(game: TGame) { }
 
   protected createInstanceGame(): TGame {
-    return new Game(0, 0) as TGame
+    return new Game(0, 0, new Paddle(0, 0, 0, 0, TableSide.LEFT), new Paddle(0, 0, 0, 0, TableSide.RIGHT)) as TGame
   }
 
   getCountGamesRunning() {

@@ -1,16 +1,27 @@
-import { GameViewPlayer } from "./game/game-view-player.js"
+import { GameView } from "./game/game-view.js"
 import { Game } from "./game/game.js"
+import { TableSide } from './game/types.js'
 import { GLOBALS } from "./globals.js"
+import { PaddlePlayer } from './player/paddle-player.js'
 import { resizeCanvas } from "./utils/utils.js"
 
-const canvasGame = document.getElementById("gameCanvas") as HTMLCanvasElement
+window.onload = app
 
-resizeCanvas(canvasGame, GLOBALS.game.table)
+function app() {
+  const canvasGame = document.getElementById("gameCanvas") as HTMLCanvasElement
 
-const game = new Game(canvasGame.width, canvasGame.height)
-const gameView = new GameViewPlayer(canvasGame)
+  resizeCanvas(canvasGame, GLOBALS.game.table)
 
-gameView.setGame(game)
+  const game = new Game(
+    canvasGame.width,
+    canvasGame.height,
+    new PaddlePlayer(10, 100, canvasGame.width, canvasGame.height, TableSide.LEFT, 'w', 's'),
+    new PaddlePlayer(10, 100, canvasGame.width, canvasGame.height, TableSide.RIGHT, 'ArrowUp', 'ArrowDown')
+  )
+  const gameView = new GameView(canvasGame)
 
-game.start()
-gameView.start()
+  gameView.setGame(game)
+
+  game.start()
+  gameView.start()
+}
