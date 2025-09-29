@@ -1,5 +1,5 @@
-import { Paddle } from '../game/paddle.js';
-import { TableSide } from '../game/types.js';
+import { Paddle } from '../game/paddle.js'
+import { TableSide } from '../game/types.js'
 
 export class PaddlePlayer extends Paddle {
 
