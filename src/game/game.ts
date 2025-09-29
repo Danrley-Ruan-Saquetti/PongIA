@@ -113,6 +113,28 @@ export class Game implements IObservable<GameEvents> {
     this.ball.update(this.paddleLeft, this.paddleRight)
   }
 
+  calcComplexity() {
+    const totalRallies = this.paddleLeft.statistics.totalRallySequence + this.paddleRight.statistics.totalRallySequence
+
+    const longestRally = Math.max(this.paddleLeft.statistics.longestRallySequence, this.paddleRight.statistics.longestRallySequence)
+
+    const totalScores = this.paddleLeft.statistics.score + this.paddleRight.statistics.score
+    const totalAnticipations = this.paddleLeft.statistics.anticipationTimes + this.paddleRight.statistics.anticipationTimes
+
+    const rallyDensity = totalRallies / Math.max(1, totalScores + this.paddleLeft.statistics.ballsLost + this.paddleRight.statistics.ballsLost)
+
+    const scoreBalance = 1 - Math.abs(this.paddleLeft.statistics.score - this.paddleRight.statistics.score) / Math.max(1, totalScores)
+
+    let complexity = 0
+
+    complexity += rallyDensity * .5
+    complexity += (longestRally / 10) * .2
+    complexity += scoreBalance * .2
+    complexity += (totalAnticipations / Math.max(1, totalRallies)) * .1
+
+    return Math.max(1, complexity)
+  }
+
   moveLeftUp() {
     this.paddleLeft.moveUp()
   }

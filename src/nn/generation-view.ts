@@ -128,6 +128,11 @@ export class GenerationView implements IObservable<GenerationViewEvents> {
     this.ctx.fillText(`Anticipations:`, marginLeft, positionY)
     this.ctx.fillText(`${gameState.left.statistics.anticipationTimes}`, marginLeft + 150, positionY)
     this.ctx.fillText(`${gameState.right.statistics.anticipationTimes}`, marginLeft + 250, positionY)
+
+    positionY += 30
+
+    this.ctx.fillText(`Complexity:`, marginLeft, positionY)
+    this.ctx.fillText(`${gameSelected.calcComplexity()}`, marginLeft + 150, positionY)
   }
 
   getGameSelected() {
