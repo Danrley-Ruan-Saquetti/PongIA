@@ -23,6 +23,31 @@
 			color: white;
 		}
 
+		button {
+			border: 0;
+			cursor: pointer;
+		}
+
+		input {
+			border: 0;
+			outline: none;
+			padding: .3rem;
+		}
+
+		.actions-bar {
+			display: flex;
+			gap: .5rem;
+			position: absolute;
+			top: 0;
+			right: 0;
+			margin: .5rem;
+		}
+
+		.action-button {
+			border-radius: .3rem;
+			padding: .4rem .7rem;
+		}
+
 		canvas {
 			background: #111;
 			display: block;
@@ -36,6 +61,18 @@
 </head>
 
 <body>
+
+	<div class="actions-bar">
+		<div>
+			<label for="population-json">Population:</label>
+			<input type="text" name="population-json" id="population-json">
+		</div>
+
+		<button type="button" class="action-button" id="loadPopulation">Load Progress</button>
+		<button type="button" class="action-button" id="resetProgress">Reset Progress</button>
+		<button type="button" class="action-button" id="copyPopulation">Copy Population</button>
+	</div>
+
 	<canvas id="rankCanvas"></canvas>
 	<canvas id="gameCanvas"></canvas>
 

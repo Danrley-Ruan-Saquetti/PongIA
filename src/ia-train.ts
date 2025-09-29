@@ -1,12 +1,18 @@
 import { GameView } from "./game/game-view.js"
 import { GLOBALS } from "./globals.js"
 import { AITrainer } from './nn/ai-trainer.js'
+import { Population } from "./nn/core/population.js"
 import { GenerationView } from './nn/generation-view.js'
+import { getGenerationStorage, saveGeneration } from "./utils/population-io.js"
 import { resizeCanvas } from './utils/utils.js'
 
 window.onload = app
 
 function app() {
+  document.querySelector("#loadPopulation")?.addEventListener('click', () => loadPopulation())
+  document.querySelector("#resetProgress")?.addEventListener('click', () => resetProgress())
+  document.querySelector("#copyPopulation")?.addEventListener('click', () => copyPopulation())
+
   const canvasRank = document.getElementById("rankCanvas") as HTMLCanvasElement
   const canvasGame = document.getElementById("gameCanvas") as HTMLCanvasElement
 
@@ -56,4 +62,31 @@ function app() {
       isKeyPressed = false
     }
   })
+
+  function loadPopulation() {
+    const populationRaw = JSON.parse(document.querySelector<HTMLInputElement>("#population-json")!.value)
+
+    if (!populationRaw || !Array.isArray(populationRaw)) {
+      return
+    }
+
+    saveGeneration({ population: Population.from(populationRaw, GLOBALS.network.activations) })
+
+    window.location.reload()
+  }
+
+  function resetProgress() {
+    localStorage.removeItem('population.updated_at')
+    localStorage.removeItem('population.generation')
+    localStorage.removeItem('population')
+    localStorage.removeItem('population.best-individual')
+
+    window.location.reload()
+  }
+
+  async function copyPopulation() {
+    const population = getGenerationStorage() || aiTrainer.population
+
+    await navigator.clipboard.writeText(JSON.stringify(population.toJSON()))
+  }
 }
