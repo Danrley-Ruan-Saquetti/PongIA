@@ -6,7 +6,7 @@ export const GLOBALS = {
       width: 800,
       height: 350
     },
-    FPS: 200
+    FPS: 60
   },
   evolution: {
     mutationRate: .1,
