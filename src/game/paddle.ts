@@ -15,6 +15,8 @@ export type PaddleStatistics = {
 
 export class Paddle {
 
+  ball: Ball
+
   position: Vector2D
   speed = 6
 
@@ -40,7 +42,6 @@ export class Paddle {
     protected tableWidth: number,
     protected tableHeight: number,
     protected side: TableSide,
-    public ball: Ball
   ) {
     this.position = new Vector2D()
 
@@ -49,8 +50,6 @@ export class Paddle {
     } else {
       this.position.x = this.tableWidth - 30
     }
-
-    this.reset()
   }
 
   reset() {

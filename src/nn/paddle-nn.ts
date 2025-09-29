@@ -1,4 +1,3 @@
-import { Ball } from "../game/ball.js"
 import { Paddle } from "../game/paddle.js"
 import { TableSide } from "../game/types.js"
 import { NeuralNetwork } from "./core/neural-network.js"
@@ -13,9 +12,8 @@ export class PaddleNN extends Paddle {
     tableWidth: number,
     tableHeight: number,
     side: TableSide,
-    ball: Ball
   ) {
-    super(width, height, tableWidth, tableHeight, side, ball)
+    super(width, height, tableWidth, tableHeight, side)
   }
 
   update() {
