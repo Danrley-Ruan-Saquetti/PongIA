@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		body {
+			margin: 0;
+			background: black;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 100vh;
+			color: white;
+		}
+
+		button {
+			border: 0;
+			cursor: pointer;
+		}
+
+		input {
+			border: 0;
+			outline: none;
+			padding: .3rem;
+		}
+
+		.actions-bar {
+			display: flex;
+			gap: .5rem;
+			position: absolute;
+			top: 0;
+			right: 0;
+			margin: .5rem;
+		}
+
+		.action-button {
+			border-radius: .3rem;
+			padding: .4rem .7rem;
+		}
+
+		canvas {
+			background: #111;
+			display: block;
+			image-rendering: pixelated;
+		}
+
+		#gameCanvas {
+			margin-left: 10px;
+		}
+	</style>
+</head>
+
+<body>
+
+	<div class="actions-bar">
+		<div>
+			<label for="population-json">Population:</label>
+			<input type="text" name="population-json" id="population-json">
+		</div>
+
+		<button type="button" class="action-button" id="loadPopulation">Load Progress</button>
+		<button type="button" class="action-button" id="resetProgress">Reset Progress</button>
+		<button type="button" class="action-button" id="copyPopulation">Copy Population</button>
+	</div>
+
+	<canvas id="rankCanvas"></canvas>
+	<canvas id="gameCanvas"></canvas>
+
+	<script type="module" src="./dist/ia-train.js"></script>
+</body>
+
+</html>
