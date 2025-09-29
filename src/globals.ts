@@ -32,7 +32,7 @@ export const GLOBALS = {
     activations: [
       (x: number) => Math.tanh(x),
       (x: number) => Math.tanh(x),
-      (x: number) => x,
+      (x: number) => Math.tanh(x),
     ],
     rateInitialRandomInterval: 4,
   },

@@ -33,8 +33,10 @@ export class AITrainer extends MultiGameController<GameNN> implements IObservabl
     for (let i = 0; i < this.games.length; i++) {
       const game = this.games[i]
 
-      game.getPaddleLeft().network.fitness = computeFitness(game.getPaddleLeft().statistics)
-      game.getPaddleRight().network.fitness = computeFitness(game.getPaddleRight().statistics)
+      const complexity = game.calcComplexity()
+
+      game.getPaddleLeft().network.fitness = computeFitness(game.getPaddleLeft().statistics) * complexity
+      game.getPaddleRight().network.fitness = computeFitness(game.getPaddleRight().statistics) * complexity
     }
 
     const best = this.population.getBestIndividual()
