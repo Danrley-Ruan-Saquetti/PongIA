@@ -5,6 +5,7 @@ export class Population {
 
   private currentGeneration = 1
   private recordFitness = 0
+  private currentBiggestFitness = 0
   private avgFitness = 0
 
   constructor(public individuals: NeuralNetwork[]) { }
@@ -26,8 +27,10 @@ export class Population {
   nextGeneration(options: { mutationRate: number, mutationStrength: number, rateDeath: number }) {
     const individuals = this.individuals.sort((networkA, networkB) => networkB.fitness - networkA.fitness)
 
-    if (this.recordFitness < individuals[0].fitness) {
-      this.recordFitness = individuals[0].fitness
+    this.currentBiggestFitness = individuals[0].fitness
+
+    if (this.recordFitness < this.currentBiggestFitness) {
+      this.recordFitness = this.currentBiggestFitness
     }
 
     this.avgFitness = individuals.length > 0 ? individuals.reduce((acc, { fitness }) => acc + fitness, 0) / individuals.length : 0
@@ -90,6 +93,10 @@ export class Population {
 
   getRecordFitness() {
     return this.recordFitness
+  }
+
+  getCurrentBiggestFitness() {
+    return this.currentBiggestFitness
   }
 
   getAvgFitness() {

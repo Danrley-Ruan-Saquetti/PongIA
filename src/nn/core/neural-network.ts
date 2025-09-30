@@ -2,9 +2,7 @@ import { ActivationFunction, Layer } from "./layer.js"
 
 export class NeuralNetwork {
 
-  fitness = 0
-
-  constructor(public layers: Layer[]) { }
+  constructor(public layers: Layer[], public fitness = 0) { }
 
   static create(structure: number[], activations: ActivationFunction[]) {
     return new NeuralNetwork(
@@ -14,12 +12,12 @@ export class NeuralNetwork {
     )
   }
 
-  static from(layersRaw: { weights: number[][], biases: number[] }[], activations: ActivationFunction[]) {
+  static from(layersRaw: { weights: number[][], biases: number[] }[], activations: ActivationFunction[], fitness = 0) {
     const layers = Array.from({ length: layersRaw.length }).map((_, i) => {
       return new Layer(layersRaw[i].weights, layersRaw[i].biases, activations[i])
     })
 
-    return new NeuralNetwork(layers)
+    return new NeuralNetwork(layers, fitness)
   }
 
   randomize(min: number, max: number) {

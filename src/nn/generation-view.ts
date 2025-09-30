@@ -98,6 +98,7 @@ export class GenerationView implements IObservable<GenerationViewEvents> {
     positionY += 30
 
     this.ctx.fillText(`Avg Fitness: ${this.population.population.getAvgFitness().toFixed(2)}`, marginLeft, positionY)
+    this.ctx.fillText(`Biggest Fitness: ${this.population.population.getCurrentBiggestFitness().toFixed(2)}`, marginLeft + 150, positionY)
 
     positionY += 30
 
