@@ -21,7 +21,7 @@ export class PaddleNN extends Paddle {
       this.position.y,
       this.ball.position.x,
       this.ball.position.y,
-      Math.abs(this.ball.speed.x),
+      this.ball.speed.x,
       this.ball.speed.y,
     ])
 
