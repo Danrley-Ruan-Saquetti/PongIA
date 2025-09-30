@@ -4,6 +4,7 @@ export class Population {
         this.individuals = individuals;
         this.currentGeneration = 1;
         this.recordFitness = 0;
+        this.currentBiggestFitness = 0;
         this.avgFitness = 0;
     }
     static createPopulation(size, structure, activations) {
@@ -17,8 +18,9 @@ export class Population {
     }
     nextGeneration(options) {
         const individuals = this.individuals.sort((networkA, networkB) => networkB.fitness - networkA.fitness);
-        if (this.recordFitness < individuals[0].fitness) {
-            this.recordFitness = individuals[0].fitness;
+        this.currentBiggestFitness = individuals[0].fitness;
+        if (this.recordFitness < this.currentBiggestFitness) {
+            this.recordFitness = this.currentBiggestFitness;
         }
         this.avgFitness = individuals.length > 0 ? individuals.reduce((acc, { fitness }) => acc + fitness, 0) / individuals.length : 0;
         const newIndividuals = [];
@@ -62,6 +64,9 @@ export class Population {
     }
     getRecordFitness() {
         return this.recordFitness;
+    }
+    getCurrentBiggestFitness() {
+        return this.currentBiggestFitness;
     }
     getAvgFitness() {
         return this.avgFitness;

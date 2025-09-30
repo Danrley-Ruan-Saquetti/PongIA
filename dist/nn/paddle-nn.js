@@ -2,6 +2,7 @@ import { Paddle } from "../game/paddle.js";
 export class PaddleNN extends Paddle {
     constructor(width, height, tableWidth, tableHeight, side) {
         super(width, height, tableWidth, tableHeight, side);
+        this.color = 'yellow';
     }
     update() {
         const [up, down, stay] = this.network.feedforward([

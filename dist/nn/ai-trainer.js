@@ -1,4 +1,5 @@
 import { MultiGameController } from "../game/multi-game-controller.js";
+import { PaddleBot } from "../game/paddle-bot.js";
 import { TableSide } from "../game/types.js";
 import { GLOBALS } from "../globals.js";
 import { Observer } from "../utils/observer.js";
@@ -9,18 +10,22 @@ import { GameNN } from './game-nn.js';
 import { PaddleNN } from "./paddle-nn.js";
 export class AITrainer extends MultiGameController {
     constructor(tableWith, tableHeight) {
-        super(tableWith, tableHeight, GLOBALS.population.pairs);
+        super(tableWith, tableHeight, GLOBALS.population.size);
         this.neuralNetworks = [];
         this.observer = new Observer();
         this.loadPopulation();
     }
     onAllGamesFinish() {
+        let paddleBiggestFitness = null;
         for (let i = 0; i < this.games.length; i++) {
             const game = this.games[i];
             const complexity = game.calcComplexity();
-            game.getPaddleLeft().network.fitness = computeFitness(game.getPaddleLeft().statistics) * complexity;
-            game.getPaddleRight().network.fitness = computeFitness(game.getPaddleRight().statistics) * complexity;
+            game.getPaddleNeuralNetwork().network.fitness = computeFitness(game.getPaddleLeft().statistics) * complexity;
+            if (!paddleBiggestFitness || paddleBiggestFitness.network.fitness < game.getPaddleNeuralNetwork().network.fitness) {
+                paddleBiggestFitness = game.getPaddleNeuralNetwork();
+            }
         }
+        console.log(Object.assign(Object.assign({}, paddleBiggestFitness.statistics), { fitness: paddleBiggestFitness.network.fitness }));
         const best = this.population.getBestIndividual();
         this.population.nextGeneration(GLOBALS.evolution);
         this.neuralNetworks = this.population.individuals.map(network => network);
@@ -29,12 +34,14 @@ export class AITrainer extends MultiGameController {
         this.observer.emit('next-generation', undefined);
     }
     createInstanceGame() {
-        const game = new GameNN(this.tableWith, this.tableHeight, new PaddleNN(10, 100, this.tableWith, this.tableHeight, TableSide.LEFT), new PaddleNN(10, 100, this.tableWith, this.tableHeight, TableSide.RIGHT));
+        const paddleNetworkSide = Math.random() < .5 ? TableSide.LEFT : TableSide.RIGHT;
+        const paddleNetwork = new PaddleNN(10, 100, this.tableWith, this.tableHeight, paddleNetworkSide);
+        const paddleBot = new PaddleBot(10, 100, this.tableWith, this.tableHeight, paddleNetworkSide == TableSide.LEFT ? TableSide.RIGHT : TableSide.LEFT);
+        const game = new GameNN(this.tableWith, this.tableHeight, paddleNetwork, paddleBot);
+        game.options = Object.assign({}, GLOBALS.evolution.gameOptions);
         game.on('game/start', () => {
             const [networkLeft] = this.neuralNetworks.splice(Math.floor(Math.random() * this.neuralNetworks.length), 1);
-            const [networkRight] = this.neuralNetworks.splice(Math.floor(Math.random() * this.neuralNetworks.length), 1);
-            game.setNeuralNetworkLeft(networkLeft);
-            game.setNeuralNetworkRight(networkRight);
+            game.setNeuralNetwork(networkLeft);
         });
         return game;
     }
@@ -61,7 +68,7 @@ export class AITrainer extends MultiGameController {
             return populationStorage;
         }
         console.log('Create new Population');
-        const population = Population.createPopulation(GLOBALS.population.pairs * 2, GLOBALS.network.structure, GLOBALS.network.activations);
+        const population = Population.createPopulation(GLOBALS.population.size * 2, GLOBALS.network.structure, GLOBALS.network.activations);
         population.randomize(-GLOBALS.network.rateInitialRandomInterval, GLOBALS.network.rateInitialRandomInterval);
         return population;
     }

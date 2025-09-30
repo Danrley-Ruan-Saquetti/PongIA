@@ -1,19 +1,19 @@
 import { Layer } from "./layer.js";
 export class NeuralNetwork {
-    constructor(layers) {
+    constructor(layers, fitness = 0) {
         this.layers = layers;
-        this.fitness = 0;
+        this.fitness = fitness;
     }
     static create(structure, activations) {
         return new NeuralNetwork(Array
             .from({ length: structure.length - 1 })
             .map((_, i) => Layer.createLayer(structure[i], structure[i + 1], activations[i])));
     }
-    static from(layersRaw, activations) {
+    static from(layersRaw, activations, fitness = 0) {
         const layers = Array.from({ length: layersRaw.length }).map((_, i) => {
             return new Layer(layersRaw[i].weights, layersRaw[i].biases, activations[i]);
         });
-        return new NeuralNetwork(layers);
+        return new NeuralNetwork(layers, fitness);
     }
     randomize(min, max) {
         for (let i = 0; i < this.layers.length; i++) {

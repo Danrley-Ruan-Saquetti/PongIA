@@ -5,14 +5,15 @@ import { generateID } from '../utils/utils.js';
 import { Ball } from "./ball.js";
 import { TableSide } from './types.js';
 export class Game {
-    constructor(width, height, paddleLeft, paddleRight) {
+    constructor(width, height, paddleA, paddleB) {
         this.width = width;
         this.height = height;
-        this.paddleLeft = paddleLeft;
-        this.paddleRight = paddleRight;
         this.id = generateID();
         this.deltaTime = new DeltaTime();
         this.isRunning = false;
+        this.options = Object.assign({}, GLOBALS.game.options);
+        this.paddleLeft = paddleA.side == TableSide.LEFT ? paddleA : paddleB;
+        this.paddleRight = paddleB.side == TableSide.RIGHT ? paddleB : paddleA;
         this.observer = new Observer();
         this.initComponents();
     }
@@ -27,10 +28,10 @@ export class Game {
         this.reset();
         this.stopId = setTimeout(() => {
             this.stop();
-        }, GLOBALS.game.limitTime);
+        }, this.options.limitTime);
         this.isRunning = true;
         this.observer.emit('game/start', null);
-        this.loopId = setInterval(() => this.loop(), 1000 / GLOBALS.game.FPS);
+        this.loopId = setInterval(() => this.loop(), 1000 / (60 * this.options.speedTime));
     }
     stop() {
         if (!this.isRunning) {
@@ -100,7 +101,7 @@ export class Game {
     onScored(paddle, paddleLost) {
         paddle.onScore();
         paddleLost.onLostBall();
-        if (paddle.statistics.score >= GLOBALS.game.maxVictories) {
+        if (paddle.statistics.score >= this.options.maxVictories) {
             this.stop();
         }
     }

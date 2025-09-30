@@ -10,8 +10,10 @@ export function saveGeneration({ population, best }) {
     localStorage.setItem('population.updated_at', JSON.stringify(updatedAt));
     localStorage.setItem('population.generation', `${population.getCurrentGeneration()}`);
     localStorage.setItem('population', JSON.stringify(population.toJSON()));
-    if (best) {
+    const bestFitnessStorage = +localStorage.getItem('population.best-fitness') || 0;
+    if (best && best.fitness >= bestFitnessStorage) {
         localStorage.setItem('population.best-individual', JSON.stringify(best.toJSON()));
+        localStorage.setItem('population.best-fitness', JSON.stringify(best.fitness));
     }
 }
 export function getGenerationStorage() {
@@ -33,6 +35,14 @@ export function getBestIndividualStorage() {
     if (!individualStorage) {
         return null;
     }
-    return NeuralNetwork.from(individualStorage, GLOBALS.network.activations);
+    const bestFitnessStorage = +localStorage.getItem('population.best-fitness') || 0;
+    return NeuralNetwork.from(individualStorage, GLOBALS.network.activations, bestFitnessStorage);
+}
+export function clearStorage() {
+    localStorage.removeItem('population.updated_at');
+    localStorage.removeItem('population.generation');
+    localStorage.removeItem('population');
+    localStorage.removeItem('population.best-individual');
+    localStorage.removeItem('population.best-fitness');
 }
 //# sourceMappingURL=population-io.js.map

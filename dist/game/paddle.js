@@ -8,6 +8,7 @@ export class Paddle {
         this.tableHeight = tableHeight;
         this.side = side;
         this.speed = 6;
+        this.color = 'white';
         this.statistics = {
             score: 0,
             ballsLost: 0,
@@ -47,10 +48,11 @@ export class Paddle {
     }
     update() { }
     draw(ctx) {
-        ctx.fillStyle = "white";
+        ctx.fillStyle = this.color;
         ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
         ctx.textAlign = "center";
         ctx.font = "20px Arial";
+        ctx.fillStyle = 'white';
         ctx.fillText(`Sequence: ${this.statistics.rallySequence}`, this.position.x + (this.side == TableSide.LEFT ? 150 : -150), this.tableHeight - 15);
     }
     moveUp() {

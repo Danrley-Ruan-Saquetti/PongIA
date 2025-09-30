@@ -1,14 +1,18 @@
+const GAME_OPTIONS_DEFAULT = {
+    limitTime: 1000 * 20,
+    speedTime: 1,
+    maxVictories: 5,
+};
 export const GLOBALS = {
     game: {
-        limitTime: 1000 * 30,
-        maxVictories: 30,
+        options: GAME_OPTIONS_DEFAULT,
         table: {
             width: 800,
             height: 350
         },
-        FPS: 60
     },
     evolution: {
+        gameOptions: Object.assign(Object.assign({}, GAME_OPTIONS_DEFAULT), { limitTime: 1000 * 30, speedTime: 3, maxVictories: 30 }),
         mutationRate: .1,
         mutationStrength: .2,
         rateDeath: .3,
@@ -16,16 +20,16 @@ export const GLOBALS = {
             score: 5,
             scoresByAttack: 10,
             ballsLost: -5,
-            rallyInitiated: 3,
-            totalRallySequence: 2.5,
-            longestRallySequence: 2,
+            rallyInitiated: 1,
+            totalRallySequence: 3,
+            longestRallySequence: 4,
             anticipationTimes: 5,
-            avgRally: 2,
+            avgRally: 3,
             penaltyNoSequence: -20
         }
     },
     population: {
-        pairs: 100
+        size: 100
     },
     network: {
         structure: [5, 8, 8, 3],

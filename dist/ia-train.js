@@ -3,7 +3,7 @@ import { GLOBALS } from "./globals.js";
 import { AITrainer } from './nn/ai-trainer.js';
 import { Population } from "./nn/core/population.js";
 import { GenerationView } from './nn/generation-view.js';
-import { getGenerationStorage, saveGeneration } from "./utils/population-io.js";
+import { clearStorage, getGenerationStorage, saveGeneration } from "./utils/population-io.js";
 import { resizeCanvas } from './utils/utils.js';
 window.onload = app;
 function app() {
@@ -55,10 +55,7 @@ function app() {
         window.location.reload();
     }
     function resetProgress() {
-        localStorage.removeItem('population.updated_at');
-        localStorage.removeItem('population.generation');
-        localStorage.removeItem('population');
-        localStorage.removeItem('population.best-individual');
+        clearStorage();
         window.location.reload();
     }
     async function copyPopulation() {

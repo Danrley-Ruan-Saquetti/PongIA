@@ -88,7 +88,7 @@ export class Ball {
             return;
         }
         paddle.onBallHit();
-        if (this.alphaSpeed < 3) {
+        if (this.alphaSpeed < 2) {
             this.alphaSpeed += .25;
         }
         this.finalY = this.predictFinalY();

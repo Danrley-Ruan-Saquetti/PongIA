@@ -60,6 +60,7 @@ export class GenerationView {
         this.ctx.fillText(`Record Fitness: ${this.population.population.getRecordFitness().toFixed(2)}`, marginLeft + 150, positionY);
         positionY += 30;
         this.ctx.fillText(`Avg Fitness: ${this.population.population.getAvgFitness().toFixed(2)}`, marginLeft, positionY);
+        this.ctx.fillText(`Biggest Fitness: ${this.population.population.getCurrentBiggestFitness().toFixed(2)}`, marginLeft + 150, positionY);
         positionY += 30;
         this.ctx.fillRect(0, positionY - 15, this.canvas.width, 1);
         const gameState = gameSelected.getState();
