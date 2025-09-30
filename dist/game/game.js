@@ -55,9 +55,6 @@ export class Game {
         this.ball.on('ball/table-out', side => {
             this.onScored(this.getReversePaddleBySide(side), this.getPaddleBySide(side));
         });
-        this.ball.on('ball/paddle-hit', side => {
-            this.onPaddleHitBall(this.getPaddleBySide(side));
-        });
     }
     loadPaddles() {
         this.paddleLeft.ball = this.ball;
@@ -100,9 +97,6 @@ export class Game {
         this.paddleRight.moveDown();
     }
     updateInternal() { }
-    onPaddleHitBall(paddle) {
-        paddle.onHitBall();
-    }
     onScored(paddle, paddleLost) {
         paddle.onScore();
         paddleLost.onLostBall();

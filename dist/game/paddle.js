@@ -104,12 +104,27 @@ export class Paddle {
         this.isAnticipated = false;
         this.stopRally();
     }
-    onHitBall() {
+    onBallHit() {
         this.isCounteredBall = this.isMoveForAttack;
         if (this.isAnticipated) {
             this.statistics.anticipationTimes++;
         }
         this.nextRally();
+        this.recalculateDirectionSpeedBall();
+    }
+    recalculateDirectionSpeedBall() {
+        const relativeIntersectY = this.ball.position.y - (this.position.y + this.height / 2);
+        const normalizedIntersectY = relativeIntersectY / (this.height / 2);
+        const maxBounceAngle = Math.PI / 3;
+        const bounceAngle = normalizedIntersectY * maxBounceAngle;
+        const speed = Math.sqrt(this.ball.speed.x * this.ball.speed.x + this.ball.speed.y * this.ball.speed.y);
+        this.ball.speed.y = speed * Math.sin(bounceAngle);
+        if (this.side === TableSide.LEFT) {
+            this.ball.speed.x = Math.abs(speed * Math.cos(bounceAngle));
+        }
+        else {
+            this.ball.speed.x = -Math.abs(speed * Math.cos(bounceAngle));
+        }
     }
     nextRally() {
         if (this.statistics.rallySequence == 0) {

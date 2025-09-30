@@ -87,29 +87,11 @@ export class Ball {
         if (!this.isBallEnableToHit) {
             return;
         }
-        const relativeIntersectY = this.position.y - (paddle.position.y + paddle.height / 2);
-        const normalizedIntersectY = relativeIntersectY / (paddle.height / 2);
-        const maxBounceAngle = Math.PI / 3;
-        const bounceAngle = normalizedIntersectY * maxBounceAngle;
-        const speed = Math.sqrt(this.speed.x * this.speed.x + this.speed.y * this.speed.y);
-        this.speed.y = speed * Math.sin(bounceAngle);
-        if (side == TableSide.LEFT) {
-            this.speed.x = speed * Math.cos(bounceAngle);
-            if (this.speed.x < 0) {
-                this.speed.x *= -1;
-            }
-        }
-        else {
-            this.speed.x = -speed * Math.cos(bounceAngle);
-            if (this.speed.x > 0) {
-                this.speed.x *= -1;
-            }
-        }
+        paddle.onBallHit();
         if (this.alphaSpeed < 3) {
             this.alphaSpeed += .25;
         }
         this.finalY = this.predictFinalY();
-        this.observer.emit('ball/paddle-hit', side);
     }
     predictFinalY() {
         const finaX = this.speed.x > 0 ? this.tableWidth - (this.radius * this.GAP_FINAL_Y) : this.radius * this.GAP_FINAL_Y;
