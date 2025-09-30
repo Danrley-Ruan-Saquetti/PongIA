@@ -20,6 +20,8 @@ export class Paddle {
   position: Vector2D
   speed = 6
 
+  color = 'white'
+
   statistics: PaddleStatistics = {
     score: 0,
     ballsLost: 0,
@@ -41,7 +43,7 @@ export class Paddle {
     public height: number,
     protected tableWidth: number,
     protected tableHeight: number,
-    protected side: TableSide,
+    public readonly side: TableSide,
   ) {
     this.position = new Vector2D()
 
@@ -74,11 +76,12 @@ export class Paddle {
   update() { }
 
   draw(ctx: CanvasRenderingContext2D) {
-    ctx.fillStyle = "white"
+    ctx.fillStyle = this.color
     ctx.fillRect(this.position.x, this.position.y, this.width, this.height)
 
     ctx.textAlign = "center"
     ctx.font = "20px Arial"
+    ctx.fillStyle = 'white'
 
     ctx.fillText(
       `Sequence: ${this.statistics.rallySequence}`,

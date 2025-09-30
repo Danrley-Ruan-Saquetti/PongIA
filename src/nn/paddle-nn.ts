@@ -14,6 +14,8 @@ export class PaddleNN extends Paddle {
     side: TableSide,
   ) {
     super(width, height, tableWidth, tableHeight, side)
+
+    this.color = 'yellow'
   }
 
   update() {
