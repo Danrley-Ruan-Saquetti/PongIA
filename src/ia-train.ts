@@ -16,7 +16,7 @@ function app() {
   const canvasRank = document.getElementById("rankCanvas") as HTMLCanvasElement
   const canvasGame = document.getElementById("gameCanvas") as HTMLCanvasElement
 
-  resizeCanvas(canvasRank, { width: 375, height: 600 })
+  resizeCanvas(canvasRank, { width: 375, height: 650 })
   resizeCanvas(canvasGame, GLOBALS.game.table)
 
   const aiTrainer = new AITrainer(canvasGame.width, canvasGame.height)

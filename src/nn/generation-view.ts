@@ -1,5 +1,6 @@
 import { IObservable, ListenerHandler, Observer } from '../utils/observer.js'
 import { AITrainer } from './ai-trainer.js'
+import { computeFitness } from './fitness.js'
 import { GameNN } from './game-nn.js'
 
 export type GenerationViewEvents = {
@@ -132,8 +133,15 @@ export class GenerationView implements IObservable<GenerationViewEvents> {
 
     positionY += 30
 
+    const complexity = gameSelected.calcComplexity()
+
+    this.ctx.fillText(`Fitness:`, marginLeft, positionY)
+    this.ctx.fillText(`${computeFitness(gameSelected.getPaddleNeuralNetwork().statistics) * complexity}`, marginLeft + 190, positionY)
+
+    positionY += 30
+
     this.ctx.fillText(`Complexity:`, marginLeft, positionY)
-    this.ctx.fillText(`${gameSelected.calcComplexity()}`, marginLeft + 150, positionY)
+    this.ctx.fillText(`${complexity.toFixed(2)}`, marginLeft + 190, positionY)
   }
 
   getGameSelected() {
