@@ -132,7 +132,7 @@ export class Ball implements IObservable<BallEvents> {
 
     paddle.onBallHit()
 
-    if (this.alphaSpeed < 3) {
+    if (this.alphaSpeed < 2) {
       this.alphaSpeed += .25
     }
 

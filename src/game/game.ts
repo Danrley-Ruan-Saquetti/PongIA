@@ -4,7 +4,7 @@ import { IObservable, ListenerHandler, Observer } from '../utils/observer.js'
 import { generateID } from '../utils/utils.js'
 import { Ball } from "./ball.js"
 import { Paddle } from "./paddle.js"
-import { TableSide } from './types.js'
+import { GameOptions, TableSide } from './types.js'
 
 type GameEvents = {
   'game/start': null
@@ -17,6 +17,9 @@ export class Game implements IObservable<GameEvents> {
   deltaTime = new DeltaTime()
   protected observer: Observer<GameEvents>
 
+  public paddleLeft: Paddle
+  public paddleRight: Paddle
+
   protected loopId: number
   protected stopId: number
 
@@ -24,12 +27,17 @@ export class Game implements IObservable<GameEvents> {
 
   protected ball: Ball
 
+  options: GameOptions = { ...GLOBALS.game.options }
+
   constructor(
     protected width: number,
     protected height: number,
-    public paddleLeft: Paddle,
-    public paddleRight: Paddle
+    paddleA: Paddle,
+    paddleB: Paddle
   ) {
+    this.paddleLeft = paddleA.side == TableSide.LEFT ? paddleA : paddleB
+    this.paddleRight = paddleB.side == TableSide.RIGHT ? paddleB : paddleA
+
     this.observer = new Observer<GameEvents>()
 
     this.initComponents()
@@ -49,13 +57,13 @@ export class Game implements IObservable<GameEvents> {
 
     this.stopId = setTimeout(() => {
       this.stop()
-    }, GLOBALS.game.limitTime)
+    }, this.options.limitTime)
 
     this.isRunning = true
 
     this.observer.emit('game/start', null)
 
-    this.loopId = setInterval(() => this.loop(), 1000 / GLOBALS.game.FPS)
+    this.loopId = setInterval(() => this.loop(), 1000 / (60 * this.options.speedTime))
   }
 
   stop() {
@@ -155,7 +163,7 @@ export class Game implements IObservable<GameEvents> {
     paddle.onScore()
     paddleLost.onLostBall()
 
-    if (paddle.statistics.score >= GLOBALS.game.maxVictories) {
+    if (paddle.statistics.score >= this.options.maxVictories) {
       this.stop()
     }
   }
