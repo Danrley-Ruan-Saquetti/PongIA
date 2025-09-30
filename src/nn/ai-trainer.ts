@@ -1,4 +1,5 @@
 import { MultiGameController } from "../game/multi-game-controller.js"
+import { PaddleBot } from "../game/paddle-bot.js"
 import { TableSide } from "../game/types.js"
 import { GLOBALS } from "../globals.js"
 import { IObservable, ListenerHandler, Observer } from "../utils/observer.js"
@@ -25,21 +26,28 @@ export class AITrainer extends MultiGameController<GameNN> implements IObservabl
     tableWith: number,
     tableHeight: number
   ) {
-    super(tableWith, tableHeight, GLOBALS.population.pairs)
+    super(tableWith, tableHeight, GLOBALS.population.size)
     this.observer = new Observer<AITrainerEvents>()
 
     this.loadPopulation()
   }
 
   protected onAllGamesFinish() {
+    let paddleBiggestFitness: PaddleNN = null!
+
     for (let i = 0; i < this.games.length; i++) {
       const game = this.games[i]
 
       const complexity = game.calcComplexity()
 
-      game.getPaddleLeft().network.fitness = computeFitness(game.getPaddleLeft().statistics) * complexity
-      game.getPaddleRight().network.fitness = computeFitness(game.getPaddleRight().statistics) * complexity
+      game.getPaddleNeuralNetwork().network.fitness = computeFitness(game.getPaddleLeft().statistics) * complexity
+
+      if (!paddleBiggestFitness || paddleBiggestFitness.network.fitness < game.getPaddleNeuralNetwork().network.fitness) {
+        paddleBiggestFitness = game.getPaddleNeuralNetwork()
+      }
     }
+
+    console.log({ ...paddleBiggestFitness.statistics, fitness: paddleBiggestFitness.network.fitness })
 
     const best = this.population.getBestIndividual()
 
@@ -54,19 +62,24 @@ export class AITrainer extends MultiGameController<GameNN> implements IObservabl
   }
 
   protected createInstanceGame() {
+    const paddleNetworkSide = Math.random() < .5 ? TableSide.LEFT : TableSide.RIGHT;
+
+    const paddleNetwork = new PaddleNN(10, 100, this.tableWith, this.tableHeight, paddleNetworkSide)
+    const paddleBot = new PaddleBot(10, 100, this.tableWith, this.tableHeight, paddleNetworkSide == TableSide.LEFT ? TableSide.RIGHT : TableSide.LEFT)
+
     const game = new GameNN(
       this.tableWith,
       this.tableHeight,
-      new PaddleNN(10, 100, this.tableWith, this.tableHeight, TableSide.LEFT),
-      new PaddleNN(10, 100, this.tableWith, this.tableHeight, TableSide.RIGHT)
+      paddleNetwork,
+      paddleBot
     )
+
+    game.options = { ...GLOBALS.evolution.gameOptions }
 
     game.on('game/start', () => {
       const [networkLeft] = this.neuralNetworks.splice(Math.floor(Math.random() * this.neuralNetworks.length), 1)
-      const [networkRight] = this.neuralNetworks.splice(Math.floor(Math.random() * this.neuralNetworks.length), 1)
 
-      game.setNeuralNetworkLeft(networkLeft)
-      game.setNeuralNetworkRight(networkRight)
+      game.setNeuralNetwork(networkLeft)
     })
 
     return game
@@ -104,7 +117,7 @@ export class AITrainer extends MultiGameController<GameNN> implements IObservabl
 
     console.log('Create new Population')
 
-    const population = Population.createPopulation(GLOBALS.population.pairs * 2, GLOBALS.network.structure, GLOBALS.network.activations)
+    const population = Population.createPopulation(GLOBALS.population.size * 2, GLOBALS.network.structure, GLOBALS.network.activations)
 
     population.randomize(-GLOBALS.network.rateInitialRandomInterval, GLOBALS.network.rateInitialRandomInterval)
 
