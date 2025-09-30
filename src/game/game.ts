@@ -92,10 +92,6 @@ export class Game implements IObservable<GameEvents> {
         this.getPaddleBySide(side)
       )
     })
-
-    this.ball.on('ball/paddle-hit', side => {
-      this.onPaddleHitBall(this.getPaddleBySide(side))
-    })
   }
 
   protected loadPaddles() {
@@ -154,10 +150,6 @@ export class Game implements IObservable<GameEvents> {
   }
 
   protected updateInternal() { }
-
-  protected onPaddleHitBall(paddle: Paddle) {
-    paddle.onHitBall()
-  }
 
   protected onScored(paddle: Paddle, paddleLost: Paddle) {
     paddle.onScore()
