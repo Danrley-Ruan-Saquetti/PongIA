@@ -13,7 +13,7 @@ function app() {
     (_c = document.querySelector("#copyPopulation")) === null || _c === void 0 ? void 0 : _c.addEventListener('click', () => copyPopulation());
     const canvasRank = document.getElementById("rankCanvas");
     const canvasGame = document.getElementById("gameCanvas");
-    resizeCanvas(canvasRank, { width: 375, height: 600 });
+    resizeCanvas(canvasRank, { width: 375, height: 650 });
     resizeCanvas(canvasGame, GLOBALS.game.table);
     const aiTrainer = new AITrainer(canvasGame.width, canvasGame.height);
     const generationView = new GenerationView(canvasRank, aiTrainer);

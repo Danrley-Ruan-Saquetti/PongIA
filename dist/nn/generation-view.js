@@ -1,4 +1,5 @@
 import { Observer } from '../utils/observer.js';
+import { computeFitness } from './fitness.js';
 export class GenerationView {
     constructor(canvas, population) {
         this.canvas = canvas;
@@ -81,8 +82,12 @@ export class GenerationView {
         this.ctx.fillText(`${gameState.left.statistics.anticipationTimes}`, marginLeft + 150, positionY);
         this.ctx.fillText(`${gameState.right.statistics.anticipationTimes}`, marginLeft + 250, positionY);
         positionY += 30;
+        const complexity = gameSelected.calcComplexity();
+        this.ctx.fillText(`Fitness:`, marginLeft, positionY);
+        this.ctx.fillText(`${computeFitness(gameSelected.getPaddleNeuralNetwork().statistics) * complexity}`, marginLeft + 190, positionY);
+        positionY += 30;
         this.ctx.fillText(`Complexity:`, marginLeft, positionY);
-        this.ctx.fillText(`${gameSelected.calcComplexity()}`, marginLeft + 150, positionY);
+        this.ctx.fillText(`${complexity.toFixed(2)}`, marginLeft + 190, positionY);
     }
     getGameSelected() {
         return this.population.games[this.gameIndexSelected];
