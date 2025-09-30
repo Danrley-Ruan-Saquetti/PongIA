@@ -15,8 +15,11 @@ export function saveGeneration({ population, best }: { population: Population, b
   localStorage.setItem('population.generation', `${population.getCurrentGeneration()}`)
   localStorage.setItem('population', JSON.stringify(population.toJSON()))
 
-  if (best) {
+  const bestFitnessStorage = +localStorage.getItem('population.best-fitness')! || 0
+
+  if (best && best.fitness >= bestFitnessStorage) {
     localStorage.setItem('population.best-individual', JSON.stringify(best.toJSON()))
+    localStorage.setItem('population.best-fitness', JSON.stringify(best.fitness))
   }
 }
 
@@ -46,5 +49,15 @@ export function getBestIndividualStorage(): NeuralNetwork | null {
     return null
   }
 
-  return NeuralNetwork.from(individualStorage, GLOBALS.network.activations)
+  const bestFitnessStorage = +localStorage.getItem('population.best-fitness')! || 0
+
+  return NeuralNetwork.from(individualStorage, GLOBALS.network.activations, bestFitnessStorage)
+}
+
+export function clearStorage() {
+  localStorage.removeItem('population.updated_at')
+  localStorage.removeItem('population.generation')
+  localStorage.removeItem('population')
+  localStorage.removeItem('population.best-individual')
+  localStorage.removeItem('population.best-fitness')
 }
