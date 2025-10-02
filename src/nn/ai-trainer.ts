@@ -33,23 +33,18 @@ export class AITrainer extends MultiGameController<GameNN> implements IObservabl
   }
 
   protected onAllGamesFinish() {
-    let paddleBiggestFitness: PaddleNN = null!
-
     for (let i = 0; i < this.games.length; i++) {
       const game = this.games[i]
 
       const complexity = game.calcComplexity()
 
-      game.getPaddleNeuralNetwork().network.fitness = computeFitness(game.getPaddleLeft().statistics) * complexity
-
-      if (!paddleBiggestFitness || paddleBiggestFitness.network.fitness < game.getPaddleNeuralNetwork().network.fitness) {
-        paddleBiggestFitness = game.getPaddleNeuralNetwork()
-      }
+      game.getPaddleNeuralNetwork().network.fitness = computeFitness(game.getPaddleNeuralNetwork().statistics) * complexity
     }
 
-    console.log({ ...paddleBiggestFitness.statistics, fitness: paddleBiggestFitness.network.fitness })
+    const bestIndividual = this.population.getBestIndividual()
 
-    const best = this.population.getBestIndividual()
+    const best = bestIndividual.clone()
+    best.fitness = bestIndividual.fitness
 
     this.population.nextGeneration(GLOBALS.evolution)
     this.neuralNetworks = this.population.individuals.map(network => network)
@@ -117,7 +112,7 @@ export class AITrainer extends MultiGameController<GameNN> implements IObservabl
 
     console.log('Create new Population')
 
-    const population = Population.createPopulation(GLOBALS.population.size * 2, GLOBALS.network.structure, GLOBALS.network.activations)
+    const population = Population.createPopulation(GLOBALS.population.size, GLOBALS.network.structure, GLOBALS.network.activations)
 
     population.randomize(-GLOBALS.network.rateInitialRandomInterval, GLOBALS.network.rateInitialRandomInterval)
 
