@@ -16,17 +16,14 @@ export class AITrainer extends MultiGameController {
         this.loadPopulation();
     }
     onAllGamesFinish() {
-        let paddleBiggestFitness = null;
         for (let i = 0; i < this.games.length; i++) {
             const game = this.games[i];
             const complexity = game.calcComplexity();
-            game.getPaddleNeuralNetwork().network.fitness = computeFitness(game.getPaddleLeft().statistics) * complexity;
-            if (!paddleBiggestFitness || paddleBiggestFitness.network.fitness < game.getPaddleNeuralNetwork().network.fitness) {
-                paddleBiggestFitness = game.getPaddleNeuralNetwork();
-            }
+            game.getPaddleNeuralNetwork().network.fitness = computeFitness(game.getPaddleNeuralNetwork().statistics) * complexity;
         }
-        console.log(Object.assign(Object.assign({}, paddleBiggestFitness.statistics), { fitness: paddleBiggestFitness.network.fitness }));
-        const best = this.population.getBestIndividual();
+        const bestIndividual = this.population.getBestIndividual();
+        const best = bestIndividual.clone();
+        best.fitness = bestIndividual.fitness;
         this.population.nextGeneration(GLOBALS.evolution);
         this.neuralNetworks = this.population.individuals.map(network => network);
         saveGeneration({ population: this.population, best });
@@ -68,7 +65,7 @@ export class AITrainer extends MultiGameController {
             return populationStorage;
         }
         console.log('Create new Population');
-        const population = Population.createPopulation(GLOBALS.population.size * 2, GLOBALS.network.structure, GLOBALS.network.activations);
+        const population = Population.createPopulation(GLOBALS.population.size, GLOBALS.network.structure, GLOBALS.network.activations);
         population.randomize(-GLOBALS.network.rateInitialRandomInterval, GLOBALS.network.rateInitialRandomInterval);
         return population;
     }

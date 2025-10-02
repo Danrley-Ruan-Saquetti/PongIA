@@ -38,7 +38,7 @@ export const GLOBALS = {
             (x) => Math.tanh(x),
             (x) => Math.tanh(x),
         ],
-        rateInitialRandomInterval: 4,
+        rateInitialRandomInterval: 8,
     },
     storage: {
         enable: true
