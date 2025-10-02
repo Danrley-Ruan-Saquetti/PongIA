@@ -6,7 +6,7 @@ export class PaddleNN extends Paddle {
     }
     update() {
         const [up, down, stay] = this.network.feedforward([
-            this.position.y,
+            this.position.y + (this.height / 2),
             this.ball.position.x,
             this.ball.position.y,
             this.ball.speed.x,
