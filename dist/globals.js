@@ -21,10 +21,10 @@ export const GLOBALS = {
             scoresByAttack: 10,
             ballsLost: -5,
             rallyInitiated: 1,
-            totalRallySequence: 3,
-            longestRallySequence: 4,
+            totalRallySequence: 2,
+            longestRallySequence: 10,
             anticipationTimes: 5,
-            avgRally: 3,
+            avgRally: 6,
             penaltyNoSequence: -20
         }
     },
