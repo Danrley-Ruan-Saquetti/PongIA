@@ -56,12 +56,15 @@ export class GameView {
       30
     )
 
+    this.ctx.fillStyle = state.fps >= this.game.FPS ? '#64f22dff' : state.fps < this.game.FPS - 20 ? '#FF0000' : '#3870fdff'
     this.ctx.font = "15px Arial"
     this.ctx.fillText(
       `${state.fps}FPS`,
       200,
       25
     )
+
+    this.ctx.fillStyle = '#FFF'
 
     this.ctx.font = "30px Arial"
 

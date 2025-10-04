@@ -29,6 +29,8 @@ export class Game implements IObservable<GameEvents> {
 
   options: GameOptions = { ...GLOBALS.game.options }
 
+  get FPS() { return 1000 / (60 * this.options.speedTime) }
+
   constructor(
     protected width: number,
     protected height: number,
@@ -63,7 +65,7 @@ export class Game implements IObservable<GameEvents> {
 
     this.observer.emit('game/start', null)
 
-    this.loopId = setInterval(() => this.loop(), 1000 / (60 * this.options.speedTime))
+    this.loopId = setInterval(() => this.loop(), this.FPS)
   }
 
   stop() {
