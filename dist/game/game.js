@@ -5,6 +5,7 @@ import { generateID } from '../utils/utils.js';
 import { Ball } from "./ball.js";
 import { TableSide } from './types.js';
 export class Game {
+    get FPS() { return 1000 / (60 * this.options.speedTime); }
     constructor(width, height, paddleA, paddleB) {
         this.width = width;
         this.height = height;
@@ -31,7 +32,7 @@ export class Game {
         }, this.options.limitTime);
         this.isRunning = true;
         this.observer.emit('game/start', null);
-        this.loopId = setInterval(() => this.loop(), 1000 / (60 * this.options.speedTime));
+        this.loopId = setInterval(() => this.loop(), this.FPS);
     }
     stop() {
         if (!this.isRunning) {

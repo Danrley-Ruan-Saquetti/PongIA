@@ -32,8 +32,10 @@ export class GameView {
         this.ctx.textAlign = "center";
         this.ctx.font = "30px Arial";
         this.ctx.fillText(`${state.id}`, 100, 30);
+        this.ctx.fillStyle = state.fps >= this.game.FPS ? '#64f22dff' : state.fps < this.game.FPS - 20 ? '#FF0000' : '#3870fdff';
         this.ctx.font = "15px Arial";
         this.ctx.fillText(`${state.fps}FPS`, 200, 25);
+        this.ctx.fillStyle = '#FFF';
         this.ctx.font = "30px Arial";
         this.ctx.fillText(`${state.time.toFixed(1)}s`, state.width / 2, 30);
         this.ctx.fillText(`${state.left.statistics.score} - ${state.right.statistics.score}`, state.width / 2, 70);
