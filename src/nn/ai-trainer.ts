@@ -114,7 +114,8 @@ export class AITrainer extends MultiGameController<GameNN> implements IObservabl
 
     const population = Population.createPopulation(GLOBALS.population.size, GLOBALS.network.structure, GLOBALS.network.activations)
 
-    population.randomize(-GLOBALS.network.rateInitialRandomInterval, GLOBALS.network.rateInitialRandomInterval)
+    population.randomizeWeights(GLOBALS.network.rateWeightsInitialInterval.min, GLOBALS.network.rateWeightsInitialInterval.max)
+    population.randomizeBiases(GLOBALS.network.rateBiasesInitialInterval.min, GLOBALS.network.rateBiasesInitialInterval.max)
 
     return population
   }

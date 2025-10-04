@@ -26,15 +26,17 @@ export class Layer {
     )
   }
 
-  randomize(min: number, max: number) {
-    for (let i = 0; i < this.biases.length; i++) {
-      this.biases[i] = Math.random() * (max - min) + min
-    }
-
+  randomizeWeights(min: number, max: number) {
     for (let i = 0; i < this.weights.length; i++) {
       for (let j = 0; j < this.weights[i].length; j++) {
         this.weights[i][j] = Math.random() * (max - min) + min
       }
+    }
+  }
+
+  randomizeBiases(min: number, max: number) {
+    for (let i = 0; i < this.biases.length; i++) {
+      this.biases[i] = Math.random() * (max - min) + min
     }
   }
 

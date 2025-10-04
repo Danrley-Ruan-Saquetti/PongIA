@@ -22,7 +22,7 @@ export const GLOBALS = {
       maxVictories: 30,
     },
     mutationRate: .1,
-    mutationStrength: .2,
+    mutationStrength: .05,
     rateDeath: .3,
     fitness: {
       score: 5,
@@ -46,9 +46,16 @@ export const GLOBALS = {
       (x: number) => Math.tanh(x),
       (x: number) => Math.tanh(x),
     ],
-    rateInitialRandomInterval: 8,
+    rateWeightsInitialInterval: {
+      min: -1,
+      max: 1
+    },
+    rateBiasesInitialInterval: {
+      min: 0,
+      max: .1
+    },
   },
   storage: {
-    enable: true
+    enable: false
   }
 }

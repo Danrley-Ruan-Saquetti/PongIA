@@ -81,9 +81,15 @@ export class Population {
     return bestIndividual
   }
 
-  randomize(min: number, max: number) {
+  randomizeWeights(min: number, max: number) {
     for (let i = 0; i < this.individuals.length; i++) {
-      this.individuals[i].randomize(min, max)
+      this.individuals[i].randomizeWeights(min, max)
+    }
+  }
+
+  randomizeBiases(min: number, max: number) {
+    for (let i = 0; i < this.individuals.length; i++) {
+      this.individuals[i].randomizeBiases(min, max)
     }
   }
 
