@@ -14,7 +14,7 @@ export const GLOBALS = {
     evolution: {
         gameOptions: Object.assign(Object.assign({}, GAME_OPTIONS_DEFAULT), { limitTime: 1000 * 30, speedTime: 3, maxVictories: 30 }),
         mutationRate: .1,
-        mutationStrength: .2,
+        mutationStrength: .05,
         rateDeath: .3,
         fitness: {
             score: 5,
@@ -38,10 +38,17 @@ export const GLOBALS = {
             (x) => Math.tanh(x),
             (x) => Math.tanh(x),
         ],
-        rateInitialRandomInterval: 8,
+        rateWeightsInitialInterval: {
+            min: -1,
+            max: 1
+        },
+        rateBiasesInitialInterval: {
+            min: 0,
+            max: .1
+        },
     },
     storage: {
-        enable: true
+        enable: false
     }
 };
 //# sourceMappingURL=globals.js.map

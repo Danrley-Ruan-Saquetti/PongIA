@@ -11,14 +11,16 @@ export class Layer {
     static from(weights, biases, activation) {
         return new Layer(Array.from({ length: weights.length }).map((_, i) => Array.from(weights[i])), Array.from(biases), activation);
     }
-    randomize(min, max) {
-        for (let i = 0; i < this.biases.length; i++) {
-            this.biases[i] = Math.random() * (max - min) + min;
-        }
+    randomizeWeights(min, max) {
         for (let i = 0; i < this.weights.length; i++) {
             for (let j = 0; j < this.weights[i].length; j++) {
                 this.weights[i][j] = Math.random() * (max - min) + min;
             }
+        }
+    }
+    randomizeBiases(min, max) {
+        for (let i = 0; i < this.biases.length; i++) {
+            this.biases[i] = Math.random() * (max - min) + min;
         }
     }
     feedforward(inputs) {

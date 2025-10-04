@@ -54,9 +54,14 @@ export class Population {
         }
         return bestIndividual;
     }
-    randomize(min, max) {
+    randomizeWeights(min, max) {
         for (let i = 0; i < this.individuals.length; i++) {
-            this.individuals[i].randomize(min, max);
+            this.individuals[i].randomizeWeights(min, max);
+        }
+    }
+    randomizeBiases(min, max) {
+        for (let i = 0; i < this.individuals.length; i++) {
+            this.individuals[i].randomizeBiases(min, max);
         }
     }
     getBestIndividual() {

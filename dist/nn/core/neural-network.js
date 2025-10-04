@@ -15,9 +15,14 @@ export class NeuralNetwork {
         });
         return new NeuralNetwork(layers, fitness);
     }
-    randomize(min, max) {
+    randomizeWeights(min, max) {
         for (let i = 0; i < this.layers.length; i++) {
-            this.layers[i].randomize(min, max);
+            this.layers[i].randomizeWeights(min, max);
+        }
+    }
+    randomizeBiases(min, max) {
+        for (let i = 0; i < this.layers.length; i++) {
+            this.layers[i].randomizeBiases(min, max);
         }
     }
     feedforward(inputs) {
