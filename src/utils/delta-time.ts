@@ -15,7 +15,7 @@ export class DeltaTime {
     return deltaTimeSeconds > 0 ? Math.round(1 / deltaTimeSeconds) : 0
   }
 
-  constructor() {
+  constructor(private multiplier = 1) {
     this.reset()
   }
 
@@ -34,7 +34,11 @@ export class DeltaTime {
   }
 
   performanceNow() {
-    return performance.now()
+    return performance.now() * this.multiplier
+  }
+
+  setMultiplier(multiplier: number) {
+    this.multiplier = multiplier
   }
 
   toJSON() {
