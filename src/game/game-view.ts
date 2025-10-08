@@ -70,25 +70,34 @@ export class GameView {
 
     this.ctx.fillText(
       `${state.time.toFixed(1)}s`,
-      state.width / 2,
+      (state.width / 2) + 100,
       30
     )
 
     this.ctx.fillText(
       `${state.left.statistics.score} - ${state.right.statistics.score}`,
       state.width / 2,
-      70
+      30
     )
 
+    this.ctx.font = "20px Arial"
+    this.ctx.fillText(
+      `${state.left.accStatistics.roundVictories} - ${state.right.accStatistics.roundVictories}`,
+      state.width / 2,
+      60
+    )
+
+    this.ctx.font = "30px Arial"
+
     if (!this.game.isRunning) {
-      if (this.game.paddleLeft.statistics.score > this.game.paddleRight.statistics.score) {
+      if (this.game.paddleLeft.accStatistics.roundVictories > this.game.paddleRight.accStatistics.roundVictories) {
         this.ctx.fillText(
           `Winner`,
           state.width / 4,
           state.height / 2
         )
       }
-      else if (this.game.paddleLeft.statistics.score < this.game.paddleRight.statistics.score) {
+      else if (this.game.paddleLeft.accStatistics.roundVictories < this.game.paddleRight.accStatistics.roundVictories) {
         this.ctx.fillText(
           `Winner`,
           (state.width / 4) * 3,

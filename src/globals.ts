@@ -3,7 +3,8 @@ import { GameOptions } from "./game/types";
 const GAME_OPTIONS_DEFAULT: GameOptions = {
   limitTime: 1000 * 20,
   speedTime: 1,
-  maxVictories: 5,
+  maxScore: 5,
+  rounds: 5,
 }
 
 export const GLOBALS = {
@@ -18,8 +19,9 @@ export const GLOBALS = {
     gameOptions: {
       ...GAME_OPTIONS_DEFAULT,
       limitTime: 1000 * 30,
-      speedTime: 3,
-      maxVictories: 30,
+      speedTime: 5,
+      maxScore: 5,
+      rounds: 3,
     },
     mutationRate: .1,
     mutationStrength: .05,

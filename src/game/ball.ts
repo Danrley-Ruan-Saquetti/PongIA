@@ -33,6 +33,12 @@ export class Ball implements IObservable<BallEvents> {
     this.restartBall()
   }
 
+  onStartGame() { }
+
+  onStartRound() {
+    this.reset()
+  }
+
   reset() {
     this.restartBall()
   }

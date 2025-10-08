@@ -32,7 +32,7 @@ function app() {
   paddleNetwork.network = bestIndividual
 
   game.options.limitTime = 1000 * 60
-  game.options.maxVictories = 60
+  game.options.maxScore = 60
 
   const gameView = new GameView(canvasGame)
 

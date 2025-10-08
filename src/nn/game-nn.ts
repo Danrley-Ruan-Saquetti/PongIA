@@ -20,7 +20,7 @@ export class GameNN extends Game {
     return {
       ...super.getState(),
       network: this.network,
-      bestSequence: Math.max(this.paddleLeft.statistics.totalRallySequence || 0, this.paddleRight.statistics.totalRallySequence || 0),
+      bestSequence: Math.max(this.paddleLeft.accStatistics.totalRallySequence || 0, this.paddleRight.accStatistics.totalRallySequence || 0),
     }
   }
 }
