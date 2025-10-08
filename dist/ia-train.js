@@ -59,7 +59,7 @@ function app() {
         window.location.reload();
     }
     async function copyPopulation() {
-        const population = getGenerationStorage() || aiTrainer.population;
+        const population = (GLOBALS.storage.enable ? getGenerationStorage() : null) || aiTrainer.population;
         await navigator.clipboard.writeText(JSON.stringify(population.toJSON()));
     }
 }

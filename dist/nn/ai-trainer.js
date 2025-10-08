@@ -19,14 +19,16 @@ export class AITrainer extends MultiGameController {
         for (let i = 0; i < this.games.length; i++) {
             const game = this.games[i];
             const complexity = game.calcComplexity();
-            game.getPaddleNeuralNetwork().network.fitness = computeFitness(game.getPaddleNeuralNetwork().statistics) * complexity;
+            game.getPaddleNeuralNetwork().network.fitness = computeFitness(game.getPaddleNeuralNetwork().getAvgStatistics()) * complexity;
         }
         const bestIndividual = this.population.getBestIndividual();
         const best = bestIndividual.clone();
         best.fitness = bestIndividual.fitness;
         this.population.nextGeneration(GLOBALS.evolution);
         this.neuralNetworks = this.population.individuals.map(network => network);
-        saveGeneration({ population: this.population, best });
+        if (GLOBALS.storage.enable) {
+            saveGeneration({ population: this.population, best });
+        }
         this.startGames();
         this.observer.emit('next-generation', undefined);
     }
@@ -59,7 +61,7 @@ export class AITrainer extends MultiGameController {
         this.observer.clearListenersByEvent(event);
     }
     static getGeneration() {
-        const populationStorage = getGenerationStorage();
+        const populationStorage = GLOBALS.storage.enable ? getGenerationStorage() : null;
         if (populationStorage) {
             console.log('Load population from Storage');
             return populationStorage;

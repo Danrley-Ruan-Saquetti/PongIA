@@ -8,7 +8,8 @@ export class DeltaTime {
         const deltaTimeSeconds = this.elapsedTimeSeconds;
         return deltaTimeSeconds > 0 ? Math.round(1 / deltaTimeSeconds) : 0;
     }
-    constructor() {
+    constructor(multiplier = 1) {
+        this.multiplier = multiplier;
         this._lastElapsedTimeMilliseconds = 0;
         this._elapsedTimeMilliseconds = 0;
         this._totalElapsedTimeMilliseconds = 0;
@@ -26,7 +27,10 @@ export class DeltaTime {
         this._lastElapsedTimeMilliseconds = current;
     }
     performanceNow() {
-        return performance.now();
+        return performance.now() * this.multiplier;
+    }
+    setMultiplier(multiplier) {
+        this.multiplier = multiplier;
     }
     toJSON() {
         return {

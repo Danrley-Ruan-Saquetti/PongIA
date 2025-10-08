@@ -18,7 +18,7 @@ function app() {
     const game = new Game(canvasGame.width, canvasGame.height, paddleNetwork, paddleBot);
     paddleNetwork.network = bestIndividual;
     game.options.limitTime = 1000 * 60;
-    game.options.maxVictories = 60;
+    game.options.maxScore = 60;
     const gameView = new GameView(canvasGame);
     gameView.setGame(game);
     game.start();

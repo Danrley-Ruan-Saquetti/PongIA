@@ -11,6 +11,7 @@ function app() {
     resizeCanvas(canvasGame, GLOBALS.game.table);
     const game = new Game(canvasGame.width, canvasGame.height, new PaddlePlayer(10, 100, canvasGame.width, canvasGame.height, TableSide.LEFT, 'w', 's'), new PaddleBot(10, 100, canvasGame.width, canvasGame.height, TableSide.RIGHT));
     const gameView = new GameView(canvasGame);
+    game.options.limitTime = 1000 * 5;
     gameView.setGame(game);
     game.start();
     gameView.start();

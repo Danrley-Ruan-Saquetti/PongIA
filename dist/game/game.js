@@ -11,8 +11,9 @@ export class Game {
         this.height = height;
         this.id = generateID();
         this.deltaTime = new DeltaTime();
-        this.isRunning = false;
         this.options = Object.assign({}, GLOBALS.game.options);
+        this.countRounds = 0;
+        this.isRunning = false;
         this.paddleLeft = paddleA.side == TableSide.LEFT ? paddleA : paddleB;
         this.paddleRight = paddleB.side == TableSide.RIGHT ? paddleB : paddleA;
         this.observer = new Observer();
@@ -26,27 +27,55 @@ export class Game {
         if (this.isRunning) {
             return;
         }
-        this.reset();
-        this.stopId = setTimeout(() => {
-            this.stop();
-        }, this.options.limitTime);
-        this.isRunning = true;
+        this.resetGame();
+        this.ball.onStartGame();
+        this.paddleLeft.onStartGame();
+        this.paddleRight.onStartGame();
         this.observer.emit('game/start', null);
+        this.startRound();
+    }
+    startRound() {
+        if (this.isRunning) {
+            return;
+        }
+        this.stopId = setTimeout(() => {
+            this.stopRound();
+        }, this.options.limitTime / this.options.speedTime);
+        this.isRunning = true;
+        this.countRounds++;
+        this.ball.onStartRound();
+        this.paddleLeft.onStartRound();
+        this.paddleRight.onStartRound();
+        this.deltaTime.setMultiplier(this.options.speedTime);
+        this.deltaTime.reset();
         this.loopId = setInterval(() => this.loop(), this.FPS);
     }
-    stop() {
+    stopRound() {
         if (!this.isRunning) {
             return;
         }
-        this.isRunning = false;
         clearTimeout(this.stopId);
         clearInterval(this.loopId);
-        this.observer.emit('game/stop', null);
+        this.isRunning = false;
+        if (this.paddleLeft.statistics.score > this.paddleRight.statistics.score) {
+            this.paddleLeft.onVictory();
+        }
+        else if (this.paddleRight.statistics.score > this.paddleLeft.statistics.score) {
+            this.paddleRight.onVictory();
+        }
+        this.observer.emit('game/round/stop', null);
+        if (this.countRounds >= this.options.rounds) {
+            this.observer.emit('game/stop', null);
+        }
+        else {
+            this.startRound();
+        }
     }
-    reset() {
+    resetGame() {
         clearTimeout(this.stopId);
         clearInterval(this.loopId);
         this.isRunning = false;
+        this.countRounds = 0;
         this.deltaTime.reset();
         this.ball.reset();
         this.paddleLeft.reset();
@@ -73,12 +102,12 @@ export class Game {
         this.ball.update(this.paddleLeft, this.paddleRight);
     }
     calcComplexity() {
-        const totalRallies = this.paddleLeft.statistics.totalRallySequence + this.paddleRight.statistics.totalRallySequence;
-        const longestRally = Math.max(this.paddleLeft.statistics.longestRallySequence, this.paddleRight.statistics.longestRallySequence);
-        const totalScores = this.paddleLeft.statistics.score + this.paddleRight.statistics.score;
-        const totalAnticipations = this.paddleLeft.statistics.anticipationTimes + this.paddleRight.statistics.anticipationTimes;
-        const rallyDensity = totalRallies / Math.max(1, totalScores + this.paddleLeft.statistics.ballsLost + this.paddleRight.statistics.ballsLost);
-        const scoreBalance = 1 - Math.abs(this.paddleLeft.statistics.score - this.paddleRight.statistics.score) / Math.max(1, totalScores);
+        const totalRallies = this.paddleLeft.accStatistics.totalRallySequence + this.paddleRight.accStatistics.totalRallySequence;
+        const longestRally = Math.max(this.paddleLeft.accStatistics.longestRallySequence, this.paddleRight.accStatistics.longestRallySequence);
+        const totalScores = this.paddleLeft.accStatistics.score + this.paddleRight.accStatistics.score;
+        const totalAnticipations = this.paddleLeft.accStatistics.anticipationTimes + this.paddleRight.accStatistics.anticipationTimes;
+        const rallyDensity = totalRallies / Math.max(1, totalScores + this.paddleLeft.accStatistics.ballsLost + this.paddleRight.accStatistics.ballsLost);
+        const scoreBalance = 1 - Math.abs(this.paddleLeft.accStatistics.score - this.paddleRight.accStatistics.score) / Math.max(1, totalScores);
         let complexity = 0;
         complexity += rallyDensity * .5;
         complexity += (longestRally / 10) * .2;
@@ -102,8 +131,8 @@ export class Game {
     onScored(paddle, paddleLost) {
         paddle.onScore();
         paddleLost.onLostBall();
-        if (paddle.statistics.score >= this.options.maxVictories) {
-            this.stop();
+        if (paddle.statistics.score >= this.options.maxScore) {
+            this.stopRound();
         }
     }
     getPaddleLeft() {

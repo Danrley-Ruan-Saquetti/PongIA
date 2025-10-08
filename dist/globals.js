@@ -1,7 +1,8 @@
 const GAME_OPTIONS_DEFAULT = {
     limitTime: 1000 * 20,
     speedTime: 1,
-    maxVictories: 5,
+    maxScore: 5,
+    rounds: 5,
 };
 export const GLOBALS = {
     game: {
@@ -12,7 +13,7 @@ export const GLOBALS = {
         },
     },
     evolution: {
-        gameOptions: Object.assign(Object.assign({}, GAME_OPTIONS_DEFAULT), { limitTime: 1000 * 30, speedTime: 3, maxVictories: 30 }),
+        gameOptions: Object.assign(Object.assign({}, GAME_OPTIONS_DEFAULT), { limitTime: 1000 * 30, speedTime: 5, maxScore: 5, rounds: 3 }),
         mutationRate: .1,
         mutationStrength: .05,
         rateDeath: .3,

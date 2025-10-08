@@ -9,16 +9,8 @@ export class Paddle {
         this.side = side;
         this.speed = 6;
         this.color = 'white';
-        this.statistics = {
-            score: 0,
-            ballsLost: 0,
-            scoresByAttack: 0,
-            rallySequence: 0,
-            rallyInitiated: 0,
-            longestRallySequence: 0,
-            totalRallySequence: 0,
-            anticipationTimes: 0,
-        };
+        this.statistics = Paddle.getDefaultStatistics();
+        this.accStatistics = Paddle.getDefaultStatistics();
         this.isMoveForAttack = false;
         this.isCounteredBall = false;
         this.isAnticipated = false;
@@ -30,9 +22,10 @@ export class Paddle {
             this.position.x = this.tableWidth - 30;
         }
     }
-    reset() {
-        this.position.y = (this.tableHeight / 2) - (this.height / 2);
-        this.statistics = {
+    static getDefaultStatistics() {
+        return {
+            countRounds: 0,
+            roundVictories: 0,
             score: 0,
             ballsLost: 0,
             scoresByAttack: 0,
@@ -42,6 +35,26 @@ export class Paddle {
             totalRallySequence: 0,
             anticipationTimes: 0,
         };
+    }
+    onStartGame() {
+        this.accStatistics = Paddle.getDefaultStatistics();
+        this.statistics = Paddle.getDefaultStatistics();
+    }
+    onStartRound() {
+        this.accStatistics.score += this.statistics.score;
+        this.accStatistics.ballsLost += this.statistics.ballsLost;
+        this.accStatistics.scoresByAttack += this.statistics.scoresByAttack;
+        this.accStatistics.rallySequence += this.statistics.rallySequence;
+        this.accStatistics.rallyInitiated += this.statistics.rallyInitiated;
+        this.accStatistics.longestRallySequence += this.statistics.longestRallySequence;
+        this.accStatistics.totalRallySequence += this.statistics.totalRallySequence;
+        this.accStatistics.anticipationTimes += this.statistics.anticipationTimes;
+        this.accStatistics.countRounds++;
+        this.statistics = Paddle.getDefaultStatistics();
+        this.reset();
+    }
+    reset() {
+        this.position.y = (this.tableHeight / 2) - (this.height / 2);
         this.isMoveForAttack = false;
         this.isCounteredBall = false;
         this.isAnticipated = false;
@@ -88,6 +101,9 @@ export class Paddle {
                 this.isAnticipated = false;
             }
         }
+    }
+    onVictory() {
+        this.accStatistics.roundVictories++;
     }
     onScore() {
         this.statistics.score++;
@@ -140,6 +156,20 @@ export class Paddle {
             this.statistics.longestRallySequence = this.statistics.rallySequence;
         }
         this.statistics.rallySequence = 0;
+    }
+    getAvgStatistics() {
+        return {
+            countRounds: this.accStatistics.countRounds,
+            roundVictories: this.accStatistics.roundVictories / (this.accStatistics.roundVictories || 1),
+            score: this.accStatistics.score / (this.accStatistics.roundVictories || 1),
+            ballsLost: this.accStatistics.ballsLost / (this.accStatistics.roundVictories || 1),
+            scoresByAttack: this.accStatistics.scoresByAttack / (this.accStatistics.roundVictories || 1),
+            rallySequence: this.accStatistics.rallySequence / (this.accStatistics.roundVictories || 1),
+            rallyInitiated: this.accStatistics.rallyInitiated / (this.accStatistics.roundVictories || 1),
+            longestRallySequence: this.accStatistics.longestRallySequence / (this.accStatistics.roundVictories || 1),
+            totalRallySequence: this.accStatistics.totalRallySequence / (this.accStatistics.roundVictories || 1),
+            anticipationTimes: this.accStatistics.anticipationTimes / (this.accStatistics.roundVictories || 1),
+        };
     }
 }
 //# sourceMappingURL=paddle.js.map

@@ -14,6 +14,10 @@ export class Ball {
         this.position = new Vector2D();
         this.restartBall();
     }
+    onStartGame() { }
+    onStartRound() {
+        this.reset();
+    }
     reset() {
         this.restartBall();
     }
