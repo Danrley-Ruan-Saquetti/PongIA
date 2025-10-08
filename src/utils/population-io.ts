@@ -3,10 +3,6 @@ import { NeuralNetwork } from "../nn/core/neural-network.js"
 import { Population } from "../nn/core/population.js"
 
 export function saveGeneration({ population, best }: { population: Population, best?: NeuralNetwork }) {
-  if (!GLOBALS.storage.enable) {
-    return
-  }
-
   const updatedAt = new Date(Date.now())
 
   console.log('Population saved', updatedAt.toLocaleString('pt-BR'))
@@ -24,10 +20,6 @@ export function saveGeneration({ population, best }: { population: Population, b
 }
 
 export function getGenerationStorage(): Population | null {
-  if (!GLOBALS.storage.enable) {
-    return null
-  }
-
   const populationStorage = JSON.parse(localStorage.getItem('population')!)
   const generation = JSON.parse(localStorage.getItem('population.generation')!)
 
@@ -39,10 +31,6 @@ export function getGenerationStorage(): Population | null {
 }
 
 export function getBestIndividualStorage(): NeuralNetwork | null {
-  if (!GLOBALS.storage.enable) {
-    return null
-  }
-
   const individualStorage = JSON.parse(localStorage.getItem('population.best-individual')!)
 
   if (!individualStorage) {

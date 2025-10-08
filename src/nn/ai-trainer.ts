@@ -38,7 +38,7 @@ export class AITrainer extends MultiGameController<GameNN> implements IObservabl
 
       const complexity = game.calcComplexity()
 
-      game.getPaddleNeuralNetwork().network.fitness = computeFitness(game.getPaddleNeuralNetwork().statistics) * complexity
+      game.getPaddleNeuralNetwork().network.fitness = computeFitness(game.getPaddleNeuralNetwork().getAvgStatistics()) * complexity
     }
 
     const bestIndividual = this.population.getBestIndividual()
@@ -49,7 +49,9 @@ export class AITrainer extends MultiGameController<GameNN> implements IObservabl
     this.population.nextGeneration(GLOBALS.evolution)
     this.neuralNetworks = this.population.individuals.map(network => network)
 
-    saveGeneration({ population: this.population, best })
+    if (GLOBALS.storage.enable) {
+      saveGeneration({ population: this.population, best })
+    }
 
     this.startGames()
 
@@ -102,7 +104,7 @@ export class AITrainer extends MultiGameController<GameNN> implements IObservabl
   }
 
   private static getGeneration() {
-    const populationStorage = getGenerationStorage()
+    const populationStorage = GLOBALS.storage.enable ? getGenerationStorage() : null
 
     if (populationStorage) {
       console.log('Load population from Storage')
