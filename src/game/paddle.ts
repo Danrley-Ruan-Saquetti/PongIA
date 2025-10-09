@@ -29,8 +29,8 @@ export class Paddle {
 
   private isMoveForAttack = false
   private isCounteredBall = false
-
   private isAnticipated = false
+  private inSequence = false
 
   constructor(
     public width: number,
@@ -91,6 +91,7 @@ export class Paddle {
     this.isMoveForAttack = false
     this.isCounteredBall = false
     this.isAnticipated = false
+    this.inSequence = false
   }
 
   update() { }
@@ -143,10 +144,8 @@ export class Paddle {
       if (!this.ball.isCrossedTable()) {
         this.isAnticipated = true
       }
-    } else {
-      if (this.ball.isCrossedTable()) {
-        this.isAnticipated = false
-      }
+    } else if (this.ball.isCrossedTable()) {
+      this.isAnticipated = false
     }
   }
 
@@ -195,18 +194,23 @@ export class Paddle {
     const maxBounceAngle = Math.PI / 3
     const bounceAngle = normalizedIntersectY * maxBounceAngle
 
-    const speed = Math.sqrt(this.ball.speed.x * this.ball.speed.x + this.ball.speed.y * this.ball.speed.y)
+    const speed = Math.sqrt(this.ball.MAX_SPEED.x * this.ball.MAX_SPEED.x + this.ball.speed.y * this.ball.speed.y)
 
-    this.ball.speed.y = speed * Math.sin(bounceAngle)
+    this.ball.speed.y = speed * Math.sin(bounceAngle) * this.ball.speedMultiplier
 
     if (this.side === TableSide.LEFT) {
-      this.ball.speed.x = Math.abs(speed * Math.cos(bounceAngle))
+      this.ball.speed.x = Math.abs(speed * Math.cos(bounceAngle)) * this.ball.speedMultiplier
     } else {
-      this.ball.speed.x = -Math.abs(speed * Math.cos(bounceAngle))
+      this.ball.speed.x = -Math.abs(speed * Math.cos(bounceAngle)) * this.ball.speedMultiplier
     }
   }
 
   protected nextRally() {
+    if (!this.inSequence) {
+      this.inSequence = true
+      return
+    }
+
     if (this.statistics.rallySequence == 0) {
       this.statistics.rallyInitiated++
     }
