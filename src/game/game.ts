@@ -32,7 +32,7 @@ export class Game implements IObservable<GameEvents> {
   countRounds = 0
   isRunning = false
 
-  get FPS() { return 1000 / (60 * this.options.speedTime) }
+  get FPS() { return 1000 / (60 * this.options.speedMultiplier) }
 
   constructor(
     protected width: number,
@@ -76,7 +76,7 @@ export class Game implements IObservable<GameEvents> {
 
     this.stopId = setTimeout(() => {
       this.stopRound()
-    }, this.options.limitTime / this.options.speedTime)
+    }, this.options.limitTime / this.options.speedMultiplier)
 
     this.isRunning = true
     this.countRounds++
@@ -85,7 +85,7 @@ export class Game implements IObservable<GameEvents> {
     this.paddleLeft.onStartRound()
     this.paddleRight.onStartRound()
 
-    this.deltaTime.setMultiplier(this.options.speedTime)
+    this.deltaTime.setMultiplier(this.options.speedMultiplier)
     this.deltaTime.reset()
 
     this.loopId = setInterval(() => this.loop(), this.FPS)

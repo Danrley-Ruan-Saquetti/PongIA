@@ -5,7 +5,7 @@ export enum TableSide {
 
 export type GameOptions = {
   limitTime: number
-  speedTime: number
+  speedMultiplier: number
   maxScore: number
   rounds: number
 }
