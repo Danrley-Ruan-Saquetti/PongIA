@@ -6,8 +6,11 @@ export class Ball {
         this.radius = radius;
         this.tableWidth = tableWidth;
         this.tableHeight = tableHeight;
-        this.alphaSpeed = 1;
         this.GAP_FINAL_Y = 4;
+        this.MAX_SPEED = new Vector2D(5, 4);
+        this.MAX_MULTIPLIER = 2;
+        this.SPEED_MULTIPLIER_INCREASE_PER_HIT = .25;
+        this.speedMultiplier = 1;
         this.isBallEnableToHit = false;
         this.observer = new Observer();
         this.speed = new Vector2D();
@@ -25,14 +28,14 @@ export class Ball {
         this.isBallEnableToHit = false;
         this.position.x = this.tableWidth / 2;
         this.position.y = this.tableHeight / 2;
-        this.speed.x = 5 * (Math.random() > 0.5 ? 1 : -1);
-        this.speed.y = 4 * (Math.random() > 0.5 ? 1 : -1);
-        this.alphaSpeed = 1;
+        this.speed.x = this.MAX_SPEED.x * (Math.random() > 0.5 ? 1 : -1);
+        this.speed.y = this.MAX_SPEED.y * (Math.random() > 0.5 ? 1 : -1);
+        this.speedMultiplier = 1;
         this.finalY = this.predictFinalY();
     }
     update(p1, p2) {
-        this.position.x += this.speed.x * this.alphaSpeed;
-        this.position.y += this.speed.y * this.alphaSpeed;
+        this.position.x += this.speed.x;
+        this.position.y += this.speed.y;
         this.isBallEnableToHit = this.isCrossedTable();
         if (this.position.y - this.radius < 0 || this.position.y + this.radius > this.tableHeight) {
             this.speed.y *= -1;
@@ -92,15 +95,15 @@ export class Ball {
             return;
         }
         paddle.onBallHit();
-        if (this.alphaSpeed < 2) {
-            this.alphaSpeed += .25;
+        if (this.speedMultiplier < this.MAX_MULTIPLIER) {
+            this.speedMultiplier += this.SPEED_MULTIPLIER_INCREASE_PER_HIT;
         }
         this.finalY = this.predictFinalY();
     }
     predictFinalY() {
         const finaX = this.speed.x > 0 ? this.tableWidth - (this.radius * this.GAP_FINAL_Y) : this.radius * this.GAP_FINAL_Y;
-        const speedX = this.speed.x * this.alphaSpeed;
-        const speedY = this.speed.y * this.alphaSpeed;
+        const speedX = this.speed.x;
+        const speedY = this.speed.y;
         const deltaX = (finaX - this.position.x) / speedX;
         if (deltaX < 0) {
             return this.position.y;

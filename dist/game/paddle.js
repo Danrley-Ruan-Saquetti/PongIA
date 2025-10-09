@@ -14,6 +14,7 @@ export class Paddle {
         this.isMoveForAttack = false;
         this.isCounteredBall = false;
         this.isAnticipated = false;
+        this.inSequence = false;
         this.position = new Vector2D();
         if (side == TableSide.LEFT) {
             this.position.x = 20;
@@ -58,6 +59,7 @@ export class Paddle {
         this.isMoveForAttack = false;
         this.isCounteredBall = false;
         this.isAnticipated = false;
+        this.inSequence = false;
     }
     update() { }
     draw(ctx) {
@@ -96,10 +98,8 @@ export class Paddle {
                 this.isAnticipated = true;
             }
         }
-        else {
-            if (this.ball.isCrossedTable()) {
-                this.isAnticipated = false;
-            }
+        else if (this.ball.isCrossedTable()) {
+            this.isAnticipated = false;
         }
     }
     onVictory() {
@@ -135,16 +135,20 @@ export class Paddle {
         const normalizedIntersectY = relativeIntersectY / (this.height / 2);
         const maxBounceAngle = Math.PI / 3;
         const bounceAngle = normalizedIntersectY * maxBounceAngle;
-        const speed = Math.sqrt(this.ball.speed.x * this.ball.speed.x + this.ball.speed.y * this.ball.speed.y);
-        this.ball.speed.y = speed * Math.sin(bounceAngle);
+        const speed = Math.sqrt(this.ball.MAX_SPEED.x * this.ball.MAX_SPEED.x + this.ball.speed.y * this.ball.speed.y);
+        this.ball.speed.y = speed * Math.sin(bounceAngle) * this.ball.speedMultiplier;
         if (this.side === TableSide.LEFT) {
-            this.ball.speed.x = Math.abs(speed * Math.cos(bounceAngle));
+            this.ball.speed.x = Math.abs(speed * Math.cos(bounceAngle)) * this.ball.speedMultiplier;
         }
         else {
-            this.ball.speed.x = -Math.abs(speed * Math.cos(bounceAngle));
+            this.ball.speed.x = -Math.abs(speed * Math.cos(bounceAngle)) * this.ball.speedMultiplier;
         }
     }
     nextRally() {
+        if (!this.inSequence) {
+            this.inSequence = true;
+            return;
+        }
         if (this.statistics.rallySequence == 0) {
             this.statistics.rallyInitiated++;
         }

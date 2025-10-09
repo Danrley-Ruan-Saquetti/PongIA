@@ -5,7 +5,7 @@ import { generateID } from '../utils/utils.js';
 import { Ball } from "./ball.js";
 import { TableSide } from './types.js';
 export class Game {
-    get FPS() { return 1000 / (60 * this.options.speedTime); }
+    get FPS() { return 1000 / (60 * this.options.speedMultiplier); }
     constructor(width, height, paddleA, paddleB) {
         this.width = width;
         this.height = height;
@@ -40,13 +40,13 @@ export class Game {
         }
         this.stopId = setTimeout(() => {
             this.stopRound();
-        }, this.options.limitTime / this.options.speedTime);
+        }, this.options.limitTime / this.options.speedMultiplier);
         this.isRunning = true;
         this.countRounds++;
         this.ball.onStartRound();
         this.paddleLeft.onStartRound();
         this.paddleRight.onStartRound();
-        this.deltaTime.setMultiplier(this.options.speedTime);
+        this.deltaTime.setMultiplier(this.options.speedMultiplier);
         this.deltaTime.reset();
         this.loopId = setInterval(() => this.loop(), this.FPS);
     }
