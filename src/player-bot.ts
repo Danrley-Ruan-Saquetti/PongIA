@@ -21,7 +21,7 @@ function app() {
   )
   const gameView = new GameView(canvasGame)
 
-  game.options.limitTime = 1000 * 5
+  game.options.limitTime = 1000 * 60
 
   gameView.setGame(game)
 

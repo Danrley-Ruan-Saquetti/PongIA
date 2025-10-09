@@ -6,7 +6,7 @@ export class PaddleBot extends Paddle {
   update() {
     super.update()
 
-    this.position.approach({ x: this.position.x, y: this.ball.position.y - (this.height / 2) }, this.speed)
+    this.position.approach({ x: this.position.x, y: this.ball.finalY - (this.height / 2) }, this.speed)
 
     if (this.position.y < 0) {
       this.position.y = 0
@@ -16,15 +16,16 @@ export class PaddleBot extends Paddle {
   }
 
   protected recalculateDirectionSpeedBall() {
-    const speed = Math.sqrt(this.ball.speed.x * this.ball.speed.x + this.ball.speed.y * this.ball.speed.y)
+    const speed = Math.sqrt(this.ball.MAX_SPEED.x * this.ball.MAX_SPEED.x + this.ball.MAX_SPEED.y * this.ball.MAX_SPEED.y)
 
     const angle = (Math.random() * Math.PI / 2) - (Math.PI / 4)
-    this.ball.speed.y = speed * Math.sin(angle)
+
+    this.ball.speed.y = speed * Math.sin(angle) * this.ball.speedMultiplier
 
     if (this.side === TableSide.LEFT) {
-      this.ball.speed.x = Math.abs(speed * Math.cos(angle))
+      this.ball.speed.x = Math.abs(speed * Math.cos(angle)) * this.ball.speedMultiplier
     } else {
-      this.ball.speed.x = -Math.abs(speed * Math.cos(angle))
+      this.ball.speed.x = -Math.abs(speed * Math.cos(angle)) * this.ball.speedMultiplier
     }
   }
 }
