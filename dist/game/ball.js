@@ -7,11 +7,12 @@ export class Ball {
         this.tableWidth = tableWidth;
         this.tableHeight = tableHeight;
         this.GAP_FINAL_Y = 4;
-        this.MAX_SPEED = new Vector2D(5, 4);
+        this.MAX_SPEED = new Vector2D(6, 4);
         this.MAX_MULTIPLIER = 2;
         this.SPEED_MULTIPLIER_INCREASE_PER_HIT = .25;
         this.speedMultiplier = 1;
         this.isBallEnableToHit = false;
+        this.renderFinalTarget = false;
         this.observer = new Observer();
         this.speed = new Vector2D();
         this.position = new Vector2D();
@@ -71,12 +72,14 @@ export class Ball {
         ctx.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2);
         ctx.fill();
         const finalX = this.speed.x > 0 ? this.tableWidth - (this.radius * this.GAP_FINAL_Y) : this.radius * this.GAP_FINAL_Y;
-        ctx.globalAlpha = 0.5;
-        ctx.fillStyle = "red";
-        ctx.beginPath();
-        ctx.arc(finalX, this.finalY, this.radius, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.globalAlpha = 1;
+        if (this.renderFinalTarget) {
+            ctx.globalAlpha = 0.5;
+            ctx.fillStyle = "red";
+            ctx.beginPath();
+            ctx.arc(finalX, this.finalY, this.radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.globalAlpha = 1;
+        }
     }
     isCrossedTable() {
         if (this.speed.x > 0) {

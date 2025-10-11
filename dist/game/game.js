@@ -167,6 +167,7 @@ export class Game {
             ball: this.ball,
             width: this.width,
             height: this.height,
+            round: this.countRounds,
             time: this.deltaTime.totalElapsedTimeSeconds,
             fps: this.deltaTime.FPS,
         };

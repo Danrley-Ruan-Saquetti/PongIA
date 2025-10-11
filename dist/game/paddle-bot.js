@@ -1,26 +1,18 @@
 import { Paddle } from './paddle.js';
-import { TableSide } from './types.js';
 export class PaddleBot extends Paddle {
+    constructor(width, height, tableWidth, tableHeight, side) {
+        super(width, height, tableWidth, tableHeight, side);
+        this.targetType = 'BALL';
+        this.typeDirectionBall = 'RANDOM';
+    }
     update() {
         super.update();
-        this.position.approach({ x: this.position.x, y: this.ball.finalY - (this.height / 2) }, this.speed);
-        if (this.position.y < 0) {
-            this.position.y = 0;
+        let targetY = (this.tableHeight / 2);
+        if (this.ball.isBallIntoSide(this.side)) {
+            targetY = this.targetType == 'BALL' ? this.ball.position.y : this.ball.finalY;
         }
-        else if (this.position.y + this.height > this.tableHeight) {
-            this.position.y = this.tableHeight - this.height;
-        }
-    }
-    recalculateDirectionSpeedBall() {
-        const speed = Math.sqrt(this.ball.MAX_SPEED.x * this.ball.MAX_SPEED.x + this.ball.MAX_SPEED.y * this.ball.MAX_SPEED.y);
-        const angle = (Math.random() * Math.PI / 2) - (Math.PI / 4);
-        this.ball.speed.y = speed * Math.sin(angle) * this.ball.speedMultiplier;
-        if (this.side === TableSide.LEFT) {
-            this.ball.speed.x = Math.abs(speed * Math.cos(angle)) * this.ball.speedMultiplier;
-        }
-        else {
-            this.ball.speed.x = -Math.abs(speed * Math.cos(angle)) * this.ball.speedMultiplier;
-        }
+        this.position.approach({ x: this.position.x, y: targetY - (this.height / 2) }, this.speed);
+        this.fixPosition();
     }
 }
 //# sourceMappingURL=paddle-bot.js.map

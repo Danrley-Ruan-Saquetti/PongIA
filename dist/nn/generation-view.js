@@ -34,8 +34,9 @@ export class GenerationView {
         let positionY = 30;
         let marginLeft = 20;
         this.ctx.fillText("Game", marginLeft + 40, positionY);
-        this.ctx.fillText("Time", marginLeft + 200, positionY);
-        this.ctx.fillText("Score", marginLeft + 260, positionY);
+        this.ctx.fillText("Round", marginLeft + 150, positionY);
+        this.ctx.fillText("Time", marginLeft + 220, positionY);
+        this.ctx.fillText("Score", marginLeft + 280, positionY);
         positionY += 30;
         this.ctx.fillRect(0, positionY - 23, this.canvas.width, 1);
         const games = this.population.games.sort((gameA, gameB) => gameB.getState().bestSequence - gameA.getState().bestSequence);
@@ -47,8 +48,9 @@ export class GenerationView {
             this.ctx.fillStyle = state.id == gameSelected.id ? '#fbff00ff' : (game.isRunning ? '#FFF' : '#FF0000');
             this.ctx.fillText(`#${i + 1}`, marginLeft + 5, positionY);
             this.ctx.fillText(state.id, marginLeft + 40, positionY);
-            this.ctx.fillText(`${state.time.toFixed(0)}s`, marginLeft + 200, positionY);
-            this.ctx.fillText(`${state.left.statistics.score} x ${state.right.statistics.score}`, marginLeft + 260, positionY);
+            this.ctx.fillText(`${state.round}`, marginLeft + 150, positionY);
+            this.ctx.fillText(`${state.time.toFixed(0)}s`, marginLeft + 220, positionY);
+            this.ctx.fillText(`${state.left.statistics.score} x ${state.right.statistics.score}`, marginLeft + 280, positionY);
             positionY += 30;
         });
         this.ctx.fillStyle = '#FFF';

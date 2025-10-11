@@ -7,6 +7,7 @@ export class Paddle {
         this.tableWidth = tableWidth;
         this.tableHeight = tableHeight;
         this.side = side;
+        this.typeDirectionBall = 'ANGLE';
         this.speed = 6;
         this.color = 'white';
         this.statistics = Paddle.getDefaultStatistics();
@@ -62,6 +63,14 @@ export class Paddle {
         this.inSequence = false;
     }
     update() { }
+    fixPosition() {
+        if (this.position.y < 0) {
+            this.position.y = 0;
+        }
+        else if (this.position.y + this.height > this.tableHeight) {
+            this.position.y = this.tableHeight - this.height;
+        }
+    }
     draw(ctx) {
         ctx.fillStyle = this.color;
         ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
@@ -72,21 +81,17 @@ export class Paddle {
     }
     moveUp() {
         this.position.y -= this.speed;
-        if (this.position.y < 0) {
-            this.position.y = 0;
-        }
-        else {
+        if (this.position.y >= 0) {
             this.onMoved();
         }
+        this.fixPosition();
     }
     moveDown() {
         this.position.y += this.speed;
-        if (this.position.y + this.height > this.tableHeight) {
-            this.position.y = this.tableHeight - this.height;
-        }
-        else {
+        if (this.position.y + this.height <= this.tableHeight) {
             this.onMoved();
         }
+        this.fixPosition();
     }
     onMoved() {
         this.isMoveForAttack = true;
@@ -131,6 +136,14 @@ export class Paddle {
         this.recalculateDirectionSpeedBall();
     }
     recalculateDirectionSpeedBall() {
+        if (this.typeDirectionBall == 'ANGLE') {
+            this.calculateDirectionSpeedBallFromAngle();
+        }
+        else {
+            this.calculateRandomDirectionSpeedBall();
+        }
+    }
+    calculateDirectionSpeedBallFromAngle() {
         const relativeIntersectY = this.ball.position.y - (this.position.y + this.height / 2);
         const normalizedIntersectY = relativeIntersectY / (this.height / 2);
         const maxBounceAngle = Math.PI / 3;
@@ -142,6 +155,17 @@ export class Paddle {
         }
         else {
             this.ball.speed.x = -Math.abs(speed * Math.cos(bounceAngle)) * this.ball.speedMultiplier;
+        }
+    }
+    calculateRandomDirectionSpeedBall() {
+        const speed = Math.sqrt(this.ball.MAX_SPEED.x * this.ball.MAX_SPEED.x + this.ball.MAX_SPEED.y * this.ball.MAX_SPEED.y);
+        const angle = (Math.random() * Math.PI / 2) - (Math.PI / 4);
+        this.ball.speed.y = speed * Math.sin(angle) * this.ball.speedMultiplier;
+        if (this.side === TableSide.LEFT) {
+            this.ball.speed.x = Math.abs(speed * Math.cos(angle)) * this.ball.speedMultiplier;
+        }
+        else {
+            this.ball.speed.x = -Math.abs(speed * Math.cos(angle)) * this.ball.speedMultiplier;
         }
     }
     nextRally() {
