@@ -1,5 +1,5 @@
-import { Vector2D } from "../utils/vector2d.js"
 import { Ball } from "./ball.js"
+import { GameEntity } from "./game-entity.js"
 import { TableSide } from "./types.js"
 
 export type PaddleStatistics = {
@@ -17,11 +17,9 @@ export type PaddleStatistics = {
 
 export type PaddleTypeDirectionBall = 'RANDOM' | 'ANGLE'
 
-export class Paddle {
+export class Paddle extends GameEntity {
 
   protected ball: Ball
-
-  position: Vector2D
 
   statistics: PaddleStatistics = Paddle.getDefaultStatistics()
   accStatistics: PaddleStatistics = Paddle.getDefaultStatistics()
@@ -43,7 +41,7 @@ export class Paddle {
     protected tableHeight: number,
     public readonly side: TableSide,
   ) {
-    this.position = new Vector2D()
+    super()
 
     if (side == TableSide.LEFT) {
       this.position.x = 20

@@ -1,5 +1,6 @@
 import { IObservable, ListenerHandler, Observer } from '../utils/observer.js'
 import { Vector2D } from './../utils/vector2d.js'
+import { GameEntity } from './game-entity.js'
 import { Paddle } from "./paddle.js"
 import { TableSide } from './types.js'
 
@@ -7,7 +8,7 @@ type BallEvents = {
   'ball/table-out': TableSide
 }
 
-export class Ball implements IObservable<BallEvents> {
+export class Ball extends GameEntity implements IObservable<BallEvents> {
 
   private observer: Observer<BallEvents>
 
@@ -16,7 +17,6 @@ export class Ball implements IObservable<BallEvents> {
   readonly MAX_MULTIPLIER = 2
   readonly SPEED_MULTIPLIER_INCREASE_PER_HIT = .25
 
-  position: Vector2D
   speed: Vector2D
 
   finalY: number
@@ -32,9 +32,10 @@ export class Ball implements IObservable<BallEvents> {
     private tableWidth: number,
     private tableHeight: number
   ) {
+    super()
+
     this.observer = new Observer<BallEvents>()
     this.speed = new Vector2D()
-    this.position = new Vector2D()
 
     this.restartBall()
   }
