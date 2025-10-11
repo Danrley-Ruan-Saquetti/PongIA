@@ -1,9 +1,9 @@
-import { GameEntity } from "./game-entity.js";
+import { Vector2D } from '../utils/vector2d.js';
+import { RectangleEntity } from './rectangle-entity.js';
 import { TableSide } from "./types.js";
-export class Paddle extends GameEntity {
+export class Paddle extends RectangleEntity {
     constructor(dimension, side) {
-        super();
-        this.dimension = dimension;
+        super(dimension, new Vector2D());
         this.side = side;
         this.statistics = Paddle.getDefaultStatistics();
         this.accStatistics = Paddle.getDefaultStatistics();
@@ -30,11 +30,12 @@ export class Paddle extends GameEntity {
         };
     }
     onStartGame() {
+        this.position.y = this.table.position.y;
         if (this.side == TableSide.LEFT) {
-            this.position.x = 20;
+            this.position.x = this.table.positionInitialX + 20;
         }
         else {
-            this.position.x = this.table.dimension.width - this.dimension.width - 30;
+            this.position.x = this.table.positionFinalX - 20;
         }
         this.accStatistics = Paddle.getDefaultStatistics();
         this.statistics = Paddle.getDefaultStatistics();
@@ -53,7 +54,7 @@ export class Paddle extends GameEntity {
         this.reset();
     }
     reset() {
-        this.position.y = (this.table.dimension.height / 2) - (this.dimension.height / 2);
+        this.position.y = this.table.position.y;
         this.isMoveForAttack = false;
         this.isCounteredBall = false;
         this.isAnticipated = false;
@@ -61,31 +62,31 @@ export class Paddle extends GameEntity {
     }
     update() { }
     fixPosition() {
-        if (this.position.y < 0) {
-            this.position.y = 0;
+        if (this.positionInitialY < this.table.positionInitialY) {
+            this.position.y = this.table.positionInitialY + this.dimension.height / 2;
         }
-        else if (this.position.y + this.dimension.height > this.table.dimension.height) {
-            this.position.y = this.table.dimension.height - this.dimension.height;
+        else if (this.positionFinalY > this.table.positionFinalY) {
+            this.position.y = this.table.positionFinalY - this.dimension.height / 2;
         }
     }
     draw(ctx) {
         ctx.fillStyle = this.color;
-        ctx.fillRect(this.position.x, this.position.y, this.dimension.width, this.dimension.height);
+        ctx.fillRect(this.positionInitialX, this.positionInitialY, this.dimension.width, this.dimension.height);
         ctx.textAlign = "center";
         ctx.font = "20px Arial";
         ctx.fillStyle = 'white';
-        ctx.fillText(`Sequence: ${this.statistics.rallySequence}`, this.position.x + (this.side == TableSide.LEFT ? 150 : -150), this.table.dimension.height - 15);
+        ctx.fillText(`Sequence: ${this.statistics.rallySequence}`, this.table.position.x + 200 * (this.side == TableSide.LEFT ? 1 : -1), this.table.positionFinalY - 15);
     }
     moveUp() {
         this.position.y -= this.speed;
-        if (this.position.y >= 0) {
+        if (this.positionInitialY >= this.table.positionFinalY) {
             this.onMoved();
         }
         this.fixPosition();
     }
     moveDown() {
         this.position.y += this.speed;
-        if (this.position.y + this.dimension.height <= this.table.dimension.height) {
+        if (this.positionFinalY <= this.table.position.x) {
             this.onMoved();
         }
         this.fixPosition();
@@ -95,7 +96,7 @@ export class Paddle extends GameEntity {
         if (!this.ball.isBallIntoSide(this.side)) {
             return;
         }
-        if (this.position.y <= this.ball.finalY && this.ball.finalY <= this.position.y + this.dimension.height) {
+        if (this.positionInitialY <= this.ball.finalY && this.ball.finalY <= this.positionFinalY) {
             if (!this.ball.isCrossedTable()) {
                 this.isAnticipated = true;
             }
@@ -141,7 +142,7 @@ export class Paddle extends GameEntity {
         }
     }
     calculateDirectionSpeedBallFromAngle() {
-        const relativeIntersectY = this.ball.position.y - (this.position.y + this.dimension.height / 2);
+        const relativeIntersectY = this.ball.position.y - this.position.y;
         const normalizedIntersectY = relativeIntersectY / (this.dimension.height / 2);
         const maxBounceAngle = Math.PI / 3;
         const bounceAngle = normalizedIntersectY * maxBounceAngle;

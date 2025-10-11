@@ -5,16 +5,20 @@ import { TableSide } from './types.js';
 export class Ball extends GameEntity {
     get speedMultiplier() { return this._speedMultiplier; }
     get finalY() { return this._finalY; }
+    get positionInitialX() { return this.position.x - this.radius; }
+    get positionInitialY() { return this.position.y - this.radius; }
+    get positionFinalX() { return this.position.x + this.radius; }
+    get positionFinalY() { return this.position.y + this.radius; }
     constructor(radius) {
         super();
         this.radius = radius;
-        this.GAP_FINAL_Y = 4;
+        this.GAP_FINAL_Y = 20;
         this.MAX_SPEED = new Vector2D(6, 4);
         this.MAX_MULTIPLIER = 2;
         this.SPEED_MULTIPLIER_INCREASE_PER_HIT = .25;
         this._speedMultiplier = 1;
         this.isBallEnableToHit = false;
-        this.renderFinalTarget = false;
+        this.renderFinalTarget = true;
         this.observer = new Observer();
         this.speed = new Vector2D();
     }
@@ -27,8 +31,8 @@ export class Ball extends GameEntity {
     }
     restartBall() {
         this.isBallEnableToHit = false;
-        this.position.x = this.table.dimension.width / 2;
-        this.position.y = this.table.dimension.height / 2;
+        this.position.x = this.table.position.x;
+        this.position.y = this.table.position.y;
         this.speed.x = this.MAX_SPEED.x * -1;
         this.speed.y = this.MAX_SPEED.y * (Math.random() > 0.5 ? 1 : -1);
         this._speedMultiplier = 1;
@@ -38,28 +42,33 @@ export class Ball extends GameEntity {
         this.position.x += this.speed.x;
         this.position.y += this.speed.y;
         this.isBallEnableToHit = this.isCrossedTable();
-        if (this.position.y - this.radius < 0 || this.position.y + this.radius > this.table.dimension.height) {
+        if (this.positionInitialY < this.table.positionInitialY || this.positionFinalY > this.table.positionFinalY) {
             this.speed.y *= -1;
-            if (this.position.y - this.radius < 0) {
-                this.position.y = this.radius;
-            }
-            else {
-                this.position.y = this.table.dimension.height - this.radius;
-            }
         }
+        this.fixPosition();
         if (this.checkCollisionPaddle(paddleLeft)) {
-            this.handleCollision(paddleLeft);
+            this.collisionPaddle(paddleLeft);
+            // this.handleCollision(paddleLeft)
         }
         else if (this.checkCollisionPaddle(paddleRight)) {
-            this.handleCollision(paddleRight);
+            this.collisionPaddle(paddleRight);
+            // this.handleCollision(paddleRight)
         }
-        if (this.position.x < 0) {
+        if (this.positionFinalX < this.table.positionInitialX) {
             this.restartBall();
             this.observer.emit('ball/table-out', TableSide.LEFT);
         }
-        if (this.position.x > this.table.dimension.width) {
+        if (this.positionInitialX > this.table.positionFinalX) {
             this.restartBall();
             this.observer.emit('ball/table-out', TableSide.RIGHT);
+        }
+    }
+    fixPosition() {
+        if (this.positionInitialY < this.table.positionInitialY) {
+            this.position.y = this.table.positionInitialY + this.radius;
+        }
+        else if (this.positionFinalY > this.table.positionFinalY) {
+            this.position.y = this.table.positionFinalY - this.radius;
         }
     }
     draw(ctx) {
@@ -67,8 +76,8 @@ export class Ball extends GameEntity {
         ctx.beginPath();
         ctx.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2);
         ctx.fill();
-        const finalX = this.speed.x > 0 ? this.table.dimension.width - (this.radius * this.GAP_FINAL_Y) : this.radius * this.GAP_FINAL_Y;
         if (this.renderFinalTarget) {
+            const finalX = this.speed.x > 0 ? this.table.positionFinalX - this.GAP_FINAL_Y : this.table.positionInitialX + this.GAP_FINAL_Y;
             ctx.globalAlpha = 0.5;
             ctx.fillStyle = "red";
             ctx.beginPath();
@@ -79,9 +88,9 @@ export class Ball extends GameEntity {
     }
     isCrossedTable() {
         if (this.speed.x > 0) {
-            return this.position.x >= this.table.dimension.width / 2;
+            return this.position.x >= this.table.position.x;
         }
-        return this.position.x <= this.table.dimension.width / 2;
+        return this.position.x <= this.table.position.x;
     }
     isBallIntoSide(side) {
         if (side == TableSide.RIGHT) {
@@ -90,8 +99,8 @@ export class Ball extends GameEntity {
         return this.speed.x < 0;
     }
     checkCollisionPaddle(paddle) {
-        const closestX = Math.max(paddle.position.x, Math.min(this.position.x, paddle.position.x + paddle.dimension.width));
-        const closestY = Math.max(paddle.position.y, Math.min(this.position.y, paddle.position.y + paddle.dimension.height));
+        const closestX = Math.max(paddle.positionInitialX, Math.min(this.position.x, paddle.positionFinalX));
+        const closestY = Math.max(paddle.positionInitialY, Math.min(this.position.y, paddle.positionFinalY));
         const dx = this.position.x - closestX;
         const dy = this.position.y - closestY;
         return (dx * dx + dy * dy) < (this.radius * this.radius);
@@ -100,10 +109,8 @@ export class Ball extends GameEntity {
         if (!this.isBallEnableToHit) {
             return;
         }
-        const paddleCenterX = paddle.position.x + paddle.dimension.width / 2;
-        const paddleCenterY = paddle.position.y + paddle.dimension.height / 2;
-        const dx = this.position.x - paddleCenterX;
-        const dy = this.position.y - paddleCenterY;
+        const dx = this.position.x - paddle.positionFinalX;
+        const dy = this.position.y - paddle.positionFinalY;
         const absDX = Math.abs(dx);
         const absDY = Math.abs(dy);
         if (absDX > absDY) {
@@ -121,22 +128,30 @@ export class Ball extends GameEntity {
         this._finalY = this.predictFinalY();
     }
     predictFinalY() {
-        const finaX = this.speed.x > 0 ? this.table.dimension.width - (this.radius * this.GAP_FINAL_Y) : this.radius * this.GAP_FINAL_Y;
+        const halfWidth = this.table.halfWidth;
+        const halfHeight = this.table.halfHeight;
+        // destino em X (direita ou esquerda)
+        const finalX = this.speed.x > 0
+            ? halfWidth - this.GAP_FINAL_Y
+            : -halfWidth + this.GAP_FINAL_Y;
         const speedX = this.speed.x;
         const speedY = this.speed.y;
-        const deltaX = (finaX - this.position.x) / speedX;
+        const deltaX = (finalX - this.position.x) / speedX;
         if (deltaX < 0) {
             return this.position.y;
         }
         const rawY = this.position.y + speedY * deltaX;
+        // altura útil (sem os limites do raio)
         const effectiveHeight = this.table.dimension.height - this.radius * 2;
-        const offset = this.radius;
+        const halfEffective = effectiveHeight / 2;
+        // período refletido no espaço [-halfEffective, +halfEffective]
         const period = 2 * effectiveHeight;
-        const modY = ((rawY - offset) % period + period) % period;
-        const _finalY = modY <= effectiveHeight
-            ? modY + offset
-            : effectiveHeight - (modY - effectiveHeight) + offset;
-        return _finalY;
+        const modY = ((rawY + halfEffective) % period + period) % period;
+        const reflectedY = modY <= effectiveHeight
+            ? modY - halfEffective
+            : effectiveHeight - (modY - effectiveHeight) - halfEffective;
+        // compensar deslocamento do raio
+        return Math.max(-halfHeight + this.radius, Math.min(halfHeight - this.radius, reflectedY));
     }
     setTable(table) {
         this.table = table;

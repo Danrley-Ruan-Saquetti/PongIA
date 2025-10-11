@@ -17,9 +17,9 @@ export class PaddleNN extends Paddle {
     }
     getInputNormalized() {
         return [
-            ((this.position.y + this.dimension.height / 2) / this.table.dimension.height) * 2 - 1,
-            (this.ball.position.x / this.table.dimension.width) * 2 - 1,
-            (this.ball.position.y / this.table.dimension.height) * 2 - 1,
+            ((this.position.y - this.table.positionInitialY) / this.table.dimension.height) * 2 - 1,
+            ((this.ball.position.x - this.table.positionInitialX) / this.table.dimension.width) * 2 - 1,
+            ((this.ball.position.y - this.table.positionInitialY) / this.table.dimension.height) * 2 - 1,
             this.ball.speed.x / this.ball.MAX_SPEED.x * this.ball.MAX_MULTIPLIER,
             this.ball.speed.y / this.ball.MAX_SPEED.y * this.ball.MAX_MULTIPLIER
         ];

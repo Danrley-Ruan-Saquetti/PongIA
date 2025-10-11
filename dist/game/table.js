@@ -1,10 +1,9 @@
 import { Vector2D } from '../utils/vector2d.js';
 import { Dimension } from './../utils/dimension.js';
-import { GameEntity } from './game-entity.js';
-export class Table extends GameEntity {
+import { RectangleEntity } from './rectangle-entity.js';
+export class Table extends RectangleEntity {
     constructor(dimension = new Dimension(), position = new Vector2D()) {
-        super(position);
-        this.dimension = dimension;
+        super(dimension, position);
     }
 }
 //# sourceMappingURL=table.js.map
