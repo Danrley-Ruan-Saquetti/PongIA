@@ -25,7 +25,7 @@ export const GLOBALS = {
     },
     mutationRate: .1,
     mutationStrength: .05,
-    rateDeath: .3,
+    rateDeath: .7,
     fitness: {
       score: 5,
       scoresByAttack: 10,

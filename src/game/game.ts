@@ -190,7 +190,7 @@ export class Game implements IObservable<GameEvents> {
     complexity += scoreBalance * .2
     complexity += (totalAnticipations / Math.max(1, totalRallies)) * .1
 
-    return Math.max(1, complexity)
+    return complexity
   }
 
   moveLeftUp() {

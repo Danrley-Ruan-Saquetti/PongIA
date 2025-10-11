@@ -132,9 +132,10 @@ export class GenerationView implements IObservable<GenerationViewEvents> {
     positionY += 30
 
     const complexity = gameSelected.calcComplexity()
+    const fitness = computeFitness(gameSelected.getPaddleNeuralNetwork().getAvgStatistics())
 
     this.ctx.fillText(`Fitness:`, marginLeft, positionY)
-    this.ctx.fillText(`${computeFitness(gameSelected.getPaddleNeuralNetwork().statistics) * complexity}`, marginLeft + 190, positionY)
+    this.ctx.fillText(`${fitness > 0 ? fitness * complexity : fitness * (1 + complexity)}`, marginLeft + 190, positionY)
 
     positionY += 30
 
