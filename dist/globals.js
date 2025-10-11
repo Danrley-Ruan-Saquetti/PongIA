@@ -16,7 +16,7 @@ export const GLOBALS = {
         gameOptions: Object.assign(Object.assign({}, GAME_OPTIONS_DEFAULT), { limitTime: 1000 * 30, speedMultiplier: 5, maxScore: 5, rounds: 3 }),
         mutationRate: .1,
         mutationStrength: .05,
-        rateDeath: .3,
+        rateDeath: .7,
         fitness: {
             score: 5,
             scoresByAttack: 10,

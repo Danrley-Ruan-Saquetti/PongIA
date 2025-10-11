@@ -14,6 +14,7 @@ export class Game {
         this.table = table;
         this.id = generateID();
         this.deltaTime = new DeltaTime();
+        this.paddles = { [TableSide.LEFT]: null, [TableSide.RIGHT]: null };
         this._isRunning = false;
         this._countRounds = 0;
         this.componentsInitialized = false;
@@ -33,10 +34,11 @@ export class Game {
             return;
         }
         this.initComponents();
+        this.randomSides();
         this.resetGame();
         this.ball.onStartGame();
-        this._paddleLeft.onStartGame();
-        this._paddleRight.onStartGame();
+        this.paddles[TableSide.LEFT].onStartGame();
+        this.paddles[TableSide.RIGHT].onStartGame();
         this.observer.emit('game/start', null);
         this.startRound();
     }
@@ -50,8 +52,8 @@ export class Game {
         this._isRunning = true;
         this._countRounds++;
         this.ball.onStartRound();
-        this._paddleLeft.onStartRound();
-        this._paddleRight.onStartRound();
+        this.paddles[TableSide.LEFT].onStartRound();
+        this.paddles[TableSide.RIGHT].onStartRound();
         this.deltaTime.setMultiplier(this.options.speedMultiplier);
         this.deltaTime.reset();
         this.loopId = setInterval(() => this.loop(), this.FPS_LOCKED);
@@ -63,11 +65,11 @@ export class Game {
         clearTimeout(this.stopId);
         clearInterval(this.loopId);
         this._isRunning = false;
-        if (this._paddleLeft.statistics.score > this._paddleRight.statistics.score) {
-            this._paddleLeft.onVictory();
+        if (this.paddles[TableSide.LEFT].statistics.score > this.paddles[TableSide.RIGHT].statistics.score) {
+            this.paddles[TableSide.LEFT].onVictory();
         }
-        else if (this._paddleRight.statistics.score > this._paddleLeft.statistics.score) {
-            this._paddleRight.onVictory();
+        else if (this.paddles[TableSide.RIGHT].statistics.score > this.paddles[TableSide.LEFT].statistics.score) {
+            this.paddles[TableSide.RIGHT].onVictory();
         }
         this.observer.emit('game/round/stop', null);
         if (this.countRounds >= this.options.rounds) {
@@ -84,8 +86,8 @@ export class Game {
         this._countRounds = 0;
         this.deltaTime.reset();
         this.ball.reset();
-        this._paddleLeft.reset();
-        this._paddleRight.reset();
+        this.paddles[TableSide.LEFT].reset();
+        this.paddles[TableSide.RIGHT].reset();
     }
     loadBall() {
         this.ball = new Ball(10);
@@ -94,10 +96,10 @@ export class Game {
         });
     }
     loadPaddles() {
-        this._paddleLeft.setBall(this.ball);
-        this._paddleRight.setBall(this.ball);
-        this._paddleLeft.setTable(this.table);
-        this._paddleRight.setTable(this.table);
+        this.paddles[TableSide.LEFT].setBall(this.ball);
+        this.paddles[TableSide.RIGHT].setBall(this.ball);
+        this.paddles[TableSide.LEFT].setTable(this.table);
+        this.paddles[TableSide.RIGHT].setTable(this.table);
         this.ball.setTable(this.table);
     }
     loop() {
@@ -106,35 +108,33 @@ export class Game {
     update() {
         this.deltaTime.next();
         this.updateInternal();
-        this._paddleLeft.update();
-        this._paddleRight.update();
-        this.ball.update(this._paddleLeft, this._paddleRight);
+        this.paddles[TableSide.LEFT].update();
+        this.paddles[TableSide.RIGHT].update();
+        this.ball.update(this.paddles[TableSide.LEFT], this.paddles[TableSide.RIGHT]);
+    }
+    randomSides() {
+        if (Math.random() >= .5) {
+            const paddleLeft = this.paddles[TableSide.LEFT];
+            const paddleRight = this.paddles[TableSide.RIGHT];
+            this.setPaddle(paddleLeft, TableSide.RIGHT);
+            this.setPaddle(paddleRight, TableSide.LEFT);
+        }
     }
     calcComplexity() {
-        const totalRallies = this._paddleLeft.accStatistics.totalRallySequence + this._paddleRight.accStatistics.totalRallySequence;
-        const longestRally = Math.max(this._paddleLeft.accStatistics.longestRallySequence, this._paddleRight.accStatistics.longestRallySequence);
-        const totalScores = this._paddleLeft.accStatistics.score + this._paddleRight.accStatistics.score;
-        const totalAnticipations = this._paddleLeft.accStatistics.anticipationTimes + this._paddleRight.accStatistics.anticipationTimes;
-        const rallyDensity = totalRallies / Math.max(1, totalScores + this._paddleLeft.accStatistics.ballsLost + this._paddleRight.accStatistics.ballsLost);
-        const scoreBalance = 1 - Math.abs(this._paddleLeft.accStatistics.score - this._paddleRight.accStatistics.score) / Math.max(1, totalScores);
+        const paddleLeft = this.paddles[TableSide.LEFT];
+        const paddleRight = this.paddles[TableSide.RIGHT];
+        const totalRallies = paddleLeft.accStatistics.totalRallySequence + paddleRight.accStatistics.totalRallySequence;
+        const longestRally = Math.max(paddleLeft.accStatistics.longestRallySequence, paddleRight.accStatistics.longestRallySequence);
+        const totalScores = paddleLeft.accStatistics.score + paddleRight.accStatistics.score;
+        const totalAnticipations = paddleLeft.accStatistics.anticipationTimes + paddleRight.accStatistics.anticipationTimes;
+        const rallyDensity = totalRallies / Math.max(1, totalScores + paddleLeft.accStatistics.ballsLost + paddleRight.accStatistics.ballsLost);
+        const scoreBalance = 1 - Math.abs(paddleLeft.accStatistics.score - paddleRight.accStatistics.score) / Math.max(1, totalScores);
         let complexity = 0;
         complexity += rallyDensity * .5;
         complexity += (longestRally / 10) * .2;
         complexity += scoreBalance * .2;
         complexity += (totalAnticipations / Math.max(1, totalRallies)) * .1;
-        return Math.max(1, complexity);
-    }
-    moveLeftUp() {
-        this._paddleLeft.moveUp();
-    }
-    moveLeftDown() {
-        this._paddleLeft.moveDown();
-    }
-    moveRightUp() {
-        this._paddleRight.moveUp();
-    }
-    moveRightDown() {
-        this._paddleRight.moveDown();
+        return complexity;
     }
     updateInternal() { }
     onScored(paddle, paddleLost) {
@@ -151,24 +151,24 @@ export class Game {
         return this.ball;
     }
     getPaddleLeft() {
-        return this._paddleLeft;
+        return this.paddles[TableSide.LEFT];
     }
     getPaddleRight() {
-        return this._paddleRight;
+        return this.paddles[TableSide.RIGHT];
     }
-    setPaddle(paddle) {
-        if (paddle.side == TableSide.LEFT) {
-            this._paddleLeft = paddle;
-        }
-        else {
-            this._paddleRight = paddle;
-        }
+    setPaddles(paddleA, paddleB) {
+        this.setPaddle(paddleA, TableSide.LEFT);
+        this.setPaddle(paddleB, TableSide.RIGHT);
+    }
+    setPaddle(paddle, side) {
+        this.paddles[side] = paddle;
+        paddle.setSide(side);
     }
     getPaddleBySide(side) {
-        return side == TableSide.LEFT ? this._paddleLeft : this._paddleRight;
+        return this.paddles[side];
     }
     getReversePaddleBySide(side) {
-        return side == TableSide.RIGHT ? this._paddleLeft : this._paddleRight;
+        return this.paddles[side == TableSide.LEFT ? TableSide.RIGHT : TableSide.LEFT];
     }
     on(event, handler) {
         return this.observer.on(event, handler);

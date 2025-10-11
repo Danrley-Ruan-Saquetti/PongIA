@@ -2,9 +2,9 @@ import { Vector2D } from '../utils/vector2d.js';
 import { RectangleEntity } from './rectangle-entity.js';
 import { TableSide } from "./types.js";
 export class Paddle extends RectangleEntity {
-    constructor(dimension, side) {
+    get side() { return this._side; }
+    constructor(dimension) {
         super(dimension, new Vector2D());
-        this.side = side;
         this.statistics = Paddle.getDefaultStatistics();
         this.accStatistics = Paddle.getDefaultStatistics();
         this.color = 'white';
@@ -31,7 +31,7 @@ export class Paddle extends RectangleEntity {
     }
     onStartGame() {
         this.position.y = this.table.position.y;
-        if (this.side == TableSide.LEFT) {
+        if (this._side == TableSide.LEFT) {
             this.position.x = this.table.positionInitialX + 20;
         }
         else {
@@ -75,7 +75,7 @@ export class Paddle extends RectangleEntity {
         ctx.textAlign = "center";
         ctx.font = "20px Arial";
         ctx.fillStyle = 'white';
-        ctx.fillText(`Sequence: ${this.statistics.rallySequence}`, this.table.position.x + 200 * (this.side == TableSide.LEFT ? 1 : -1), this.table.positionFinalY - 15);
+        ctx.fillText(`Sequence: ${this.statistics.rallySequence}`, this.table.position.x + 200 * (this._side == TableSide.LEFT ? 1 : -1), this.table.positionFinalY - 15);
     }
     moveUp() {
         this.position.y -= this.speed;
@@ -93,7 +93,7 @@ export class Paddle extends RectangleEntity {
     }
     onMoved() {
         this.isMoveForAttack = true;
-        if (!this.ball.isBallIntoSide(this.side)) {
+        if (!this.ball.isBallIntoSide(this._side)) {
             return;
         }
         if (this.positionInitialY <= this.ball.finalY && this.ball.finalY <= this.positionFinalY) {
@@ -148,7 +148,7 @@ export class Paddle extends RectangleEntity {
         const bounceAngle = normalizedIntersectY * maxBounceAngle;
         const speed = Math.sqrt(this.ball.MAX_SPEED.x * this.ball.MAX_SPEED.x + this.ball.speed.y * this.ball.speed.y);
         this.ball.speed.y = speed * Math.sin(bounceAngle) * this.ball.speedMultiplier;
-        if (this.side === TableSide.LEFT) {
+        if (this._side === TableSide.LEFT) {
             this.ball.speed.x = Math.abs(speed * Math.cos(bounceAngle)) * this.ball.speedMultiplier;
         }
         else {
@@ -159,7 +159,7 @@ export class Paddle extends RectangleEntity {
         const speed = Math.sqrt(this.ball.MAX_SPEED.x * this.ball.MAX_SPEED.x + this.ball.MAX_SPEED.y * this.ball.MAX_SPEED.y);
         const angle = (Math.random() * Math.PI / 2) - (Math.PI / 4);
         this.ball.speed.y = speed * Math.sin(angle) * this.ball.speedMultiplier;
-        if (this.side === TableSide.LEFT) {
+        if (this._side === TableSide.LEFT) {
             this.ball.speed.x = Math.abs(speed * Math.cos(angle)) * this.ball.speedMultiplier;
         }
         else {
@@ -199,6 +199,9 @@ export class Paddle extends RectangleEntity {
     }
     setTable(table) {
         this.table = table;
+    }
+    setSide(side) {
+        this._side = side;
     }
     setBall(ball) {
         this.ball = ball;

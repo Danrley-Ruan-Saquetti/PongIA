@@ -1,7 +1,7 @@
 import { Paddle } from "../game/paddle.js";
 export class PaddleNN extends Paddle {
-    constructor(dimension, side) {
-        super(dimension, side);
+    constructor(dimension) {
+        super(dimension);
         this.ACTION = {
             1: () => this.moveDown(),
             2: () => this.moveUp(),

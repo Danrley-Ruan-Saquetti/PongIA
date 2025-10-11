@@ -1,6 +1,5 @@
 import { MultiGameController } from "../game/multi-game-controller.js";
 import { PaddleBot } from "../game/paddle-bot.js";
-import { TableSide } from "../game/types.js";
 import { GLOBALS } from "../globals.js";
 import { Dimension } from "../utils/dimension.js";
 import { Observer } from "../utils/observer.js";
@@ -20,7 +19,8 @@ export class AITrainer extends MultiGameController {
         for (let i = 0; i < this.games.length; i++) {
             const game = this.games[i];
             const complexity = game.calcComplexity();
-            game.getPaddleNeuralNetwork().network.fitness = computeFitness(game.getPaddleNeuralNetwork().getAvgStatistics()) * complexity;
+            const fitness = computeFitness(game.getPaddleNeuralNetwork().getAvgStatistics());
+            game.getPaddleNeuralNetwork().network.fitness = fitness > 0 ? fitness * complexity : fitness * (1 + complexity);
         }
         const bestIndividual = this.population.getBestIndividual();
         const best = bestIndividual.clone();
@@ -34,12 +34,10 @@ export class AITrainer extends MultiGameController {
         this.observer.emit('next-generation', undefined);
     }
     createInstanceGame() {
-        const paddleNetworkSide = Math.random() < .5 ? TableSide.LEFT : TableSide.RIGHT;
-        const paddleNetwork = new PaddleNN(new Dimension(10, 100), paddleNetworkSide);
-        const paddleBot = new PaddleBot(new Dimension(10, 100), paddleNetworkSide == TableSide.LEFT ? TableSide.RIGHT : TableSide.LEFT);
+        const paddleNetwork = new PaddleNN(new Dimension(10, 100));
+        const paddleBot = new PaddleBot(new Dimension(10, 100));
         const game = new GameNN(this.table);
-        game.setPaddle(paddleNetwork);
-        game.setPaddle(paddleBot);
+        game.setPaddles(paddleNetwork, paddleBot);
         game.options = Object.assign({}, GLOBALS.evolution.gameOptions);
         game.on('game/start', () => {
             const [networkLeft] = this.neuralNetworks.splice(Math.floor(Math.random() * this.neuralNetworks.length), 1);
