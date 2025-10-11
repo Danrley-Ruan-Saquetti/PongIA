@@ -97,6 +97,14 @@ export class Paddle {
 
   update() { }
 
+  protected fixPosition() {
+    if (this.position.y < 0) {
+      this.position.y = 0
+    } else if (this.position.y + this.height > this.tableHeight) {
+      this.position.y = this.tableHeight - this.height
+    }
+  }
+
   draw(ctx: CanvasRenderingContext2D) {
     ctx.fillStyle = this.color
     ctx.fillRect(this.position.x, this.position.y, this.width, this.height)
@@ -115,23 +123,21 @@ export class Paddle {
   moveUp() {
     this.position.y -= this.speed
 
-    if (this.position.y < 0) {
-      this.position.y = 0
-    }
-    else {
+    if (this.position.y >= 0) {
       this.onMoved()
     }
+
+    this.fixPosition()
   }
 
   moveDown() {
     this.position.y += this.speed
 
-    if (this.position.y + this.height > this.tableHeight) {
-      this.position.y = this.tableHeight - this.height
-    }
-    else {
+    if (this.position.y + this.height <= this.tableHeight) {
       this.onMoved()
     }
+
+    this.fixPosition()
   }
 
   onMoved() {

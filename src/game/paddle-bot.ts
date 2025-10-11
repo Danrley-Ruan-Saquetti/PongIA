@@ -3,6 +3,8 @@ import { TableSide } from './types.js'
 
 export class PaddleBot extends Paddle {
 
+  targetType: 'BALL' | 'FINAL' = 'BALL'
+
   constructor(
     width: number,
     height: number,
@@ -18,12 +20,14 @@ export class PaddleBot extends Paddle {
   update() {
     super.update()
 
-    this.position.approach({ x: this.position.x, y: this.ball.finalY - (this.height / 2) }, this.speed)
+    let targetY = (this.tableHeight / 2)
 
-    if (this.position.y < 0) {
-      this.position.y = 0
-    } else if (this.position.y + this.height > this.tableHeight) {
-      this.position.y = this.tableHeight - this.height
+    if (this.ball.isBallIntoSide(this.side)) {
+      targetY = this.targetType == 'BALL' ? this.ball.position.y : this.ball.finalY
     }
+
+    this.position.approach({ x: this.position.x, y: targetY - (this.height / 2) }, this.speed)
+
+    this.fixPosition()
   }
 }
