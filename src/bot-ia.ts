@@ -17,7 +17,7 @@ function app() {
 
   const bestIndividual = getBestIndividualStorage() || NeuralNetwork.create(GLOBALS.network.structure, GLOBALS.network.activations)
 
-  const paddleNetworkSide = Math.random() < .5 ? TableSide.LEFT : TableSide.RIGHT;
+  const paddleNetworkSide = Math.random() < .5 ? TableSide.LEFT : TableSide.RIGHT
 
   const paddleNetwork = new PaddleNN(10, 100, canvasGame.width, canvasGame.height, paddleNetworkSide)
   const paddleBot = new PaddleBot(10, 100, canvasGame.width, canvasGame.height, paddleNetworkSide == TableSide.LEFT ? TableSide.RIGHT : TableSide.LEFT)

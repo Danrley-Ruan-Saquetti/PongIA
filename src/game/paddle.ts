@@ -15,27 +15,30 @@ export type PaddleStatistics = {
   anticipationTimes: number
 }
 
+export type PaddleTypeDirectionBall = 'RANDOM' | 'ANGLE'
+
 export class Paddle {
 
-  ball: Ball
+  protected ball: Ball
 
-  typeDirectionBall: 'RANDOM' | 'ANGLE' = 'ANGLE'
   position: Vector2D
-  speed = 6
-
-  color = 'white'
 
   statistics: PaddleStatistics = Paddle.getDefaultStatistics()
   accStatistics: PaddleStatistics = Paddle.getDefaultStatistics()
 
-  private isMoveForAttack = false
-  private isCounteredBall = false
-  private isAnticipated = false
-  private inSequence = false
+  color = 'white'
+  readonly speed = 6
+
+  protected typeDirectionBall: PaddleTypeDirectionBall = 'ANGLE'
+
+  protected isMoveForAttack = false
+  protected isCounteredBall = false
+  protected isAnticipated = false
+  protected inSequence = false
 
   constructor(
-    public width: number,
-    public height: number,
+    public readonly width: number,
+    public readonly height: number,
     protected tableWidth: number,
     protected tableHeight: number,
     public readonly side: TableSide,
@@ -45,7 +48,7 @@ export class Paddle {
     if (side == TableSide.LEFT) {
       this.position.x = 20
     } else {
-      this.position.x = this.tableWidth - 30
+      this.position.x = this.tableWidth - this.width - 30
     }
   }
 
@@ -269,5 +272,13 @@ export class Paddle {
       totalRallySequence: this.accStatistics.totalRallySequence / (this.accStatistics.roundVictories || 1),
       anticipationTimes: this.accStatistics.anticipationTimes / (this.accStatistics.roundVictories || 1),
     }
+  }
+
+  setBall(ball: Ball) {
+    this.ball = ball
+  }
+
+  setTypeDirectionBall(type: PaddleTypeDirectionBall) {
+    this.typeDirectionBall = type
   }
 }

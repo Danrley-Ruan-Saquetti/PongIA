@@ -55,7 +55,7 @@ export class Ball implements IObservable<BallEvents> {
     this.position.x = this.tableWidth / 2
     this.position.y = this.tableHeight / 2
 
-    this.speed.x = this.MAX_SPEED.x * (Math.random() > 0.5 ? 1 : -1)
+    this.speed.x = this.MAX_SPEED.x * -1
     this.speed.y = this.MAX_SPEED.y * (Math.random() > 0.5 ? 1 : -1)
 
     this.speedMultiplier = 1
@@ -63,7 +63,7 @@ export class Ball implements IObservable<BallEvents> {
     this.finalY = this.predictFinalY()
   }
 
-  update(p1: Paddle, p2: Paddle) {
+  update(paddleLeft: Paddle, paddleRight: Paddle) {
     this.position.x += this.speed.x
     this.position.y += this.speed.y
 
@@ -79,20 +79,10 @@ export class Ball implements IObservable<BallEvents> {
       }
     }
 
-    if (
-      this.position.x - this.radius < p1.position.x + p1.width &&
-      this.position.y > p1.position.y &&
-      this.position.y < p1.position.y + p1.height
-    ) {
-      this.collisionPaddle(p1, TableSide.LEFT)
-    }
-
-    if (
-      this.position.x + this.radius > p2.position.x &&
-      this.position.y > p2.position.y &&
-      this.position.y < p2.position.y + p2.height
-    ) {
-      this.collisionPaddle(p2, TableSide.RIGHT)
+    if (this.checkCollisionPaddle(paddleLeft)) {
+      this.handleCollision(paddleLeft)
+    } else if (this.checkCollisionPaddle(paddleRight)) {
+      this.handleCollision(paddleRight)
     }
 
     if (this.position.x < 0) {
@@ -139,11 +129,38 @@ export class Ball implements IObservable<BallEvents> {
     return this.speed.x < 0
   }
 
-  private collisionPaddle(paddle: Paddle, side: TableSide) {
+  protected checkCollisionPaddle(paddle: Paddle) {
+    const closestX = Math.max(paddle.position.x, Math.min(this.position.x, paddle.position.x + paddle.width))
+    const closestY = Math.max(paddle.position.y, Math.min(this.position.y, paddle.position.y + paddle.height))
+
+    const dx = this.position.x - closestX
+    const dy = this.position.y - closestY
+
+    return (dx * dx + dy * dy) < (this.radius * this.radius)
+  }
+
+  protected handleCollision(paddle: Paddle) {
     if (!this.isBallEnableToHit) {
       return
     }
 
+    const paddleCenterX = paddle.position.x + paddle.width / 2
+    const paddleCenterY = paddle.position.y + paddle.height / 2
+
+    const dx = this.position.x - paddleCenterX
+    const dy = this.position.y - paddleCenterY
+
+    const absDX = Math.abs(dx)
+    const absDY = Math.abs(dy)
+
+    if (absDX > absDY) {
+      this.collisionPaddle(paddle)
+    } else {
+      this.speed.y *= -1
+    }
+  }
+
+  private collisionPaddle(paddle: Paddle) {
     paddle.onBallHit()
 
     if (this.speedMultiplier < this.MAX_MULTIPLIER) {

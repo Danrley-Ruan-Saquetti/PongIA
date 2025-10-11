@@ -16,8 +16,8 @@ function app() {
   const game = new Game(
     canvasGame.width,
     canvasGame.height,
-    new PaddlePlayer(10, 100, canvasGame.width, canvasGame.height, TableSide.LEFT, 'w', 's'),
-    new PaddleBot(10, 100, canvasGame.width, canvasGame.height, TableSide.RIGHT)
+    new PaddlePlayer(100, 100, canvasGame.width, canvasGame.height, TableSide.LEFT, 'w', 's'),
+    new PaddleBot(100, 100, canvasGame.width, canvasGame.height, TableSide.RIGHT)
   )
   const gameView = new GameView(canvasGame)
 

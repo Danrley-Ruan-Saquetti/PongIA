@@ -1,4 +1,4 @@
-import { GameOptions } from "./game/types";
+import { GameOptions } from "./game/types"
 
 const GAME_OPTIONS_DEFAULT: GameOptions = {
   limitTime: 1000 * 20,

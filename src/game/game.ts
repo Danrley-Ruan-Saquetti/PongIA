@@ -14,25 +14,30 @@ type GameEvents = {
 }
 
 export class Game implements IObservable<GameEvents> {
-  public id = generateID()
 
-  deltaTime = new DeltaTime()
+  readonly id = generateID()
+
+  protected deltaTime = new DeltaTime()
   protected observer: Observer<GameEvents>
 
   protected ball: Ball
 
-  public paddleLeft: Paddle
-  public paddleRight: Paddle
+  protected _paddleLeft: Paddle
+  protected _paddleRight: Paddle
 
   protected loopId: number
   protected stopId: number
 
+  private _isRunning = false
+  private _countRounds = 0
+
   options: GameOptions = { ...GLOBALS.game.options }
 
-  countRounds = 0
-  isRunning = false
-
+  get isRunning() { return this._isRunning }
+  get countRounds() { return this._countRounds }
   get FPS() { return 1000 / (60 * this.options.speedMultiplier) }
+  get paddleLeft() { return this._paddleLeft }
+  get paddleRight() { return this._paddleRight }
 
   constructor(
     protected width: number,
@@ -40,8 +45,8 @@ export class Game implements IObservable<GameEvents> {
     paddleA: Paddle,
     paddleB: Paddle
   ) {
-    this.paddleLeft = paddleA.side == TableSide.LEFT ? paddleA : paddleB
-    this.paddleRight = paddleB.side == TableSide.RIGHT ? paddleB : paddleA
+    this._paddleLeft = paddleA.side == TableSide.LEFT ? paddleA : paddleB
+    this._paddleRight = paddleB.side == TableSide.RIGHT ? paddleB : paddleA
 
     this.observer = new Observer<GameEvents>()
 
@@ -61,8 +66,8 @@ export class Game implements IObservable<GameEvents> {
     this.resetGame()
 
     this.ball.onStartGame()
-    this.paddleLeft.onStartGame()
-    this.paddleRight.onStartGame()
+    this._paddleLeft.onStartGame()
+    this._paddleRight.onStartGame()
 
     this.observer.emit('game/start', null)
 
@@ -70,7 +75,7 @@ export class Game implements IObservable<GameEvents> {
   }
 
   protected startRound() {
-    if (this.isRunning) {
+    if (this._isRunning) {
       return
     }
 
@@ -78,12 +83,12 @@ export class Game implements IObservable<GameEvents> {
       this.stopRound()
     }, this.options.limitTime / this.options.speedMultiplier)
 
-    this.isRunning = true
-    this.countRounds++
+    this._isRunning = true
+    this._countRounds++
 
     this.ball.onStartRound()
-    this.paddleLeft.onStartRound()
-    this.paddleRight.onStartRound()
+    this._paddleLeft.onStartRound()
+    this._paddleRight.onStartRound()
 
     this.deltaTime.setMultiplier(this.options.speedMultiplier)
     this.deltaTime.reset()
@@ -99,12 +104,12 @@ export class Game implements IObservable<GameEvents> {
     clearTimeout(this.stopId)
     clearInterval(this.loopId)
 
-    this.isRunning = false
+    this._isRunning = false
 
-    if (this.paddleLeft.statistics.score > this.paddleRight.statistics.score) {
-      this.paddleLeft.onVictory()
-    } else if (this.paddleRight.statistics.score > this.paddleLeft.statistics.score) {
-      this.paddleRight.onVictory()
+    if (this._paddleLeft.statistics.score > this._paddleRight.statistics.score) {
+      this._paddleLeft.onVictory()
+    } else if (this._paddleRight.statistics.score > this._paddleLeft.statistics.score) {
+      this._paddleRight.onVictory()
     }
 
     this.observer.emit('game/round/stop', null)
@@ -121,14 +126,14 @@ export class Game implements IObservable<GameEvents> {
     clearTimeout(this.stopId)
     clearInterval(this.loopId)
 
-    this.isRunning = false
-    this.countRounds = 0
+    this._isRunning = false
+    this._countRounds = 0
 
     this.deltaTime.reset()
 
     this.ball.reset()
-    this.paddleLeft.reset()
-    this.paddleRight.reset()
+    this._paddleLeft.reset()
+    this._paddleRight.reset()
   }
 
   protected loadBall() {
@@ -143,8 +148,8 @@ export class Game implements IObservable<GameEvents> {
   }
 
   protected loadPaddles() {
-    this.paddleLeft.ball = this.ball
-    this.paddleRight.ball = this.ball
+    this._paddleLeft.setBall(this.ball)
+    this._paddleRight.setBall(this.ball)
   }
 
   private loop() {
@@ -154,22 +159,22 @@ export class Game implements IObservable<GameEvents> {
   update() {
     this.deltaTime.next()
     this.updateInternal()
-    this.paddleLeft.update()
-    this.paddleRight.update()
-    this.ball.update(this.paddleLeft, this.paddleRight)
+    this._paddleLeft.update()
+    this._paddleRight.update()
+    this.ball.update(this._paddleLeft, this._paddleRight)
   }
 
   calcComplexity() {
-    const totalRallies = this.paddleLeft.accStatistics.totalRallySequence + this.paddleRight.accStatistics.totalRallySequence
+    const totalRallies = this._paddleLeft.accStatistics.totalRallySequence + this._paddleRight.accStatistics.totalRallySequence
 
-    const longestRally = Math.max(this.paddleLeft.accStatistics.longestRallySequence, this.paddleRight.accStatistics.longestRallySequence)
+    const longestRally = Math.max(this._paddleLeft.accStatistics.longestRallySequence, this._paddleRight.accStatistics.longestRallySequence)
 
-    const totalScores = this.paddleLeft.accStatistics.score + this.paddleRight.accStatistics.score
-    const totalAnticipations = this.paddleLeft.accStatistics.anticipationTimes + this.paddleRight.accStatistics.anticipationTimes
+    const totalScores = this._paddleLeft.accStatistics.score + this._paddleRight.accStatistics.score
+    const totalAnticipations = this._paddleLeft.accStatistics.anticipationTimes + this._paddleRight.accStatistics.anticipationTimes
 
-    const rallyDensity = totalRallies / Math.max(1, totalScores + this.paddleLeft.accStatistics.ballsLost + this.paddleRight.accStatistics.ballsLost)
+    const rallyDensity = totalRallies / Math.max(1, totalScores + this._paddleLeft.accStatistics.ballsLost + this._paddleRight.accStatistics.ballsLost)
 
-    const scoreBalance = 1 - Math.abs(this.paddleLeft.accStatistics.score - this.paddleRight.accStatistics.score) / Math.max(1, totalScores)
+    const scoreBalance = 1 - Math.abs(this._paddleLeft.accStatistics.score - this._paddleRight.accStatistics.score) / Math.max(1, totalScores)
 
     let complexity = 0
 
@@ -182,19 +187,19 @@ export class Game implements IObservable<GameEvents> {
   }
 
   moveLeftUp() {
-    this.paddleLeft.moveUp()
+    this._paddleLeft.moveUp()
   }
 
   moveLeftDown() {
-    this.paddleLeft.moveDown()
+    this._paddleLeft.moveDown()
   }
 
   moveRightUp() {
-    this.paddleRight.moveUp()
+    this._paddleRight.moveUp()
   }
 
   moveRightDown() {
-    this.paddleRight.moveDown()
+    this._paddleRight.moveDown()
   }
 
   protected updateInternal() { }
@@ -209,19 +214,19 @@ export class Game implements IObservable<GameEvents> {
   }
 
   getPaddleLeft() {
-    return this.paddleLeft
+    return this._paddleLeft
   }
 
   getPaddleRight() {
-    return this.paddleRight
+    return this._paddleRight
   }
 
   getPaddleBySide(side: TableSide) {
-    return side == TableSide.LEFT ? this.paddleLeft : this.paddleRight
+    return side == TableSide.LEFT ? this._paddleLeft : this._paddleRight
   }
 
   getReversePaddleBySide(side: TableSide) {
-    return side == TableSide.RIGHT ? this.paddleLeft : this.paddleRight
+    return side == TableSide.RIGHT ? this._paddleLeft : this._paddleRight
   }
 
   on<EventName extends keyof GameEvents>(event: EventName, handler: ListenerHandler<GameEvents[EventName]>) {
@@ -243,8 +248,8 @@ export class Game implements IObservable<GameEvents> {
   getState() {
     return {
       id: this.id,
-      left: this.paddleLeft,
-      right: this.paddleRight,
+      left: this._paddleLeft,
+      right: this._paddleRight,
       ball: this.ball,
       width: this.width,
       height: this.height,

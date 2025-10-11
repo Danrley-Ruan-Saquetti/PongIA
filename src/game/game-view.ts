@@ -1,6 +1,7 @@
 import { Game } from "./game.js"
 
 export class GameView {
+
   private ctx: CanvasRenderingContext2D
 
   protected game: Game

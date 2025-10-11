@@ -1,9 +1,11 @@
 import { Paddle } from './paddle.js'
 import { TableSide } from './types.js'
 
+export type PaddleBotTargetType = 'BALL' | 'FINAL'
+
 export class PaddleBot extends Paddle {
 
-  targetType: 'BALL' | 'FINAL' = 'BALL'
+  private targetType: PaddleBotTargetType = 'BALL'
 
   constructor(
     width: number,
@@ -29,5 +31,9 @@ export class PaddleBot extends Paddle {
     this.position.approach({ x: this.position.x, y: targetY - (this.height / 2) }, this.speed)
 
     this.fixPosition()
+  }
+
+  setTargetType(type: PaddleBotTargetType) {
+    this.targetType = type
   }
 }

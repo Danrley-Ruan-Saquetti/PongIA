@@ -59,7 +59,7 @@ export class AITrainer extends MultiGameController<GameNN> implements IObservabl
   }
 
   protected createInstanceGame() {
-    const paddleNetworkSide = Math.random() < .5 ? TableSide.LEFT : TableSide.RIGHT;
+    const paddleNetworkSide = Math.random() < .5 ? TableSide.LEFT : TableSide.RIGHT
 
     const paddleNetwork = new PaddleNN(10, 100, this.tableWith, this.tableHeight, paddleNetworkSide)
     const paddleBot = new PaddleBot(10, 100, this.tableWith, this.tableHeight, paddleNetworkSide == TableSide.LEFT ? TableSide.RIGHT : TableSide.LEFT)
