@@ -1,5 +1,4 @@
 import { Paddle } from '../game/paddle.js'
-import { TableSide } from '../game/types.js'
 import { Dimension } from '../utils/dimension.js'
 
 export class PaddlePlayer extends Paddle {
@@ -11,11 +10,10 @@ export class PaddlePlayer extends Paddle {
 
   constructor(
     dimension: Dimension,
-    side: TableSide,
     private keyUp: string,
     private keyDown: string
   ) {
-    super(dimension, side)
+    super(dimension)
   }
 
   reset() {

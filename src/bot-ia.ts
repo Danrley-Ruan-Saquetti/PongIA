@@ -2,7 +2,6 @@ import { GameView } from "./game/game-view.js"
 import { Game } from "./game/game.js"
 import { PaddleBot } from "./game/paddle-bot.js"
 import { Table } from "./game/table.js"
-import { TableSide } from "./game/types.js"
 import { GLOBALS } from "./globals.js"
 import { NeuralNetwork } from "./nn/core/neural-network.js"
 import { PaddleNN } from "./nn/paddle-nn.js"
@@ -21,15 +20,12 @@ function app() {
 
   const bestIndividual = getBestIndividualStorage() || NeuralNetwork.create(GLOBALS.network.structure, GLOBALS.network.activations)
 
-  const paddleNetworkSide = Math.random() < .5 ? TableSide.LEFT : TableSide.RIGHT
-
-  const paddleNetwork = new PaddleNN(new Dimension(10, 100), paddleNetworkSide)
-  const paddleBot = new PaddleBot(new Dimension(10, 100), paddleNetworkSide == TableSide.LEFT ? TableSide.RIGHT : TableSide.LEFT)
+  const paddleNetwork = new PaddleNN(new Dimension(10, 100))
+  const paddleBot = new PaddleBot(new Dimension(10, 100))
 
   const game = new Game(table)
 
-  game.setPaddle(paddleNetwork)
-  game.setPaddle(paddleBot)
+  game.setPaddles(paddleNetwork, paddleBot)
 
   paddleNetwork.network = bestIndividual
 

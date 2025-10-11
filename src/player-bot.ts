@@ -2,7 +2,6 @@ import { GameView } from "./game/game-view.js"
 import { Game } from "./game/game.js"
 import { PaddleBot } from './game/paddle-bot.js'
 import { Table } from "./game/table.js"
-import { TableSide } from './game/types.js'
 import { GLOBALS } from "./globals.js"
 import { PaddlePlayer } from './player/paddle-player.js'
 import { Dimension } from "./utils/dimension.js"
@@ -17,13 +16,12 @@ function app() {
 
   const table = new Table(new Dimension(canvasGame.width, canvasGame.height))
 
-  const paddlePlayer = new PaddlePlayer(new Dimension(10, 100), TableSide.LEFT, 'w', 's')
-  const paddleBot = new PaddleBot(new Dimension(10, 100), TableSide.RIGHT)
+  const paddlePlayer = new PaddlePlayer(new Dimension(10, 100), 'w', 's')
+  const paddleBot = new PaddleBot(new Dimension(10, 100))
 
   const game = new Game(table)
 
-  game.setPaddle(paddlePlayer)
-  game.setPaddle(paddleBot)
+  game.setPaddles(paddlePlayer, paddleBot)
 
   const gameView = new GameView(canvasGame)
 

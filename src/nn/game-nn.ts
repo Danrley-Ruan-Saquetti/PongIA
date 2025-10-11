@@ -1,4 +1,5 @@
 import { Game } from "../game/game.js"
+import { TableSide } from "../game/types.js"
 import { NeuralNetwork } from './core/neural-network.js'
 import { PaddleNN } from './paddle-nn.js'
 
@@ -7,7 +8,7 @@ export class GameNN extends Game {
   protected network: NeuralNetwork
 
   getPaddleNeuralNetwork() {
-    return this._paddleLeft instanceof PaddleNN ? this._paddleLeft : this._paddleRight as PaddleNN
+    return this.paddles[TableSide.LEFT] instanceof PaddleNN ? this.paddles[TableSide.LEFT] : this.paddles[TableSide.RIGHT] as PaddleNN
   }
 
   setNeuralNetwork(network: NeuralNetwork) {
@@ -17,6 +18,6 @@ export class GameNN extends Game {
   }
 
   getBestSequence() {
-    return Math.max(this._paddleLeft.accStatistics.totalRallySequence || 0, this._paddleRight.accStatistics.totalRallySequence || 0)
+    return Math.max(this.paddles[TableSide.LEFT].accStatistics.totalRallySequence || 0, this.paddles[TableSide.RIGHT].accStatistics.totalRallySequence || 0)
   }
 }

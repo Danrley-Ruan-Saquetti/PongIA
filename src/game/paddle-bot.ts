@@ -1,6 +1,5 @@
 import { Dimension } from '../utils/dimension.js'
 import { Paddle } from './paddle.js'
-import { TableSide } from './types.js'
 
 export type PaddleBotTargetType = 'BALL' | 'FINAL'
 
@@ -8,11 +7,8 @@ export class PaddleBot extends Paddle {
 
   private targetType: PaddleBotTargetType = 'BALL'
 
-  constructor(
-    dimension: Dimension,
-    side: TableSide,
-  ) {
-    super(dimension, side)
+  constructor(dimension: Dimension) {
+    super(dimension)
 
     this.typeDirectionBall = 'RANDOM'
   }

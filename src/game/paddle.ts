@@ -24,6 +24,7 @@ export class Paddle extends RectangleEntity {
 
   protected table: Table
   protected ball: Ball
+  protected _side: TableSide
 
   statistics: PaddleStatistics = Paddle.getDefaultStatistics()
   accStatistics: PaddleStatistics = Paddle.getDefaultStatistics()
@@ -38,9 +39,10 @@ export class Paddle extends RectangleEntity {
   protected isAnticipated = false
   protected inSequence = false
 
+  get side() { return this._side }
+
   constructor(
-    dimension: Dimension,
-    public readonly side: TableSide,
+    dimension: Dimension
   ) {
     super(dimension, new Vector2D())
   }
@@ -63,7 +65,7 @@ export class Paddle extends RectangleEntity {
   onStartGame() {
     this.position.y = this.table.position.y
 
-    if (this.side == TableSide.LEFT) {
+    if (this._side == TableSide.LEFT) {
       this.position.x = this.table.positionInitialX + 20
     } else {
       this.position.x = this.table.positionFinalX - 20
@@ -124,7 +126,7 @@ export class Paddle extends RectangleEntity {
 
     ctx.fillText(
       `Sequence: ${this.statistics.rallySequence}`,
-      this.table.position.x + 200 * (this.side == TableSide.LEFT ? 1 : -1),
+      this.table.position.x + 200 * (this._side == TableSide.LEFT ? 1 : -1),
       this.table.positionFinalY - 15
     )
   }
@@ -152,7 +154,7 @@ export class Paddle extends RectangleEntity {
   onMoved() {
     this.isMoveForAttack = true
 
-    if (!this.ball.isBallIntoSide(this.side)) {
+    if (!this.ball.isBallIntoSide(this._side)) {
       return
     }
 
@@ -222,7 +224,7 @@ export class Paddle extends RectangleEntity {
 
     this.ball.speed.y = speed * Math.sin(bounceAngle) * this.ball.speedMultiplier
 
-    if (this.side === TableSide.LEFT) {
+    if (this._side === TableSide.LEFT) {
       this.ball.speed.x = Math.abs(speed * Math.cos(bounceAngle)) * this.ball.speedMultiplier
     } else {
       this.ball.speed.x = -Math.abs(speed * Math.cos(bounceAngle)) * this.ball.speedMultiplier
@@ -236,7 +238,7 @@ export class Paddle extends RectangleEntity {
 
     this.ball.speed.y = speed * Math.sin(angle) * this.ball.speedMultiplier
 
-    if (this.side === TableSide.LEFT) {
+    if (this._side === TableSide.LEFT) {
       this.ball.speed.x = Math.abs(speed * Math.cos(angle)) * this.ball.speedMultiplier
     } else {
       this.ball.speed.x = -Math.abs(speed * Math.cos(angle)) * this.ball.speedMultiplier
@@ -282,6 +284,10 @@ export class Paddle extends RectangleEntity {
 
   setTable(table: Table) {
     this.table = table
+  }
+
+  setSide(side: TableSide) {
+    this._side = side
   }
 
   setBall(ball: Ball) {
