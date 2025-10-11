@@ -1,8 +1,9 @@
-import { Dimension } from "../utils/dimension.js"
-import { Ball } from "./ball.js"
-import { GameEntity } from "./game-entity.js"
-import { Table } from './table'
-import { TableSide } from "./types.js"
+import { Dimension } from "../utils/dimension.js";
+import { Vector2D } from '../utils/vector2d.js';
+import { Ball } from "./ball.js";
+import { RectangleEntity } from './rectangle-entity.js';
+import { Table } from './table.js';
+import { TableSide } from "./types.js";
 
 export type PaddleStatistics = {
   countRounds: number
@@ -19,7 +20,7 @@ export type PaddleStatistics = {
 
 export type PaddleTypeDirectionBall = 'RANDOM' | 'ANGLE'
 
-export class Paddle extends GameEntity {
+export class Paddle extends RectangleEntity {
 
   protected table: Table
   protected ball: Ball
@@ -38,10 +39,10 @@ export class Paddle extends GameEntity {
   protected inSequence = false
 
   constructor(
-    public readonly dimension: Dimension,
+    dimension: Dimension,
     public readonly side: TableSide,
   ) {
-    super()
+    super(dimension, new Vector2D())
   }
 
   private static getDefaultStatistics(): PaddleStatistics {
@@ -60,10 +61,12 @@ export class Paddle extends GameEntity {
   }
 
   onStartGame() {
+    this.position.y = this.table.position.y
+
     if (this.side == TableSide.LEFT) {
-      this.position.x = 20
+      this.position.x = this.table.positionInitialX + 20
     } else {
-      this.position.x = this.table.dimension.width - this.dimension.width - 30
+      this.position.x = this.table.positionFinalX - 20
     }
 
     this.accStatistics = Paddle.getDefaultStatistics()
@@ -88,7 +91,7 @@ export class Paddle extends GameEntity {
   }
 
   reset() {
-    this.position.y = (this.table.dimension.height / 2) - (this.dimension.height / 2)
+    this.position.y = this.table.position.y
 
     this.isMoveForAttack = false
     this.isCounteredBall = false
@@ -99,16 +102,21 @@ export class Paddle extends GameEntity {
   update() { }
 
   protected fixPosition() {
-    if (this.position.y < 0) {
-      this.position.y = 0
-    } else if (this.position.y + this.dimension.height > this.table.dimension.height) {
-      this.position.y = this.table.dimension.height - this.dimension.height
+    if (this.positionInitialY < this.table.positionInitialY) {
+      this.position.y = this.table.positionInitialY + this.dimension.height / 2
+    } else if (this.positionFinalY > this.table.positionFinalY) {
+      this.position.y = this.table.positionFinalY - this.dimension.height / 2
     }
   }
 
   draw(ctx: CanvasRenderingContext2D) {
     ctx.fillStyle = this.color
-    ctx.fillRect(this.position.x, this.position.y, this.dimension.width, this.dimension.height)
+    ctx.fillRect(
+      this.positionInitialX,
+      this.positionInitialY,
+      this.dimension.width,
+      this.dimension.height
+    )
 
     ctx.textAlign = "center"
     ctx.font = "20px Arial"
@@ -116,15 +124,15 @@ export class Paddle extends GameEntity {
 
     ctx.fillText(
       `Sequence: ${this.statistics.rallySequence}`,
-      this.position.x + (this.side == TableSide.LEFT ? 150 : -150),
-      this.table.dimension.height - 15
+      this.table.position.x + 200 * (this.side == TableSide.LEFT ? 1 : -1),
+      this.table.positionFinalY - 15
     )
   }
 
   moveUp() {
     this.position.y -= this.speed
 
-    if (this.position.y >= 0) {
+    if (this.positionInitialY >= this.table.positionFinalY) {
       this.onMoved()
     }
 
@@ -134,7 +142,7 @@ export class Paddle extends GameEntity {
   moveDown() {
     this.position.y += this.speed
 
-    if (this.position.y + this.dimension.height <= this.table.dimension.height) {
+    if (this.positionFinalY <= this.table.position.x) {
       this.onMoved()
     }
 
@@ -148,7 +156,7 @@ export class Paddle extends GameEntity {
       return
     }
 
-    if (this.position.y <= this.ball.finalY && this.ball.finalY <= this.position.y + this.dimension.height) {
+    if (this.positionInitialY <= this.ball.finalY && this.ball.finalY <= this.positionFinalY) {
       if (!this.ball.isCrossedTable()) {
         this.isAnticipated = true
       }
@@ -205,7 +213,7 @@ export class Paddle extends GameEntity {
   }
 
   protected calculateDirectionSpeedBallFromAngle() {
-    const relativeIntersectY = this.ball.position.y - (this.position.y + this.dimension.height / 2)
+    const relativeIntersectY = this.ball.position.y - this.position.y
     const normalizedIntersectY = relativeIntersectY / (this.dimension.height / 2)
     const maxBounceAngle = Math.PI / 3
     const bounceAngle = normalizedIntersectY * maxBounceAngle
