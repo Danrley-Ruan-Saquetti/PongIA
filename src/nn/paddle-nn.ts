@@ -1,5 +1,4 @@
 import { Paddle } from "../game/paddle.js"
-import { Dimension } from "../utils/dimension.js"
 import { NeuralNetwork } from "./core/neural-network.js"
 
 export class PaddleNN extends Paddle {
@@ -11,8 +10,8 @@ export class PaddleNN extends Paddle {
     2: () => this.moveUp(),
   }
 
-  constructor(dimension: Dimension) {
-    super(dimension)
+  constructor() {
+    super()
 
     this.color = 'yellow'
   }

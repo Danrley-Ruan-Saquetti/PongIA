@@ -27,7 +27,7 @@ export class Ball extends GameEntity implements IObservable<BallEvents> {
 
   private isBallEnableToHit = false
 
-  renderFinalTarget = true
+  renderFinalTarget = false
 
   get speedMultiplier() { return this._speedMultiplier }
   get finalY() { return this._finalY }
@@ -63,7 +63,7 @@ export class Ball extends GameEntity implements IObservable<BallEvents> {
     this.position.x = this.table.position.x
     this.position.y = this.table.position.y
 
-    this.speed.x = this.MAX_SPEED.x * -1
+    this.speed.x = this.MAX_SPEED.x * (Math.random() > 0.5 ? 1 : -1)
     this.speed.y = this.MAX_SPEED.y * (Math.random() > 0.5 ? 1 : -1)
 
     this._speedMultiplier = 1

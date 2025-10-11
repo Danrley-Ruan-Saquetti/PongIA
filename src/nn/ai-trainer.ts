@@ -2,7 +2,6 @@ import { MultiGameController } from "../game/multi-game-controller.js"
 import { PaddleBot } from "../game/paddle-bot.js"
 import { Table } from "../game/table.js"
 import { GLOBALS } from "../globals.js"
-import { Dimension } from "../utils/dimension.js"
 import { IObservable, ListenerHandler, Observer } from "../utils/observer.js"
 import { getGenerationStorage, saveGeneration } from "../utils/population-io.js"
 import { NeuralNetwork } from "./core/neural-network.js"
@@ -60,12 +59,12 @@ export class AITrainer extends MultiGameController<GameNN> implements IObservabl
   }
 
   protected createInstanceGame() {
-    const paddleNetwork = new PaddleNN(new Dimension(10, 100))
-    const paddleBot = new PaddleBot(new Dimension(10, 100))
-
     const game = new GameNN(this.table)
 
-    game.setPaddles(paddleNetwork, paddleBot)
+    game.setPaddles(
+      new PaddleNN(),
+      new PaddleBot()
+    )
 
     game.options = { ...GLOBALS.evolution.gameOptions }
 

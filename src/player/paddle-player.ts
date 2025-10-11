@@ -1,5 +1,4 @@
 import { Paddle } from '../game/paddle.js'
-import { Dimension } from '../utils/dimension.js'
 
 export class PaddlePlayer extends Paddle {
 
@@ -9,11 +8,12 @@ export class PaddlePlayer extends Paddle {
   onkeyUp = (e: KeyboardEvent) => this.keysPressed.delete(e.key)
 
   constructor(
-    dimension: Dimension,
     private keyUp: string,
     private keyDown: string
   ) {
-    super(dimension)
+    super()
+
+    this.color = '#2e5fffff'
   }
 
   reset() {

@@ -1,5 +1,3 @@
-import { Dimension } from "../utils/dimension.js";
-import { Vector2D } from '../utils/vector2d.js';
 import { Ball } from "./ball.js";
 import { RectangleEntity } from './rectangle-entity.js';
 import { Table } from './table.js';
@@ -41,10 +39,11 @@ export class Paddle extends RectangleEntity {
 
   get side() { return this._side }
 
-  constructor(
-    dimension: Dimension
-  ) {
-    super(dimension, new Vector2D())
+  constructor() {
+    super()
+
+    this.dimension.width = 10
+    this.dimension.height = 100
   }
 
   private static getDefaultStatistics(): PaddleStatistics {

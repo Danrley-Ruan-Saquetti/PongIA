@@ -21,7 +21,9 @@ function app() {
   resizeCanvas(canvasRank, { width: 375, height: 650 })
   resizeCanvas(canvasGame, GLOBALS.game.table)
 
-  const table = new Table(new Dimension(canvasGame.width, canvasGame.height))
+  const table = new Table()
+
+  table.dimension = new Dimension(canvasGame.width, canvasGame.height)
 
   const aiTrainer = new AITrainer(table)
 

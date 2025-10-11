@@ -14,14 +14,16 @@ function app() {
 
   resizeCanvas(canvasGame, GLOBALS.game.table)
 
-  const table = new Table(new Dimension(canvasGame.width, canvasGame.height))
+  const table = new Table()
 
-  const paddlePlayer = new PaddlePlayer(new Dimension(10, 100), 'w', 's')
-  const paddleBot = new PaddleBot(new Dimension(10, 100))
+  table.dimension = new Dimension(canvasGame.width, canvasGame.height)
 
   const game = new Game(table)
 
-  game.setPaddles(paddlePlayer, paddleBot)
+  game.setPaddles(
+    new PaddlePlayer('w', 's'),
+    new PaddleBot()
+  )
 
   const gameView = new GameView(canvasGame)
 
