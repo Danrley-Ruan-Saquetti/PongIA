@@ -1,8 +1,10 @@
 import { GameView } from "./game/game-view.js";
+import { Table } from "./game/table.js";
 import { GLOBALS } from "./globals.js";
 import { AITrainer } from './nn/ai-trainer.js';
 import { Population } from "./nn/core/population.js";
 import { GenerationView } from './nn/generation-view.js';
+import { Dimension } from "./utils/dimension.js";
 import { clearStorage, getGenerationStorage, saveGeneration } from "./utils/population-io.js";
 import { resizeCanvas } from './utils/utils.js';
 window.onload = app;
@@ -15,7 +17,8 @@ function app() {
     const canvasGame = document.getElementById("gameCanvas");
     resizeCanvas(canvasRank, { width: 375, height: 650 });
     resizeCanvas(canvasGame, GLOBALS.game.table);
-    const aiTrainer = new AITrainer(canvasGame.width, canvasGame.height);
+    const table = new Table(new Dimension(canvasGame.width, canvasGame.height));
+    const aiTrainer = new AITrainer(table);
     const generationView = new GenerationView(canvasRank, aiTrainer);
     const gameView = new GameView(canvasGame);
     aiTrainer.on('next-generation', () => {

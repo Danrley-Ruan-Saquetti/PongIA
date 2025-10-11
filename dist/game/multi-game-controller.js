@@ -1,11 +1,9 @@
 import { Game } from '../game/game.js';
 import { ObjectPool } from '../utils/object-pool.js';
-import { Paddle } from './paddle.js';
-import { TableSide } from './types.js';
+import { Table } from './table.js';
 export class MultiGameController {
-    constructor(tableWith, tableHeight, gameLength) {
-        this.tableWith = tableWith;
-        this.tableHeight = tableHeight;
+    constructor(table, gameLength) {
+        this.table = table;
         this.games = [];
         this.countGamesRunning = 0;
         this.gamePool = new ObjectPool(gameLength, () => this.createGame(), game => this.resetGame(game));
@@ -33,7 +31,7 @@ export class MultiGameController {
     onAllGamesFinish() { }
     resetGame(game) { }
     createInstanceGame() {
-        return new Game(0, 0, new Paddle(0, 0, 0, 0, TableSide.LEFT), new Paddle(0, 0, 0, 0, TableSide.RIGHT));
+        return new Game(new Table());
     }
     getCountGamesRunning() {
         return this.countGamesRunning;

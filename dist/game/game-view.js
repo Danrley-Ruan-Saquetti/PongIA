@@ -17,12 +17,12 @@ export class GameView {
     updateInternal() { }
     draw() {
         const state = this.game.getState();
-        this.ctx.clearRect(0, 0, state.width, state.height);
+        this.ctx.clearRect(0, 0, state.table.dimension.width, state.table.dimension.height);
         this.ctx.strokeStyle = "white";
         this.ctx.beginPath();
         this.ctx.setLineDash([10, 10]);
-        this.ctx.moveTo(state.width / 2, 0);
-        this.ctx.lineTo(state.width / 2, state.height);
+        this.ctx.moveTo(state.table.dimension.width / 2, 0);
+        this.ctx.lineTo(state.table.dimension.width / 2, state.table.dimension.height);
         this.ctx.stroke();
         this.ctx.setLineDash([]);
         state.left.draw(this.ctx);
@@ -37,21 +37,21 @@ export class GameView {
         this.ctx.fillText(`${state.fps}FPS`, 200, 25);
         this.ctx.fillStyle = '#FFF';
         this.ctx.font = "30px Arial";
-        this.ctx.fillText(`${state.time.toFixed(1)}s`, (state.width / 2) + 100, 30);
-        this.ctx.fillText(`${state.left.statistics.score} - ${state.right.statistics.score}`, state.width / 2, 30);
+        this.ctx.fillText(`${state.time.toFixed(1)}s`, (state.table.dimension.width / 2) + 100, 30);
+        this.ctx.fillText(`${state.left.statistics.score} - ${state.right.statistics.score}`, state.table.dimension.width / 2, 30);
         this.ctx.font = "20px Arial";
-        this.ctx.fillText(`${state.left.accStatistics.roundVictories} - ${state.right.accStatistics.roundVictories}`, state.width / 2, 60);
+        this.ctx.fillText(`${state.left.accStatistics.roundVictories} - ${state.right.accStatistics.roundVictories}`, state.table.dimension.width / 2, 60);
         this.ctx.font = "30px Arial";
         if (!this.game.isRunning) {
             if (this.game.paddleLeft.accStatistics.roundVictories > this.game.paddleRight.accStatistics.roundVictories) {
-                this.ctx.fillText(`Winner`, state.width / 4, state.height / 2);
+                this.ctx.fillText(`Winner`, state.table.dimension.width / 4, state.table.dimension.height / 2);
             }
             else if (this.game.paddleLeft.accStatistics.roundVictories < this.game.paddleRight.accStatistics.roundVictories) {
-                this.ctx.fillText(`Winner`, (state.width / 4) * 3, state.height / 2);
+                this.ctx.fillText(`Winner`, (state.table.dimension.width / 4) * 3, state.table.dimension.height / 2);
             }
             else {
-                this.ctx.fillText(`Draw`, state.width / 4, state.height / 2);
-                this.ctx.fillText(`Draw`, (state.width / 4) * 3, state.height / 2);
+                this.ctx.fillText(`Draw`, state.table.dimension.width / 4, state.table.dimension.height / 2);
+                this.ctx.fillText(`Draw`, (state.table.dimension.width / 4) * 3, state.table.dimension.height / 2);
             }
         }
     }

@@ -1,7 +1,7 @@
 import { Paddle } from "../game/paddle.js";
 export class PaddleNN extends Paddle {
-    constructor(width, height, tableWidth, tableHeight, side) {
-        super(width, height, tableWidth, tableHeight, side);
+    constructor(dimension, side) {
+        super(dimension, side);
         this.ACTION = {
             1: () => this.moveDown(),
             2: () => this.moveUp(),
@@ -17,9 +17,9 @@ export class PaddleNN extends Paddle {
     }
     getInputNormalized() {
         return [
-            ((this.position.y + this.height / 2) / this.tableHeight) * 2 - 1,
-            (this.ball.position.x / this.tableWidth) * 2 - 1,
-            (this.ball.position.y / this.tableHeight) * 2 - 1,
+            ((this.position.y + this.dimension.height / 2) / this.table.dimension.height) * 2 - 1,
+            (this.ball.position.x / this.table.dimension.width) * 2 - 1,
+            (this.ball.position.y / this.table.dimension.height) * 2 - 1,
             this.ball.speed.x / this.ball.MAX_SPEED.x * this.ball.MAX_MULTIPLIER,
             this.ball.speed.y / this.ball.MAX_SPEED.y * this.ball.MAX_MULTIPLIER
         ];

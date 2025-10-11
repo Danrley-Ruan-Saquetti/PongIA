@@ -10,20 +10,21 @@ export class Game {
     get FPS() { return 1000 / (60 * this.options.speedMultiplier); }
     get paddleLeft() { return this._paddleLeft; }
     get paddleRight() { return this._paddleRight; }
-    constructor(width, height, paddleA, paddleB) {
-        this.width = width;
-        this.height = height;
+    constructor(table) {
+        this.table = table;
         this.id = generateID();
         this.deltaTime = new DeltaTime();
         this._isRunning = false;
         this._countRounds = 0;
+        this.componentsInitialized = false;
         this.options = Object.assign({}, GLOBALS.game.options);
-        this._paddleLeft = paddleA.side == TableSide.LEFT ? paddleA : paddleB;
-        this._paddleRight = paddleB.side == TableSide.RIGHT ? paddleB : paddleA;
         this.observer = new Observer();
-        this.initComponents();
     }
     initComponents() {
+        if (this.componentsInitialized) {
+            return;
+        }
+        this.componentsInitialized = true;
         this.loadBall();
         this.loadPaddles();
     }
@@ -31,6 +32,7 @@ export class Game {
         if (this.isRunning) {
             return;
         }
+        this.initComponents();
         this.resetGame();
         this.ball.onStartGame();
         this._paddleLeft.onStartGame();
@@ -86,7 +88,7 @@ export class Game {
         this._paddleRight.reset();
     }
     loadBall() {
-        this.ball = new Ball(10, this.width, this.height);
+        this.ball = new Ball(10);
         this.ball.on('ball/table-out', side => {
             this.onScored(this.getReversePaddleBySide(side), this.getPaddleBySide(side));
         });
@@ -94,6 +96,9 @@ export class Game {
     loadPaddles() {
         this._paddleLeft.setBall(this.ball);
         this._paddleRight.setBall(this.ball);
+        this._paddleLeft.setTable(this.table);
+        this._paddleRight.setTable(this.table);
+        this.ball.setTable(this.table);
     }
     loop() {
         this.update();
@@ -145,6 +150,14 @@ export class Game {
     getPaddleRight() {
         return this._paddleRight;
     }
+    setPaddle(paddle) {
+        if (paddle.side == TableSide.LEFT) {
+            this._paddleLeft = paddle;
+        }
+        else {
+            this._paddleRight = paddle;
+        }
+    }
     getPaddleBySide(side) {
         return side == TableSide.LEFT ? this._paddleLeft : this._paddleRight;
     }
@@ -166,11 +179,10 @@ export class Game {
     getState() {
         return {
             id: this.id,
+            table: this.table,
             left: this._paddleLeft,
             right: this._paddleRight,
             ball: this.ball,
-            width: this.width,
-            height: this.height,
             round: this.countRounds,
             time: this.deltaTime.totalElapsedTimeSeconds,
             fps: this.deltaTime.FPS,

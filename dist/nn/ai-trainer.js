@@ -2,6 +2,7 @@ import { MultiGameController } from "../game/multi-game-controller.js";
 import { PaddleBot } from "../game/paddle-bot.js";
 import { TableSide } from "../game/types.js";
 import { GLOBALS } from "../globals.js";
+import { Dimension } from "../utils/dimension.js";
 import { Observer } from "../utils/observer.js";
 import { getGenerationStorage, saveGeneration } from "../utils/population-io.js";
 import { Population } from './core/population.js';
@@ -9,8 +10,8 @@ import { computeFitness } from "./fitness.js";
 import { GameNN } from './game-nn.js';
 import { PaddleNN } from "./paddle-nn.js";
 export class AITrainer extends MultiGameController {
-    constructor(tableWith, tableHeight) {
-        super(tableWith, tableHeight, GLOBALS.population.size);
+    constructor(table) {
+        super(table, GLOBALS.population.size);
         this.neuralNetworks = [];
         this.observer = new Observer();
         this.loadPopulation();
@@ -34,9 +35,11 @@ export class AITrainer extends MultiGameController {
     }
     createInstanceGame() {
         const paddleNetworkSide = Math.random() < .5 ? TableSide.LEFT : TableSide.RIGHT;
-        const paddleNetwork = new PaddleNN(10, 100, this.tableWith, this.tableHeight, paddleNetworkSide);
-        const paddleBot = new PaddleBot(10, 100, this.tableWith, this.tableHeight, paddleNetworkSide == TableSide.LEFT ? TableSide.RIGHT : TableSide.LEFT);
-        const game = new GameNN(this.tableWith, this.tableHeight, paddleNetwork, paddleBot);
+        const paddleNetwork = new PaddleNN(new Dimension(10, 100), paddleNetworkSide);
+        const paddleBot = new PaddleBot(new Dimension(10, 100), paddleNetworkSide == TableSide.LEFT ? TableSide.RIGHT : TableSide.LEFT);
+        const game = new GameNN(this.table);
+        game.setPaddle(paddleNetwork);
+        game.setPaddle(paddleBot);
         game.options = Object.assign({}, GLOBALS.evolution.gameOptions);
         game.on('game/start', () => {
             const [networkLeft] = this.neuralNetworks.splice(Math.floor(Math.random() * this.neuralNetworks.length), 1);

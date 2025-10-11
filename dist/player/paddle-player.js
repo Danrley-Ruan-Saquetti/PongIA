@@ -1,7 +1,7 @@
 import { Paddle } from '../game/paddle.js';
 export class PaddlePlayer extends Paddle {
-    constructor(width, height, tableWidth, tableHeight, side, keyUp, keyDown) {
-        super(width, height, tableWidth, tableHeight, side);
+    constructor(dimension, side, keyUp, keyDown) {
+        super(dimension, side);
         this.keyUp = keyUp;
         this.keyDown = keyDown;
         this.keysPressed = new Set();
