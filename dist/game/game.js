@@ -7,9 +7,9 @@ import { TableSide } from './types.js';
 export class Game {
     get isRunning() { return this._isRunning; }
     get countRounds() { return this._countRounds; }
-    get FPS() { return 1000 / (60 * this.options.speedMultiplier); }
-    get paddleLeft() { return this._paddleLeft; }
-    get paddleRight() { return this._paddleRight; }
+    get FPS_LOCKED() { return 1000 / (60 * this.options.speedMultiplier); }
+    get FPS() { return this.deltaTime.FPS; }
+    get duration() { return this.deltaTime.totalElapsedTimeSeconds; }
     constructor(table) {
         this.table = table;
         this.id = generateID();
@@ -54,7 +54,7 @@ export class Game {
         this._paddleRight.onStartRound();
         this.deltaTime.setMultiplier(this.options.speedMultiplier);
         this.deltaTime.reset();
-        this.loopId = setInterval(() => this.loop(), this.FPS);
+        this.loopId = setInterval(() => this.loop(), this.FPS_LOCKED);
     }
     stopRound() {
         if (!this.isRunning) {
@@ -144,6 +144,12 @@ export class Game {
             this.stopRound();
         }
     }
+    getTable() {
+        return this.table;
+    }
+    getBall() {
+        return this.ball;
+    }
     getPaddleLeft() {
         return this._paddleLeft;
     }
@@ -175,18 +181,6 @@ export class Game {
     }
     clearListenersByEvent(event) {
         this.observer.clearListenersByEvent(event);
-    }
-    getState() {
-        return {
-            id: this.id,
-            table: this.table,
-            left: this._paddleLeft,
-            right: this._paddleRight,
-            ball: this.ball,
-            round: this.countRounds,
-            time: this.deltaTime.totalElapsedTimeSeconds,
-            fps: this.deltaTime.FPS,
-        };
     }
 }
 //# sourceMappingURL=game.js.map
