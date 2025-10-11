@@ -14,5 +14,8 @@ export class PaddleBot extends Paddle {
         this.position.approach({ x: this.position.x, y: targetY - (this.height / 2) }, this.speed);
         this.fixPosition();
     }
+    setTargetType(type) {
+        this.targetType = type;
+    }
 }
 //# sourceMappingURL=paddle-bot.js.map

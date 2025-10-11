@@ -7,11 +7,11 @@ export class Paddle {
         this.tableWidth = tableWidth;
         this.tableHeight = tableHeight;
         this.side = side;
-        this.typeDirectionBall = 'ANGLE';
-        this.speed = 6;
-        this.color = 'white';
         this.statistics = Paddle.getDefaultStatistics();
         this.accStatistics = Paddle.getDefaultStatistics();
+        this.color = 'white';
+        this.speed = 6;
+        this.typeDirectionBall = 'ANGLE';
         this.isMoveForAttack = false;
         this.isCounteredBall = false;
         this.isAnticipated = false;
@@ -21,7 +21,7 @@ export class Paddle {
             this.position.x = 20;
         }
         else {
-            this.position.x = this.tableWidth - 30;
+            this.position.x = this.tableWidth - this.width - 30;
         }
     }
     static getDefaultStatistics() {
@@ -198,6 +198,12 @@ export class Paddle {
             totalRallySequence: this.accStatistics.totalRallySequence / (this.accStatistics.roundVictories || 1),
             anticipationTimes: this.accStatistics.anticipationTimes / (this.accStatistics.roundVictories || 1),
         };
+    }
+    setBall(ball) {
+        this.ball = ball;
+    }
+    setTypeDirectionBall(type) {
+        this.typeDirectionBall = type;
     }
 }
 //# sourceMappingURL=paddle.js.map

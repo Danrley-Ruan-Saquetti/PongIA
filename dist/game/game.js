@@ -5,17 +5,21 @@ import { generateID } from '../utils/utils.js';
 import { Ball } from "./ball.js";
 import { TableSide } from './types.js';
 export class Game {
+    get isRunning() { return this._isRunning; }
+    get countRounds() { return this._countRounds; }
     get FPS() { return 1000 / (60 * this.options.speedMultiplier); }
+    get paddleLeft() { return this._paddleLeft; }
+    get paddleRight() { return this._paddleRight; }
     constructor(width, height, paddleA, paddleB) {
         this.width = width;
         this.height = height;
         this.id = generateID();
         this.deltaTime = new DeltaTime();
+        this._isRunning = false;
+        this._countRounds = 0;
         this.options = Object.assign({}, GLOBALS.game.options);
-        this.countRounds = 0;
-        this.isRunning = false;
-        this.paddleLeft = paddleA.side == TableSide.LEFT ? paddleA : paddleB;
-        this.paddleRight = paddleB.side == TableSide.RIGHT ? paddleB : paddleA;
+        this._paddleLeft = paddleA.side == TableSide.LEFT ? paddleA : paddleB;
+        this._paddleRight = paddleB.side == TableSide.RIGHT ? paddleB : paddleA;
         this.observer = new Observer();
         this.initComponents();
     }
@@ -29,23 +33,23 @@ export class Game {
         }
         this.resetGame();
         this.ball.onStartGame();
-        this.paddleLeft.onStartGame();
-        this.paddleRight.onStartGame();
+        this._paddleLeft.onStartGame();
+        this._paddleRight.onStartGame();
         this.observer.emit('game/start', null);
         this.startRound();
     }
     startRound() {
-        if (this.isRunning) {
+        if (this._isRunning) {
             return;
         }
         this.stopId = setTimeout(() => {
             this.stopRound();
         }, this.options.limitTime / this.options.speedMultiplier);
-        this.isRunning = true;
-        this.countRounds++;
+        this._isRunning = true;
+        this._countRounds++;
         this.ball.onStartRound();
-        this.paddleLeft.onStartRound();
-        this.paddleRight.onStartRound();
+        this._paddleLeft.onStartRound();
+        this._paddleRight.onStartRound();
         this.deltaTime.setMultiplier(this.options.speedMultiplier);
         this.deltaTime.reset();
         this.loopId = setInterval(() => this.loop(), this.FPS);
@@ -56,12 +60,12 @@ export class Game {
         }
         clearTimeout(this.stopId);
         clearInterval(this.loopId);
-        this.isRunning = false;
-        if (this.paddleLeft.statistics.score > this.paddleRight.statistics.score) {
-            this.paddleLeft.onVictory();
+        this._isRunning = false;
+        if (this._paddleLeft.statistics.score > this._paddleRight.statistics.score) {
+            this._paddleLeft.onVictory();
         }
-        else if (this.paddleRight.statistics.score > this.paddleLeft.statistics.score) {
-            this.paddleRight.onVictory();
+        else if (this._paddleRight.statistics.score > this._paddleLeft.statistics.score) {
+            this._paddleRight.onVictory();
         }
         this.observer.emit('game/round/stop', null);
         if (this.countRounds >= this.options.rounds) {
@@ -74,12 +78,12 @@ export class Game {
     resetGame() {
         clearTimeout(this.stopId);
         clearInterval(this.loopId);
-        this.isRunning = false;
-        this.countRounds = 0;
+        this._isRunning = false;
+        this._countRounds = 0;
         this.deltaTime.reset();
         this.ball.reset();
-        this.paddleLeft.reset();
-        this.paddleRight.reset();
+        this._paddleLeft.reset();
+        this._paddleRight.reset();
     }
     loadBall() {
         this.ball = new Ball(10, this.width, this.height);
@@ -88,8 +92,8 @@ export class Game {
         });
     }
     loadPaddles() {
-        this.paddleLeft.ball = this.ball;
-        this.paddleRight.ball = this.ball;
+        this._paddleLeft.setBall(this.ball);
+        this._paddleRight.setBall(this.ball);
     }
     loop() {
         this.update();
@@ -97,17 +101,17 @@ export class Game {
     update() {
         this.deltaTime.next();
         this.updateInternal();
-        this.paddleLeft.update();
-        this.paddleRight.update();
-        this.ball.update(this.paddleLeft, this.paddleRight);
+        this._paddleLeft.update();
+        this._paddleRight.update();
+        this.ball.update(this._paddleLeft, this._paddleRight);
     }
     calcComplexity() {
-        const totalRallies = this.paddleLeft.accStatistics.totalRallySequence + this.paddleRight.accStatistics.totalRallySequence;
-        const longestRally = Math.max(this.paddleLeft.accStatistics.longestRallySequence, this.paddleRight.accStatistics.longestRallySequence);
-        const totalScores = this.paddleLeft.accStatistics.score + this.paddleRight.accStatistics.score;
-        const totalAnticipations = this.paddleLeft.accStatistics.anticipationTimes + this.paddleRight.accStatistics.anticipationTimes;
-        const rallyDensity = totalRallies / Math.max(1, totalScores + this.paddleLeft.accStatistics.ballsLost + this.paddleRight.accStatistics.ballsLost);
-        const scoreBalance = 1 - Math.abs(this.paddleLeft.accStatistics.score - this.paddleRight.accStatistics.score) / Math.max(1, totalScores);
+        const totalRallies = this._paddleLeft.accStatistics.totalRallySequence + this._paddleRight.accStatistics.totalRallySequence;
+        const longestRally = Math.max(this._paddleLeft.accStatistics.longestRallySequence, this._paddleRight.accStatistics.longestRallySequence);
+        const totalScores = this._paddleLeft.accStatistics.score + this._paddleRight.accStatistics.score;
+        const totalAnticipations = this._paddleLeft.accStatistics.anticipationTimes + this._paddleRight.accStatistics.anticipationTimes;
+        const rallyDensity = totalRallies / Math.max(1, totalScores + this._paddleLeft.accStatistics.ballsLost + this._paddleRight.accStatistics.ballsLost);
+        const scoreBalance = 1 - Math.abs(this._paddleLeft.accStatistics.score - this._paddleRight.accStatistics.score) / Math.max(1, totalScores);
         let complexity = 0;
         complexity += rallyDensity * .5;
         complexity += (longestRally / 10) * .2;
@@ -116,16 +120,16 @@ export class Game {
         return Math.max(1, complexity);
     }
     moveLeftUp() {
-        this.paddleLeft.moveUp();
+        this._paddleLeft.moveUp();
     }
     moveLeftDown() {
-        this.paddleLeft.moveDown();
+        this._paddleLeft.moveDown();
     }
     moveRightUp() {
-        this.paddleRight.moveUp();
+        this._paddleRight.moveUp();
     }
     moveRightDown() {
-        this.paddleRight.moveDown();
+        this._paddleRight.moveDown();
     }
     updateInternal() { }
     onScored(paddle, paddleLost) {
@@ -136,16 +140,16 @@ export class Game {
         }
     }
     getPaddleLeft() {
-        return this.paddleLeft;
+        return this._paddleLeft;
     }
     getPaddleRight() {
-        return this.paddleRight;
+        return this._paddleRight;
     }
     getPaddleBySide(side) {
-        return side == TableSide.LEFT ? this.paddleLeft : this.paddleRight;
+        return side == TableSide.LEFT ? this._paddleLeft : this._paddleRight;
     }
     getReversePaddleBySide(side) {
-        return side == TableSide.RIGHT ? this.paddleLeft : this.paddleRight;
+        return side == TableSide.RIGHT ? this._paddleLeft : this._paddleRight;
     }
     on(event, handler) {
         return this.observer.on(event, handler);
@@ -162,8 +166,8 @@ export class Game {
     getState() {
         return {
             id: this.id,
-            left: this.paddleLeft,
-            right: this.paddleRight,
+            left: this._paddleLeft,
+            right: this._paddleRight,
             ball: this.ball,
             width: this.width,
             height: this.height,
