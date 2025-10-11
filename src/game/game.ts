@@ -4,6 +4,7 @@ import { IObservable, ListenerHandler, Observer } from '../utils/observer.js'
 import { generateID } from '../utils/utils.js'
 import { Ball } from "./ball.js"
 import { Paddle } from "./paddle.js"
+import { Table } from './table.js'
 import { GameOptions, TableSide } from './types.js'
 
 type GameEvents = {
@@ -30,6 +31,7 @@ export class Game implements IObservable<GameEvents> {
 
   private _isRunning = false
   private _countRounds = 0
+  private componentsInitialized = false
 
   options: GameOptions = { ...GLOBALS.game.options }
 
@@ -40,20 +42,18 @@ export class Game implements IObservable<GameEvents> {
   get paddleRight() { return this._paddleRight }
 
   constructor(
-    protected width: number,
-    protected height: number,
-    paddleA: Paddle,
-    paddleB: Paddle
+    protected table: Table
   ) {
-    this._paddleLeft = paddleA.side == TableSide.LEFT ? paddleA : paddleB
-    this._paddleRight = paddleB.side == TableSide.RIGHT ? paddleB : paddleA
-
     this.observer = new Observer<GameEvents>()
-
-    this.initComponents()
   }
 
   initComponents() {
+    if (this.componentsInitialized) {
+      return
+    }
+
+    this.componentsInitialized = true
+
     this.loadBall()
     this.loadPaddles()
   }
@@ -63,6 +63,7 @@ export class Game implements IObservable<GameEvents> {
       return
     }
 
+    this.initComponents()
     this.resetGame()
 
     this.ball.onStartGame()
@@ -137,7 +138,7 @@ export class Game implements IObservable<GameEvents> {
   }
 
   protected loadBall() {
-    this.ball = new Ball(10, this.width, this.height)
+    this.ball = new Ball(10)
 
     this.ball.on('ball/table-out', side => {
       this.onScored(
@@ -150,6 +151,11 @@ export class Game implements IObservable<GameEvents> {
   protected loadPaddles() {
     this._paddleLeft.setBall(this.ball)
     this._paddleRight.setBall(this.ball)
+
+    this._paddleLeft.setTable(this.table)
+    this._paddleRight.setTable(this.table)
+
+    this.ball.setTable(this.table)
   }
 
   private loop() {
@@ -221,6 +227,14 @@ export class Game implements IObservable<GameEvents> {
     return this._paddleRight
   }
 
+  setPaddle(paddle: Paddle) {
+    if (paddle.side == TableSide.LEFT) {
+      this._paddleLeft = paddle
+    } else {
+      this._paddleRight = paddle
+    }
+  }
+
   getPaddleBySide(side: TableSide) {
     return side == TableSide.LEFT ? this._paddleLeft : this._paddleRight
   }
@@ -248,11 +262,10 @@ export class Game implements IObservable<GameEvents> {
   getState() {
     return {
       id: this.id,
+      table: this.table,
       left: this._paddleLeft,
       right: this._paddleRight,
       ball: this.ball,
-      width: this.width,
-      height: this.height,
       round: this.countRounds,
       time: this.deltaTime.totalElapsedTimeSeconds,
       fps: this.deltaTime.FPS,
