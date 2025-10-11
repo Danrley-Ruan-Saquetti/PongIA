@@ -12,7 +12,7 @@ export class Ball implements IObservable<BallEvents> {
   private observer: Observer<BallEvents>
 
   private readonly GAP_FINAL_Y = 4
-  readonly MAX_SPEED = new Vector2D(5, 4)
+  readonly MAX_SPEED = new Vector2D(6, 4)
   readonly MAX_MULTIPLIER = 2
   readonly SPEED_MULTIPLIER_INCREASE_PER_HIT = .25
 
@@ -24,6 +24,8 @@ export class Ball implements IObservable<BallEvents> {
   speedMultiplier = 1
 
   private isBallEnableToHit = false
+
+  renderFinalTarget = false
 
   constructor(
     public radius: number,
@@ -111,12 +113,14 @@ export class Ball implements IObservable<BallEvents> {
 
     const finalX = this.speed.x > 0 ? this.tableWidth - (this.radius * this.GAP_FINAL_Y) : this.radius * this.GAP_FINAL_Y
 
-    ctx.globalAlpha = 0.5
-    ctx.fillStyle = "red"
-    ctx.beginPath()
-    ctx.arc(finalX, this.finalY, this.radius, 0, Math.PI * 2)
-    ctx.fill()
-    ctx.globalAlpha = 1
+    if (this.renderFinalTarget) {
+      ctx.globalAlpha = 0.5
+      ctx.fillStyle = "red"
+      ctx.beginPath()
+      ctx.arc(finalX, this.finalY, this.radius, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.globalAlpha = 1
+    }
   }
 
   isCrossedTable() {
