@@ -19,6 +19,7 @@ export class Paddle {
 
   ball: Ball
 
+  typeDirectionBall: 'RANDOM' | 'ANGLE' = 'ANGLE'
   position: Vector2D
   speed = 6
 
@@ -189,6 +190,14 @@ export class Paddle {
   }
 
   protected recalculateDirectionSpeedBall() {
+    if (this.typeDirectionBall == 'ANGLE') {
+      this.calculateDirectionSpeedBallFromAngle()
+    } else {
+      this.calculateRandomDirectionSpeedBall()
+    }
+  }
+
+  protected calculateDirectionSpeedBallFromAngle() {
     const relativeIntersectY = this.ball.position.y - (this.position.y + this.height / 2)
     const normalizedIntersectY = relativeIntersectY / (this.height / 2)
     const maxBounceAngle = Math.PI / 3
@@ -202,6 +211,20 @@ export class Paddle {
       this.ball.speed.x = Math.abs(speed * Math.cos(bounceAngle)) * this.ball.speedMultiplier
     } else {
       this.ball.speed.x = -Math.abs(speed * Math.cos(bounceAngle)) * this.ball.speedMultiplier
+    }
+  }
+
+  protected calculateRandomDirectionSpeedBall() {
+    const speed = Math.sqrt(this.ball.MAX_SPEED.x * this.ball.MAX_SPEED.x + this.ball.MAX_SPEED.y * this.ball.MAX_SPEED.y)
+
+    const angle = (Math.random() * Math.PI / 2) - (Math.PI / 4)
+
+    this.ball.speed.y = speed * Math.sin(angle) * this.ball.speedMultiplier
+
+    if (this.side === TableSide.LEFT) {
+      this.ball.speed.x = Math.abs(speed * Math.cos(angle)) * this.ball.speedMultiplier
+    } else {
+      this.ball.speed.x = -Math.abs(speed * Math.cos(angle)) * this.ball.speedMultiplier
     }
   }
 
