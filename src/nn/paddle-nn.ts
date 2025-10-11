@@ -1,5 +1,6 @@
 import { Paddle } from "../game/paddle.js"
 import { TableSide } from "../game/types.js"
+import { Dimension } from "../utils/dimension.js"
 import { NeuralNetwork } from "./core/neural-network.js"
 
 export class PaddleNN extends Paddle {
@@ -12,13 +13,10 @@ export class PaddleNN extends Paddle {
   }
 
   constructor(
-    width: number,
-    height: number,
-    tableWidth: number,
-    tableHeight: number,
-    side: TableSide,
+    dimension: Dimension,
+    side: TableSide
   ) {
-    super(width, height, tableWidth, tableHeight, side)
+    super(dimension, side)
 
     this.color = 'yellow'
   }
@@ -37,9 +35,9 @@ export class PaddleNN extends Paddle {
 
   protected getInputNormalized() {
     return [
-      ((this.position.y + this.height / 2) / this.tableHeight) * 2 - 1,
-      (this.ball.position.x / this.tableWidth) * 2 - 1,
-      (this.ball.position.y / this.tableHeight) * 2 - 1,
+      ((this.position.y + this.dimension.height / 2) / this.table.dimension.height) * 2 - 1,
+      (this.ball.position.x / this.table.dimension.width) * 2 - 1,
+      (this.ball.position.y / this.table.dimension.height) * 2 - 1,
       this.ball.speed.x / this.ball.MAX_SPEED.x * this.ball.MAX_MULTIPLIER,
       this.ball.speed.y / this.ball.MAX_SPEED.y * this.ball.MAX_MULTIPLIER
     ]

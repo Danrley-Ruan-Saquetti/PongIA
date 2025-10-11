@@ -1,3 +1,4 @@
+import { Dimension } from '../utils/dimension.js'
 import { Paddle } from './paddle.js'
 import { TableSide } from './types.js'
 
@@ -8,13 +9,10 @@ export class PaddleBot extends Paddle {
   private targetType: PaddleBotTargetType = 'BALL'
 
   constructor(
-    width: number,
-    height: number,
-    tableWidth: number,
-    tableHeight: number,
+    dimension: Dimension,
     side: TableSide,
   ) {
-    super(width, height, tableWidth, tableHeight, side)
+    super(dimension, side)
 
     this.typeDirectionBall = 'RANDOM'
   }
@@ -22,13 +20,13 @@ export class PaddleBot extends Paddle {
   update() {
     super.update()
 
-    let targetY = (this.tableHeight / 2)
+    let targetY = (this.table.dimension.height / 2)
 
     if (this.ball.isBallIntoSide(this.side)) {
       targetY = this.targetType == 'BALL' ? this.ball.position.y : this.ball.finalY
     }
 
-    this.position.approach({ x: this.position.x, y: targetY - (this.height / 2) }, this.speed)
+    this.position.approach({ x: this.position.x, y: targetY - (this.dimension.height / 2) }, this.speed)
 
     this.fixPosition()
   }

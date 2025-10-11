@@ -1,5 +1,7 @@
+import { Dimension } from "../utils/dimension.js"
 import { Ball } from "./ball.js"
 import { GameEntity } from "./game-entity.js"
+import { Table } from './table'
 import { TableSide } from "./types.js"
 
 export type PaddleStatistics = {
@@ -19,6 +21,7 @@ export type PaddleTypeDirectionBall = 'RANDOM' | 'ANGLE'
 
 export class Paddle extends GameEntity {
 
+  protected table: Table
   protected ball: Ball
 
   statistics: PaddleStatistics = Paddle.getDefaultStatistics()
@@ -35,19 +38,10 @@ export class Paddle extends GameEntity {
   protected inSequence = false
 
   constructor(
-    public readonly width: number,
-    public readonly height: number,
-    protected tableWidth: number,
-    protected tableHeight: number,
+    public readonly dimension: Dimension,
     public readonly side: TableSide,
   ) {
     super()
-
-    if (side == TableSide.LEFT) {
-      this.position.x = 20
-    } else {
-      this.position.x = this.tableWidth - this.width - 30
-    }
   }
 
   private static getDefaultStatistics(): PaddleStatistics {
@@ -66,6 +60,12 @@ export class Paddle extends GameEntity {
   }
 
   onStartGame() {
+    if (this.side == TableSide.LEFT) {
+      this.position.x = 20
+    } else {
+      this.position.x = this.table.dimension.width - this.dimension.width - 30
+    }
+
     this.accStatistics = Paddle.getDefaultStatistics()
     this.statistics = Paddle.getDefaultStatistics()
   }
@@ -88,7 +88,7 @@ export class Paddle extends GameEntity {
   }
 
   reset() {
-    this.position.y = (this.tableHeight / 2) - (this.height / 2)
+    this.position.y = (this.table.dimension.height / 2) - (this.dimension.height / 2)
 
     this.isMoveForAttack = false
     this.isCounteredBall = false
@@ -101,14 +101,14 @@ export class Paddle extends GameEntity {
   protected fixPosition() {
     if (this.position.y < 0) {
       this.position.y = 0
-    } else if (this.position.y + this.height > this.tableHeight) {
-      this.position.y = this.tableHeight - this.height
+    } else if (this.position.y + this.dimension.height > this.table.dimension.height) {
+      this.position.y = this.table.dimension.height - this.dimension.height
     }
   }
 
   draw(ctx: CanvasRenderingContext2D) {
     ctx.fillStyle = this.color
-    ctx.fillRect(this.position.x, this.position.y, this.width, this.height)
+    ctx.fillRect(this.position.x, this.position.y, this.dimension.width, this.dimension.height)
 
     ctx.textAlign = "center"
     ctx.font = "20px Arial"
@@ -117,7 +117,7 @@ export class Paddle extends GameEntity {
     ctx.fillText(
       `Sequence: ${this.statistics.rallySequence}`,
       this.position.x + (this.side == TableSide.LEFT ? 150 : -150),
-      this.tableHeight - 15
+      this.table.dimension.height - 15
     )
   }
 
@@ -134,7 +134,7 @@ export class Paddle extends GameEntity {
   moveDown() {
     this.position.y += this.speed
 
-    if (this.position.y + this.height <= this.tableHeight) {
+    if (this.position.y + this.dimension.height <= this.table.dimension.height) {
       this.onMoved()
     }
 
@@ -148,7 +148,7 @@ export class Paddle extends GameEntity {
       return
     }
 
-    if (this.position.y <= this.ball.finalY && this.ball.finalY <= this.position.y + this.height) {
+    if (this.position.y <= this.ball.finalY && this.ball.finalY <= this.position.y + this.dimension.height) {
       if (!this.ball.isCrossedTable()) {
         this.isAnticipated = true
       }
@@ -205,8 +205,8 @@ export class Paddle extends GameEntity {
   }
 
   protected calculateDirectionSpeedBallFromAngle() {
-    const relativeIntersectY = this.ball.position.y - (this.position.y + this.height / 2)
-    const normalizedIntersectY = relativeIntersectY / (this.height / 2)
+    const relativeIntersectY = this.ball.position.y - (this.position.y + this.dimension.height / 2)
+    const normalizedIntersectY = relativeIntersectY / (this.dimension.height / 2)
     const maxBounceAngle = Math.PI / 3
     const bounceAngle = normalizedIntersectY * maxBounceAngle
 
@@ -270,6 +270,10 @@ export class Paddle extends GameEntity {
       totalRallySequence: this.accStatistics.totalRallySequence / (this.accStatistics.roundVictories || 1),
       anticipationTimes: this.accStatistics.anticipationTimes / (this.accStatistics.roundVictories || 1),
     }
+  }
+
+  setTable(table: Table) {
+    this.table = table
   }
 
   setBall(ball: Ball) {

@@ -1,5 +1,6 @@
 import { Paddle } from '../game/paddle.js'
 import { TableSide } from '../game/types.js'
+import { Dimension } from '../utils/dimension.js'
 
 export class PaddlePlayer extends Paddle {
 
@@ -9,15 +10,12 @@ export class PaddlePlayer extends Paddle {
   onkeyUp = (e: KeyboardEvent) => this.keysPressed.delete(e.key)
 
   constructor(
-    width: number,
-    height: number,
-    tableWidth: number,
-    tableHeight: number,
+    dimension: Dimension,
     side: TableSide,
     private keyUp: string,
     private keyDown: string
   ) {
-    super(width, height, tableWidth, tableHeight, side)
+    super(dimension, side)
   }
 
   reset() {
