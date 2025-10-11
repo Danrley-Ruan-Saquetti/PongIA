@@ -248,6 +248,7 @@ export class Game implements IObservable<GameEvents> {
       ball: this.ball,
       width: this.width,
       height: this.height,
+      round: this.countRounds,
       time: this.deltaTime.totalElapsedTimeSeconds,
       fps: this.deltaTime.FPS,
     }
