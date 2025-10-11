@@ -63,23 +63,21 @@ export class GenerationView implements IObservable<GenerationViewEvents> {
 
     this.ctx.fillRect(0, positionY - 23, this.canvas.width, 1)
 
-    const games = this.population.games.sort((gameA, gameB) => gameB.getState().bestSequence - gameA.getState().bestSequence)
+    const games = this.population.games.sort((gameA, gameB) => gameB.getBestSequence() - gameA.getBestSequence())
 
     games.forEach((game, i) => {
       if (i < minRange || maxRange < i) {
         return
       }
 
-      const state = game.getState()
-
-      this.ctx.fillStyle = state.id == gameSelected.id ? '#fbff00ff' : (game.isRunning ? '#FFF' : '#FF0000')
+      this.ctx.fillStyle = game.id == gameSelected.id ? '#fbff00ff' : (game.isRunning ? '#FFF' : '#FF0000')
 
       this.ctx.fillText(`#${i + 1}`, marginLeft + 5, positionY)
-      this.ctx.fillText(state.id, marginLeft + 40, positionY)
+      this.ctx.fillText(game.id, marginLeft + 40, positionY)
 
-      this.ctx.fillText(`${state.round}`, marginLeft + 150, positionY)
-      this.ctx.fillText(`${state.time.toFixed(0)}s`, marginLeft + 220, positionY)
-      this.ctx.fillText(`${state.left.statistics.score} x ${state.right.statistics.score}`, marginLeft + 280, positionY)
+      this.ctx.fillText(`${game.countRounds}`, marginLeft + 150, positionY)
+      this.ctx.fillText(`${game.duration.toFixed(0)}s`, marginLeft + 220, positionY)
+      this.ctx.fillText(`${game.getPaddleLeft().statistics.score} x ${game.getPaddleRight().statistics.score}`, marginLeft + 280, positionY)
 
       positionY += 30
     })
@@ -107,8 +105,6 @@ export class GenerationView implements IObservable<GenerationViewEvents> {
 
     this.ctx.fillRect(0, positionY - 15, this.canvas.width, 1)
 
-    const gameState = gameSelected.getState()
-
     positionY += 10
 
     this.ctx.fillText(`Statistics:`, marginLeft, positionY)
@@ -118,20 +114,20 @@ export class GenerationView implements IObservable<GenerationViewEvents> {
     positionY += 30
 
     this.ctx.fillText(`Score:`, marginLeft, positionY)
-    this.ctx.fillText(`${gameState.left.statistics.score}`, marginLeft + 150, positionY)
-    this.ctx.fillText(`${gameState.right.statistics.score}`, marginLeft + 250, positionY)
+    this.ctx.fillText(`${gameSelected.getPaddleLeft().statistics.score}`, marginLeft + 150, positionY)
+    this.ctx.fillText(`${gameSelected.getPaddleRight().statistics.score}`, marginLeft + 250, positionY)
 
     positionY += 30
 
     this.ctx.fillText(`Scored by Attack:`, marginLeft, positionY)
-    this.ctx.fillText(`${gameState.left.statistics.scoresByAttack}`, marginLeft + 150, positionY)
-    this.ctx.fillText(`${gameState.right.statistics.scoresByAttack}`, marginLeft + 250, positionY)
+    this.ctx.fillText(`${gameSelected.getPaddleLeft().statistics.scoresByAttack}`, marginLeft + 150, positionY)
+    this.ctx.fillText(`${gameSelected.getPaddleRight().statistics.scoresByAttack}`, marginLeft + 250, positionY)
 
     positionY += 30
 
     this.ctx.fillText(`Anticipations:`, marginLeft, positionY)
-    this.ctx.fillText(`${gameState.left.statistics.anticipationTimes}`, marginLeft + 150, positionY)
-    this.ctx.fillText(`${gameState.right.statistics.anticipationTimes}`, marginLeft + 250, positionY)
+    this.ctx.fillText(`${gameSelected.getPaddleLeft().statistics.anticipationTimes}`, marginLeft + 150, positionY)
+    this.ctx.fillText(`${gameSelected.getPaddleRight().statistics.anticipationTimes}`, marginLeft + 250, positionY)
 
     positionY += 30
 
@@ -192,7 +188,7 @@ export class GenerationView implements IObservable<GenerationViewEvents> {
     let indexGameWithLongestSequence = 0
 
     for (let i = 0; i < this.population.games.length; i++) {
-      if (this.population.games[indexGameWithLongestSequence].getState().bestSequence < this.population.games[i].getState().bestSequence) {
+      if (this.population.games[indexGameWithLongestSequence].getBestSequence() < this.population.games[i].getBestSequence()) {
         indexGameWithLongestSequence = i
       }
     }

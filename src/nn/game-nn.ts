@@ -7,7 +7,7 @@ export class GameNN extends Game {
   protected network: NeuralNetwork
 
   getPaddleNeuralNetwork() {
-    return this.paddleLeft instanceof PaddleNN ? this.paddleLeft : this.paddleRight as PaddleNN
+    return this._paddleLeft instanceof PaddleNN ? this._paddleLeft : this._paddleRight as PaddleNN
   }
 
   setNeuralNetwork(network: NeuralNetwork) {
@@ -16,11 +16,7 @@ export class GameNN extends Game {
     this.getPaddleNeuralNetwork().network = network
   }
 
-  getState() {
-    return {
-      ...super.getState(),
-      network: this.network,
-      bestSequence: Math.max(this.paddleLeft.accStatistics.totalRallySequence || 0, this.paddleRight.accStatistics.totalRallySequence || 0),
-    }
+  getBestSequence() {
+    return Math.max(this._paddleLeft.accStatistics.totalRallySequence || 0, this._paddleRight.accStatistics.totalRallySequence || 0)
   }
 }

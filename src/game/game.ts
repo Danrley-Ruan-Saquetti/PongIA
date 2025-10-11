@@ -37,9 +37,10 @@ export class Game implements IObservable<GameEvents> {
 
   get isRunning() { return this._isRunning }
   get countRounds() { return this._countRounds }
-  get FPS() { return 1000 / (60 * this.options.speedMultiplier) }
-  get paddleLeft() { return this._paddleLeft }
-  get paddleRight() { return this._paddleRight }
+
+  get FPS_LOCKED() { return 1000 / (60 * this.options.speedMultiplier) }
+  get FPS() { return this.deltaTime.FPS }
+  get duration() { return this.deltaTime.totalElapsedTimeSeconds }
 
   constructor(
     protected table: Table
@@ -94,7 +95,7 @@ export class Game implements IObservable<GameEvents> {
     this.deltaTime.setMultiplier(this.options.speedMultiplier)
     this.deltaTime.reset()
 
-    this.loopId = setInterval(() => this.loop(), this.FPS)
+    this.loopId = setInterval(() => this.loop(), this.FPS_LOCKED)
   }
 
   protected stopRound() {
@@ -219,6 +220,14 @@ export class Game implements IObservable<GameEvents> {
     }
   }
 
+  getTable() {
+    return this.table
+  }
+
+  getBall() {
+    return this.ball
+  }
+
   getPaddleLeft() {
     return this._paddleLeft
   }
@@ -257,18 +266,5 @@ export class Game implements IObservable<GameEvents> {
 
   clearListenersByEvent(event: keyof GameEvents) {
     this.observer.clearListenersByEvent(event)
-  }
-
-  getState() {
-    return {
-      id: this.id,
-      table: this.table,
-      left: this._paddleLeft,
-      right: this._paddleRight,
-      ball: this.ball,
-      round: this.countRounds,
-      time: this.deltaTime.totalElapsedTimeSeconds,
-      fps: this.deltaTime.FPS,
-    }
   }
 }

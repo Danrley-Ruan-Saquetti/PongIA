@@ -29,22 +29,25 @@ export class GameView {
   protected updateInternal() { }
 
   private draw() {
-    const state = this.game.getState()
+    const table = this.game.getTable()
+    const ball = this.game.getBall()
+    const paddleLeft = this.game.getPaddleLeft()
+    const paddleRight = this.game.getPaddleRight()
 
-    this.ctx.clearRect(0, 0, state.table.dimension.width, state.table.dimension.height)
+    this.ctx.clearRect(0, 0, table.dimension.width, table.dimension.height)
 
     this.ctx.strokeStyle = "white"
     this.ctx.beginPath()
     this.ctx.setLineDash([10, 10])
-    this.ctx.moveTo(state.table.dimension.width / 2, 0)
-    this.ctx.lineTo(state.table.dimension.width / 2, state.table.dimension.height)
+    this.ctx.moveTo(table.dimension.width / 2, 0)
+    this.ctx.lineTo(table.dimension.width / 2, table.dimension.height)
     this.ctx.stroke()
     this.ctx.setLineDash([])
 
-    state.left.draw(this.ctx)
-    state.right.draw(this.ctx)
+    paddleLeft.draw(this.ctx)
+    paddleRight.draw(this.ctx)
 
-    state.ball.draw(this.ctx)
+    ball.draw(this.ctx)
 
     this.ctx.fillStyle = '#FFF'
 
@@ -52,15 +55,15 @@ export class GameView {
 
     this.ctx.font = "30px Arial"
     this.ctx.fillText(
-      `${state.id}`,
+      `${this.game.id}`,
       100,
       30
     )
 
-    this.ctx.fillStyle = state.fps >= this.game.FPS ? '#64f22dff' : state.fps < this.game.FPS - 20 ? '#FF0000' : '#3870fdff'
+    this.ctx.fillStyle = this.game.FPS >= this.game.FPS_LOCKED ? '#64f22dff' : this.game.FPS < this.game.FPS_LOCKED - 20 ? '#FF0000' : '#3870fdff'
     this.ctx.font = "15px Arial"
     this.ctx.fillText(
-      `${state.fps}FPS`,
+      `${this.game.FPS}FPS`,
       200,
       25
     )
@@ -70,51 +73,51 @@ export class GameView {
     this.ctx.font = "30px Arial"
 
     this.ctx.fillText(
-      `${state.time.toFixed(1)}s`,
-      (state.table.dimension.width / 2) + 100,
+      `${this.game.duration.toFixed(1)}s`,
+      (table.dimension.width / 2) + 100,
       30
     )
 
     this.ctx.fillText(
-      `${state.left.statistics.score} - ${state.right.statistics.score}`,
-      state.table.dimension.width / 2,
+      `${paddleLeft.statistics.score} - ${paddleRight.statistics.score}`,
+      table.dimension.width / 2,
       30
     )
 
     this.ctx.font = "20px Arial"
     this.ctx.fillText(
-      `${state.left.accStatistics.roundVictories} - ${state.right.accStatistics.roundVictories}`,
-      state.table.dimension.width / 2,
+      `${paddleLeft.accStatistics.roundVictories} - ${paddleRight.accStatistics.roundVictories}`,
+      table.dimension.width / 2,
       60
     )
 
     this.ctx.font = "30px Arial"
 
     if (!this.game.isRunning) {
-      if (this.game.paddleLeft.accStatistics.roundVictories > this.game.paddleRight.accStatistics.roundVictories) {
+      if (paddleLeft.accStatistics.roundVictories > paddleRight.accStatistics.roundVictories) {
         this.ctx.fillText(
           `Winner`,
-          state.table.dimension.width / 4,
-          state.table.dimension.height / 2
+          table.dimension.width / 4,
+          table.dimension.height / 2
         )
       }
-      else if (this.game.paddleLeft.accStatistics.roundVictories < this.game.paddleRight.accStatistics.roundVictories) {
+      else if (paddleLeft.accStatistics.roundVictories < paddleRight.accStatistics.roundVictories) {
         this.ctx.fillText(
           `Winner`,
-          (state.table.dimension.width / 4) * 3,
-          state.table.dimension.height / 2
+          (table.dimension.width / 4) * 3,
+          table.dimension.height / 2
         )
       }
       else {
         this.ctx.fillText(
           `Draw`,
-          state.table.dimension.width / 4,
-          state.table.dimension.height / 2
+          table.dimension.width / 4,
+          table.dimension.height / 2
         )
         this.ctx.fillText(
           `Draw`,
-          (state.table.dimension.width / 4) * 3,
-          state.table.dimension.height / 2
+          (table.dimension.width / 4) * 3,
+          table.dimension.height / 2
         )
       }
     }
