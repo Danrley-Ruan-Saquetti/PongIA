@@ -18,7 +18,7 @@ export class Ball extends GameEntity {
         this.SPEED_MULTIPLIER_INCREASE_PER_HIT = .25;
         this._speedMultiplier = 1;
         this.isBallEnableToHit = false;
-        this.renderFinalTarget = true;
+        this.renderFinalTarget = false;
         this.observer = new Observer();
         this.speed = new Vector2D();
     }
@@ -33,7 +33,7 @@ export class Ball extends GameEntity {
         this.isBallEnableToHit = false;
         this.position.x = this.table.position.x;
         this.position.y = this.table.position.y;
-        this.speed.x = this.MAX_SPEED.x * -1;
+        this.speed.x = this.MAX_SPEED.x * (Math.random() > 0.5 ? 1 : -1);
         this.speed.y = this.MAX_SPEED.y * (Math.random() > 0.5 ? 1 : -1);
         this._speedMultiplier = 1;
         this._finalY = this.predictFinalY();

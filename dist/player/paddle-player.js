@@ -1,12 +1,13 @@
 import { Paddle } from '../game/paddle.js';
 export class PaddlePlayer extends Paddle {
-    constructor(dimension, keyUp, keyDown) {
-        super(dimension);
+    constructor(keyUp, keyDown) {
+        super();
         this.keyUp = keyUp;
         this.keyDown = keyDown;
         this.keysPressed = new Set();
         this.onKeyDown = (e) => this.keysPressed.add(e.key);
         this.onkeyUp = (e) => this.keysPressed.delete(e.key);
+        this.color = '#2e5fffff';
     }
     reset() {
         super.reset();

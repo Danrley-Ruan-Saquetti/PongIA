@@ -1,7 +1,7 @@
 import { Paddle } from './paddle.js';
 export class PaddleBot extends Paddle {
-    constructor(dimension) {
-        super(dimension);
+    constructor() {
+        super();
         this.targetType = 'BALL';
         this.typeDirectionBall = 'RANDOM';
     }

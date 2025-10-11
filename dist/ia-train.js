@@ -17,7 +17,8 @@ function app() {
     const canvasGame = document.getElementById("gameCanvas");
     resizeCanvas(canvasRank, { width: 375, height: 650 });
     resizeCanvas(canvasGame, GLOBALS.game.table);
-    const table = new Table(new Dimension(canvasGame.width, canvasGame.height));
+    const table = new Table();
+    table.dimension = new Dimension(canvasGame.width, canvasGame.height);
     const aiTrainer = new AITrainer(table);
     const generationView = new GenerationView(canvasRank, aiTrainer);
     const gameView = new GameView(canvasGame);

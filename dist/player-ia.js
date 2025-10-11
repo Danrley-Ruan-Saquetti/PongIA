@@ -12,10 +12,11 @@ window.onload = app;
 function app() {
     const canvasGame = document.getElementById("gameCanvas");
     resizeCanvas(canvasGame, GLOBALS.game.table);
-    const table = new Table(new Dimension(canvasGame.width, canvasGame.height));
+    const table = new Table();
+    table.dimension = new Dimension(canvasGame.width, canvasGame.height);
     const bestIndividual = getBestIndividualStorage() || NeuralNetwork.create(GLOBALS.network.structure, GLOBALS.network.activations);
-    const paddlePlayer = new PaddlePlayer(new Dimension(10, 100), 'w', 's');
-    const paddleNN = new PaddleNN(new Dimension(10, 100));
+    const paddlePlayer = new PaddlePlayer('w', 's');
+    const paddleNN = new PaddleNN();
     paddleNN.network = bestIndividual;
     const game = new Game(table);
     game.setPaddles(paddlePlayer, paddleNN);

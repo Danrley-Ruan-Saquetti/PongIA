@@ -1,10 +1,9 @@
-import { Vector2D } from '../utils/vector2d.js';
 import { RectangleEntity } from './rectangle-entity.js';
 import { TableSide } from "./types.js";
 export class Paddle extends RectangleEntity {
     get side() { return this._side; }
-    constructor(dimension) {
-        super(dimension, new Vector2D());
+    constructor() {
+        super();
         this.statistics = Paddle.getDefaultStatistics();
         this.accStatistics = Paddle.getDefaultStatistics();
         this.color = 'white';
@@ -14,6 +13,8 @@ export class Paddle extends RectangleEntity {
         this.isCounteredBall = false;
         this.isAnticipated = false;
         this.inSequence = false;
+        this.dimension.width = 10;
+        this.dimension.height = 100;
     }
     static getDefaultStatistics() {
         return {
