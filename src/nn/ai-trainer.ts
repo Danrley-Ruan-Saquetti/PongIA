@@ -1,7 +1,9 @@
 import { MultiGameController } from "../game/multi-game-controller.js"
 import { PaddleBot } from "../game/paddle-bot.js"
+import { Table } from "../game/table.js"
 import { TableSide } from "../game/types.js"
 import { GLOBALS } from "../globals.js"
+import { Dimension } from "../utils/dimension.js"
 import { IObservable, ListenerHandler, Observer } from "../utils/observer.js"
 import { getGenerationStorage, saveGeneration } from "../utils/population-io.js"
 import { NeuralNetwork } from "./core/neural-network.js"
@@ -23,10 +25,9 @@ export class AITrainer extends MultiGameController<GameNN> implements IObservabl
   population!: Population
 
   constructor(
-    tableWith: number,
-    tableHeight: number
+    table: Table
   ) {
-    super(tableWith, tableHeight, GLOBALS.population.size)
+    super(table, GLOBALS.population.size)
     this.observer = new Observer<AITrainerEvents>()
 
     this.loadPopulation()
@@ -61,15 +62,13 @@ export class AITrainer extends MultiGameController<GameNN> implements IObservabl
   protected createInstanceGame() {
     const paddleNetworkSide = Math.random() < .5 ? TableSide.LEFT : TableSide.RIGHT
 
-    const paddleNetwork = new PaddleNN(10, 100, this.tableWith, this.tableHeight, paddleNetworkSide)
-    const paddleBot = new PaddleBot(10, 100, this.tableWith, this.tableHeight, paddleNetworkSide == TableSide.LEFT ? TableSide.RIGHT : TableSide.LEFT)
+    const paddleNetwork = new PaddleNN(new Dimension(10, 100), paddleNetworkSide)
+    const paddleBot = new PaddleBot(new Dimension(10, 100), paddleNetworkSide == TableSide.LEFT ? TableSide.RIGHT : TableSide.LEFT)
 
-    const game = new GameNN(
-      this.tableWith,
-      this.tableHeight,
-      paddleNetwork,
-      paddleBot
-    )
+    const game = new GameNN(this.table)
+
+    game.setPaddle(paddleNetwork)
+    game.setPaddle(paddleBot)
 
     game.options = { ...GLOBALS.evolution.gameOptions }
 

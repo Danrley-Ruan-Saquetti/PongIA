@@ -5,8 +5,8 @@ import { GameEntity } from './game-entity.js'
 export class Table extends GameEntity {
 
   constructor(
-    position = new Vector2D(),
-    public readonly dimension = new Dimension()
+    public readonly dimension = new Dimension(),
+    position = new Vector2D()
   ) {
     super(position)
   }
