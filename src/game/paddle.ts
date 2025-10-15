@@ -65,9 +65,9 @@ export class Paddle extends RectangleEntity {
     this.position.y = this.table.position.y
 
     if (this._side == TableSide.LEFT) {
-      this.position.x = this.table.positionInitialX + 20
+      this.position.x = this.table.positionInitialX + this.dimension.halfWidth + 20
     } else {
-      this.position.x = this.table.positionFinalX - 20
+      this.position.x = this.table.positionFinalX - this.dimension.halfWidth - 20
     }
 
     this.accStatistics = Paddle.getDefaultStatistics()

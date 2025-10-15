@@ -26,6 +26,7 @@ export class Ball extends GameEntity implements IObservable<BallEvents> {
   private _speedMultiplier = 1
 
   private isBallEnableToHit = false
+  protected lastBallHit: TableSide
 
   renderFinalTarget = false
 
@@ -58,13 +59,13 @@ export class Ball extends GameEntity implements IObservable<BallEvents> {
   }
 
   restartBall() {
-    this.isBallEnableToHit = false
-
     this.position.x = this.table.position.x
     this.position.y = this.table.position.y
 
     this.speed.x = this.MAX_SPEED.x * (Math.random() > 0.5 ? 1 : -1)
     this.speed.y = this.MAX_SPEED.y * (Math.random() > 0.5 ? 1 : -1)
+
+    this.lastBallHit = this.speed.x < 0 ? TableSide.RIGHT : TableSide.LEFT
 
     this._speedMultiplier = 1
 
@@ -75,21 +76,14 @@ export class Ball extends GameEntity implements IObservable<BallEvents> {
     this.position.x += this.speed.x
     this.position.y += this.speed.y
 
-    this.isBallEnableToHit = this.isCrossedTable()
-
     if (this.positionInitialY < this.table.positionInitialY || this.positionFinalY > this.table.positionFinalY) {
       this.speed.y *= -1
     }
 
     this.fixPosition()
 
-    if (this.checkCollisionPaddle(paddleLeft)) {
-      this.collisionPaddle(paddleLeft)
-      // this.handleCollision(paddleLeft)
-    } else if (this.checkCollisionPaddle(paddleRight)) {
-      this.collisionPaddle(paddleRight)
-      // this.handleCollision(paddleRight)
-    }
+    this.handleCollision(paddleLeft)
+    this.handleCollision(paddleRight)
 
     if (this.positionFinalX < this.table.positionInitialX) {
       this.restartBall()
@@ -154,17 +148,29 @@ export class Ball extends GameEntity implements IObservable<BallEvents> {
   }
 
   protected handleCollision(paddle: Paddle) {
-    if (!this.isBallEnableToHit) {
+    const halfW = paddle.dimension.width / 2
+    const halfH = paddle.dimension.height / 2
+
+    const dx = this.position.x - paddle.position.x
+    const dy = this.position.y - paddle.position.y
+
+    const closestX = Math.max(-halfW, Math.min(dx, halfW))
+    const closestY = Math.max(-halfH, Math.min(dy, halfH))
+
+    const distX = dx - closestX
+    const distY = dy - closestY
+
+    const distanceSquared = distX * distX + distY * distY
+    const collided = distanceSquared <= this.radius * this.radius
+
+    if (!collided) {
       return
     }
 
-    const dx = this.position.x - paddle.positionFinalX
-    const dy = this.position.y - paddle.positionFinalY
+    const overlapX = this.radius - Math.abs(distX)
+    const overlapY = this.radius - Math.abs(distY)
 
-    const absDX = Math.abs(dx)
-    const absDY = Math.abs(dy)
-
-    if (absDX > absDY) {
+    if (overlapX <= overlapY) {
       this.collisionPaddle(paddle)
     } else {
       this.speed.y *= -1
@@ -182,10 +188,9 @@ export class Ball extends GameEntity implements IObservable<BallEvents> {
   }
 
   predictFinalY() {
-    const halfWidth = this.table.halfWidth
-    const halfHeight = this.table.halfHeight
+    const halfWidth = this.table.dimension.halfWidth
+    const halfHeight = this.table.dimension.halfHeight
 
-    // destino em X (direita ou esquerda)
     const finalX = this.speed.x > 0
       ? halfWidth - this.GAP_FINAL_Y
       : -halfWidth + this.GAP_FINAL_Y
@@ -201,22 +206,17 @@ export class Ball extends GameEntity implements IObservable<BallEvents> {
 
     const rawY = this.position.y + speedY * deltaX
 
-    // altura útil (sem os limites do raio)
     const effectiveHeight = this.table.dimension.height - this.radius * 2
     const halfEffective = effectiveHeight / 2
 
-    // período refletido no espaço [-halfEffective, +halfEffective]
     const period = 2 * effectiveHeight
     const modY = ((rawY + halfEffective) % period + period) % period
-    const reflectedY =
-      modY <= effectiveHeight
-        ? modY - halfEffective
-        : effectiveHeight - (modY - effectiveHeight) - halfEffective
+    const reflectedY = modY <= effectiveHeight
+      ? modY - halfEffective
+      : effectiveHeight - (modY - effectiveHeight) - halfEffective
 
-    // compensar deslocamento do raio
     return Math.max(-halfHeight + this.radius, Math.min(halfHeight - this.radius, reflectedY))
   }
-
 
   setTable(table: Table) {
     this.table = table

@@ -20,8 +20,12 @@ function app() {
 
   const game = new Game(table)
 
+  const paddlePlayer = new PaddlePlayer('w', 's')
+
+  paddlePlayer.dimension.width = 100
+
   game.setPaddles(
-    new PaddlePlayer('w', 's'),
+    paddlePlayer,
     new PaddleBot()
   )
 
