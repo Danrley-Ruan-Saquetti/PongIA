@@ -17,7 +17,7 @@ export class Ball extends GameEntity implements IObservable<BallEvents> {
 
   private readonly GAP_FINAL_Y = 20
   readonly MAX_SPEED = new Vector2D(6, 4)
-  readonly MAX_MULTIPLIER = 2
+  readonly MAX_MULTIPLIER = 1
   readonly SPEED_MULTIPLIER_INCREASE_PER_HIT = .25
 
   speed: Vector2D
