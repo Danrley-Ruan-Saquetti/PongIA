@@ -21,7 +21,7 @@ export class PaddleNN extends Paddle {
 
     const outputs = this.network.feedforward(this.getInputNormalized())
 
-    const actionIndex = this.chooseActionProbabilistic(outputs, .7) as keyof typeof this.ACTION
+    const actionIndex = this.chooseActionProbabilistic(outputs, .5) as keyof typeof this.ACTION
 
     const action = this.ACTION[actionIndex]
 
