@@ -22,7 +22,7 @@ export class GameView {
         const paddleLeft = this.game.getPaddleLeft();
         const paddleRight = this.game.getPaddleRight();
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.ctx.translate(table.halfWidth, table.halfHeight);
+        this.ctx.translate(table.dimension.halfWidth, table.dimension.halfHeight);
         this.ctx.strokeStyle = "white";
         this.ctx.beginPath();
         this.ctx.setLineDash([10, 10]);
@@ -37,7 +37,7 @@ export class GameView {
         this.ctx.textAlign = "center";
         this.ctx.font = "30px Arial";
         this.ctx.fillText(`${this.game.id}`, table.positionInitialX + 100, table.positionInitialY + 30);
-        this.ctx.fillStyle = this.game.FPS >= this.game.FPS_LOCKED ? '#64f22dff' : this.game.FPS < this.game.FPS_LOCKED - 20 ? '#FF0000' : '#3870fdff';
+        this.ctx.fillStyle = this.game.FPS >= this.game.FPS_LOCKED ? '#64f22dff' : this.game.FPS < this.game.FPS_LOCKED - 10 ? '#FF0000' : '#3870fdff';
         this.ctx.font = "15px Arial";
         this.ctx.fillText(`${this.game.FPS}FPS`, table.positionInitialX + 200, table.positionInitialY + 25);
         this.ctx.fillStyle = '#FFF';

@@ -11,7 +11,7 @@ export class PaddleNN extends Paddle {
     update() {
         super.update();
         const outputs = this.network.feedforward(this.getInputNormalized());
-        const actionIndex = this.chooseActionProbabilistic(outputs, .7);
+        const actionIndex = this.chooseActionProbabilistic(outputs, .5);
         const action = this.ACTION[actionIndex];
         action && action();
     }

@@ -13,7 +13,9 @@ function app() {
     const table = new Table();
     table.dimension = new Dimension(canvasGame.width, canvasGame.height);
     const game = new Game(table);
-    game.setPaddles(new PaddlePlayer('w', 's'), new PaddleBot());
+    const paddlePlayer = new PaddlePlayer('w', 's');
+    paddlePlayer.dimension.width = 100;
+    game.setPaddles(paddlePlayer, new PaddleBot());
     const gameView = new GameView(canvasGame);
     game.options.limitTime = 1000 * 60;
     gameView.setGame(game);

@@ -5,11 +5,9 @@ export class RectangleEntity extends GameEntity {
         super(...arguments);
         this.dimension = new Dimension();
     }
-    get positionInitialX() { return this.position.x - this.halfWidth; }
-    get positionInitialY() { return this.position.y - this.halfHeight; }
-    get positionFinalX() { return this.position.x + this.halfWidth; }
-    get positionFinalY() { return this.position.y + this.halfHeight; }
-    get halfWidth() { return this.dimension.width / 2; }
-    get halfHeight() { return this.dimension.height / 2; }
+    get positionInitialX() { return this.position.x - this.dimension.halfWidth; }
+    get positionInitialY() { return this.position.y - this.dimension.halfHeight; }
+    get positionFinalX() { return this.position.x + this.dimension.halfWidth; }
+    get positionFinalY() { return this.position.y + this.dimension.halfHeight; }
 }
 //# sourceMappingURL=rectangle-entity.js.map

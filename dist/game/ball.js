@@ -14,7 +14,7 @@ export class Ball extends GameEntity {
         this.radius = radius;
         this.GAP_FINAL_Y = 20;
         this.MAX_SPEED = new Vector2D(6, 4);
-        this.MAX_MULTIPLIER = 2;
+        this.MAX_MULTIPLIER = 1;
         this.SPEED_MULTIPLIER_INCREASE_PER_HIT = .25;
         this._speedMultiplier = 1;
         this.isBallEnableToHit = false;
@@ -30,30 +30,23 @@ export class Ball extends GameEntity {
         this.restartBall();
     }
     restartBall() {
-        this.isBallEnableToHit = false;
         this.position.x = this.table.position.x;
         this.position.y = this.table.position.y;
         this.speed.x = this.MAX_SPEED.x * (Math.random() > 0.5 ? 1 : -1);
         this.speed.y = this.MAX_SPEED.y * (Math.random() > 0.5 ? 1 : -1);
+        this.lastBallHit = this.speed.x < 0 ? TableSide.RIGHT : TableSide.LEFT;
         this._speedMultiplier = 1;
         this._finalY = this.predictFinalY();
     }
     update(paddleLeft, paddleRight) {
         this.position.x += this.speed.x;
         this.position.y += this.speed.y;
-        this.isBallEnableToHit = this.isCrossedTable();
         if (this.positionInitialY < this.table.positionInitialY || this.positionFinalY > this.table.positionFinalY) {
             this.speed.y *= -1;
         }
         this.fixPosition();
-        if (this.checkCollisionPaddle(paddleLeft)) {
-            this.collisionPaddle(paddleLeft);
-            // this.handleCollision(paddleLeft)
-        }
-        else if (this.checkCollisionPaddle(paddleRight)) {
-            this.collisionPaddle(paddleRight);
-            // this.handleCollision(paddleRight)
-        }
+        this.handleCollision(paddleLeft);
+        this.handleCollision(paddleRight);
         if (this.positionFinalX < this.table.positionInitialX) {
             this.restartBall();
             this.observer.emit('ball/table-out', TableSide.LEFT);
@@ -106,14 +99,22 @@ export class Ball extends GameEntity {
         return (dx * dx + dy * dy) < (this.radius * this.radius);
     }
     handleCollision(paddle) {
-        if (!this.isBallEnableToHit) {
+        const halfW = paddle.dimension.width / 2;
+        const halfH = paddle.dimension.height / 2;
+        const dx = this.position.x - paddle.position.x;
+        const dy = this.position.y - paddle.position.y;
+        const closestX = Math.max(-halfW, Math.min(dx, halfW));
+        const closestY = Math.max(-halfH, Math.min(dy, halfH));
+        const distX = dx - closestX;
+        const distY = dy - closestY;
+        const distanceSquared = distX * distX + distY * distY;
+        const collided = distanceSquared <= this.radius * this.radius;
+        if (!collided) {
             return;
         }
-        const dx = this.position.x - paddle.positionFinalX;
-        const dy = this.position.y - paddle.positionFinalY;
-        const absDX = Math.abs(dx);
-        const absDY = Math.abs(dy);
-        if (absDX > absDY) {
+        const overlapX = this.radius - Math.abs(distX);
+        const overlapY = this.radius - Math.abs(distY);
+        if (overlapX <= overlapY) {
             this.collisionPaddle(paddle);
         }
         else {
@@ -128,9 +129,8 @@ export class Ball extends GameEntity {
         this._finalY = this.predictFinalY();
     }
     predictFinalY() {
-        const halfWidth = this.table.halfWidth;
-        const halfHeight = this.table.halfHeight;
-        // destino em X (direita ou esquerda)
+        const halfWidth = this.table.dimension.halfWidth;
+        const halfHeight = this.table.dimension.halfHeight;
         const finalX = this.speed.x > 0
             ? halfWidth - this.GAP_FINAL_Y
             : -halfWidth + this.GAP_FINAL_Y;
@@ -141,16 +141,13 @@ export class Ball extends GameEntity {
             return this.position.y;
         }
         const rawY = this.position.y + speedY * deltaX;
-        // altura útil (sem os limites do raio)
         const effectiveHeight = this.table.dimension.height - this.radius * 2;
         const halfEffective = effectiveHeight / 2;
-        // período refletido no espaço [-halfEffective, +halfEffective]
         const period = 2 * effectiveHeight;
         const modY = ((rawY + halfEffective) % period + period) % period;
         const reflectedY = modY <= effectiveHeight
             ? modY - halfEffective
             : effectiveHeight - (modY - effectiveHeight) - halfEffective;
-        // compensar deslocamento do raio
         return Math.max(-halfHeight + this.radius, Math.min(halfHeight - this.radius, reflectedY));
     }
     setTable(table) {
